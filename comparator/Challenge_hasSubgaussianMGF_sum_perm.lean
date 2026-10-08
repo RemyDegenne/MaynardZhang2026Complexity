@@ -1,24 +1,24 @@
 module
 
-public import Mathlib.Analysis.Convex.Hull
-public import Mathlib.Topology.Instances.Matrix
-public import Mathlib.LinearAlgebra.Matrix.SchurComplement
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Analysis.CStarAlgebra.Matrix
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.LinearAlgebra.Matrix.PosDef
-public import Mathlib.Analysis.Convex.Caratheodory
-public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
-public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-public import Mathlib.Topology.Algebra.Ring.Real
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.Analysis.Matrix.MeasurableSpace
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 public import Mathlib.MeasureTheory.Group.Arithmetic
+public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.LinearAlgebra.Matrix.SchurComplement
+public import Mathlib.Analysis.Convex.Caratheodory
+public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Logic.Equiv.Defs
@@ -99,6 +99,19 @@ end ProbabilityTheory
 namespace MaynardZhang2026Complexity
 end MaynardZhang2026Complexity
 
+-- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis ═══
+@[expose] public section
+open Matrix
+namespace Matrix
+variable {ι : Type*} [Fintype ι]
+
+/-- The squared Mahalanobis norm `‖x‖_A² = xᵀ A x`. -/
+def mahalanobisSq (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) : ℝ :=
+  WithLp.ofLp x ⬝ᵥ A *ᵥ WithLp.ofLp x
+
+end Matrix
+end
+
 -- ═══ MaynardZhang2026Complexity.LeanMachineLearning.DesignMatrix ═══
 @[expose] public section
 open Matrix Real
@@ -116,19 +129,6 @@ variable {ι : Type*} {𝒳 : Set (EuclideanSpace ℝ ι)} {x : EuclideanSpace �
 variable [Fintype ι]
 variable [DecidableEq ι]
 end Learning
-end
-
--- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis ═══
-@[expose] public section
-open Matrix
-namespace Matrix
-variable {ι : Type*} [Fintype ι]
-
-/-- The squared Mahalanobis norm `‖x‖_A² = xᵀ A x`. -/
-def mahalanobisSq (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) : ℝ :=
-  WithLp.ofLp x ⬝ᵥ A *ᵥ WithLp.ofLp x
-
-end Matrix
 end
 
 -- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice ═══

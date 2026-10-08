@@ -7,7 +7,7 @@ module
 
 public import MaynardZhang2026Complexity.LeanMachineLearning.SequentialLearning.Algorithms.RandomOrder
 public import MaynardZhang2026Complexity.Mathlib.MeasureTheory.MeasurableSpace.Instances
-public import MaynardZhang2026Complexity.Mathlib.Probability.HasCondDistrib.Countable
+public import MaynardZhang2026Complexity.Mathlib.Probability.HasCondDistrib
 public import MaynardZhang2026Complexity.Mathlib.Probability.ProbabilityMassFunction.Uniform
 
 /-!

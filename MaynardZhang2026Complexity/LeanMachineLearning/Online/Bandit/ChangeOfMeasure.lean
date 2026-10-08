@@ -63,6 +63,7 @@ lemma feedback_banditSeq_eq_withDensity (hac : ∀ t a, ν t a ≪ ν' t a)
       ENNReal.ofReal (exp (-llr (ν t p.2) (ν' t p.2) y))) := by
     have hg : Measurable fun q : ((Hist Unit 𝓐 ℝ t × Unit) × 𝓐) × ℝ ↦ (q.1.2, q.2) :=
       (measurable_snd.comp measurable_fst).prodMk measurable_snd
+    -- elaborating the composition before unifying with the goal avoids a costly `isDefEq`
     have h := (measurable_ofReal_exp_neg_llr ν ν' t).comp hg
     exact h
   ext p : 1

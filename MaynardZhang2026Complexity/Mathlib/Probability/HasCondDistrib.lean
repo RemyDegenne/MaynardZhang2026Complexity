@@ -41,6 +41,8 @@ General facts about Mathlib's `HasCondDistrib`, complementing LML's
   measure to an event determined by `X`;
 * `HasCondDistrib.measureReal_le_mul`, `HasCondDistrib.measureReal_sub_le`: a uniform bound on
   the conditional probability of an event given `Z` bounds its probability;
+* `hasCondDistrib_of_countable`: on countable spaces, a conditional law is determined by the
+  probabilities of the singletons;
 * `HasCondDistrib.lintegral_prodMk`, `HasCondDistrib.integral_prodMk`: the integral of a function
   of `(X, Y)` is the integral of its integral against the conditional law of `Y` given `X`, and
   `hasCondDistrib_of_lintegral_eq`: this characterizes the conditional law;
@@ -467,5 +469,24 @@ lemma HasCondDistrib.map_prodMk {F : α × β → δ} [SFinite P] [IsSFiniteKern
     Measure.compProd_map_prodMk _ _ hF]
 
 end congr
+
+section countable
+
+/-- On countable spaces with measurable singletons, a conditional law is determined by the
+probabilities of the singletons: if `μ (C = a, Z = b) = μ (C = a) κ a {b}` for all `a`, `b`, then
+`κ` is the conditional law of `Z` given `C`. -/
+lemma hasCondDistrib_of_countable {Ω α β : Type*} {mΩ : MeasurableSpace Ω}
+    {mα : MeasurableSpace α} {mβ : MeasurableSpace β} [Countable α] [Countable β]
+    [MeasurableSingletonClass α] [MeasurableSingletonClass β] {μ : Measure Ω} [SFinite μ]
+    {C : Ω → α} {Z : Ω → β} {κ : Kernel α β} [IsSFiniteKernel κ] (hC : Measurable C)
+    (hZ : Measurable Z) (h : ∀ a b, μ (C ⁻¹' {a} ∩ Z ⁻¹' {b}) = μ (C ⁻¹' {a}) * κ a {b}) :
+    HasCondDistrib Z C κ μ := by
+  refine ⟨(hC.prodMk hZ).aemeasurable, Measure.ext_of_singleton fun ⟨a, b⟩ ↦ ?_⟩
+  rw [← Set.singleton_prod_singleton, Measure.map_apply (hC.prodMk hZ)
+    ((measurableSet_singleton a).prod (measurableSet_singleton b)), Set.mk_preimage_prod,
+    Measure.compProd_apply_prod (measurableSet_singleton a) (measurableSet_singleton b),
+    lintegral_singleton, Measure.map_apply hC (measurableSet_singleton a), h, mul_comm]
+
+end countable
 
 end ProbabilityTheory

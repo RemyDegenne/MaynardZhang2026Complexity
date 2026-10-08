@@ -101,7 +101,8 @@ $d = \abs{\iota}$) and $T \in \N$ is the budget. Rounds are numbered $0, \dots, 
 
 \begin{lemma}[The arm of the min-gap is the best arm]
   \label{lem:min_gap_best_arm}
-  \lean{Set.Finite.mem_vertices_of_forall_vertices}
+  \lean{Set.Finite.mem_vertices_of_forall_mem_vertices,
+    Set.Finite.inner_lt_of_forall_mem_vertices}
   \leanok
   \uses{def:min_gap, lem:strict_expose, lem:max_face}
   Let $\Delta > 0$ and let $x \in \X$ beat every other vertex by $\Delta$ for $\thetabar_T$. Then $x$

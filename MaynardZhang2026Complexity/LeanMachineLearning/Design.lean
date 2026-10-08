@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import MaynardZhang2026Complexity.LeanMachineLearning.DesignMatrix
+public import MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
@@ -19,7 +20,8 @@ probability vector on points of `𝒳`, encoded as a finitely supported function
 ## Main definitions
 
 * `designMatrix`: the linear map `w ↦ ∑ₓ w x • x xᵀ`;
-* `IsDesign 𝒳 w`: `w` is a design distribution on `𝒳`.
+* `IsDesign 𝒳 w`: `w` is a design distribution on `𝒳`;
+* `designOfWeights 𝒳 q`: the design on a finite set with prescribed weights.
 
 ## Main results
 
@@ -28,6 +30,11 @@ probability vector on points of `𝒳`, encoded as a finitely supported function
   `card ι ^ 2 + 1` points; `mem_designSet_iff`: the design set is the set of design matrices of
   design distributions.
 * `sum_mul_dotProduct_inv_mulVec`: `∑ₓ w x * xᵀ A(w)⁻¹ x = card ι` when `A(w)` is invertible.
+* `mahalanobisSq_designMatrix`: the quadratic form of a design matrix,
+  `vᵀ A(w) v = ∑ₓ w x ⟪x, v⟫²`; `IsDesign.mahalanobisSq_designMatrix_le`: for a design on a
+  finite set `s`, `vᵀ A(w) v ≤ ∑_{y ∈ s} ⟪y, v⟫²`, a bound uniform in the design.
+* `designOfWeights 𝒳 q`: the design on a finite set `𝒳` with weights `q : 𝒳 → ℝ`
+  (`isDesign_designOfWeights`, `mahalanobisSq_designMatrix_designOfWeights`).
 
 Ported from the `colt-2026-83` development (the `G`-optimal designs and the Kiefer–Wolfowitz
 theorem of that development are not included).
@@ -140,6 +147,97 @@ lemma mem_designSet_iff [Finite ι] : A ∈ designSet 𝒳 ↔ ∃ w, IsDesign �
   have := Fintype.ofFinite ι
   exact ⟨fun hA ↦ (exists_isDesign_of_mem_designSet hA).imp fun _ h ↦ ⟨h.1, h.2.1⟩,
     fun ⟨_, hw, hA⟩ ↦ hA ▸ hw.designMatrix_mem_designSet⟩
+
+/-! ### Quadratic forms of design matrices -/
+
+section QuadraticForm
+
+open Matrix
+
+/-- `vᵀ (y yᵀ) v = ⟪y, v⟫²`. -/
+lemma mahalanobisSq_outerSelf (y v : EuclideanSpace ℝ ι) :
+    mahalanobisSq (outerSelf y) v = ⟪y, v⟫ ^ 2 := by
+  rw [mahalanobisSq_apply, dotProduct_outerSelf_mulVec, real_inner_comm]
+
+/-- The quadratic form of a design matrix: `vᵀ A(w) v = ∑ₓ w x ⟪x, v⟫²`. -/
+lemma mahalanobisSq_designMatrix (w : EuclideanSpace ℝ ι →₀ ℝ) (v : EuclideanSpace ℝ ι) :
+    mahalanobisSq (designMatrix w) v = ∑ y ∈ w.support, w y * ⟪y, v⟫ ^ 2 := by
+  rw [designMatrix_apply, mahalanobisSq_sum_left]
+  simp_rw [mahalanobisSq_smul_left, mahalanobisSq_outerSelf]
+
+omit [Fintype ι] in
+/-- The design matrix of a design is positive semidefinite. -/
+lemma IsDesign.posSemidef_designMatrix [Finite ι] (hw : IsDesign 𝒳 w) :
+    (designMatrix w).PosSemidef :=
+  posSemidef_of_mem_designSet hw.designMatrix_mem_designSet
+
+/-- For a design on a finite set `s`, `vᵀ A(w) v ≤ ∑_{y ∈ s} ⟪y, v⟫²`. -/
+lemma IsDesign.mahalanobisSq_designMatrix_le {s : Finset (EuclideanSpace ℝ ι)}
+    (hw : IsDesign (s : Set (EuclideanSpace ℝ ι)) w) (v : EuclideanSpace ℝ ι) :
+    mahalanobisSq (designMatrix w) v ≤ ∑ y ∈ s, ⟪y, v⟫ ^ 2 := by
+  rw [mahalanobisSq_designMatrix]
+  calc ∑ y ∈ w.support, w y * ⟪y, v⟫ ^ 2
+      ≤ ∑ y ∈ w.support, w y * ∑ z ∈ s, ⟪z, v⟫ ^ 2 := by
+        refine Finset.sum_le_sum fun y hy ↦ mul_le_mul_of_nonneg_left ?_ (hw.nonneg y)
+        exact Finset.single_le_sum (f := fun z ↦ ⟪z, v⟫ ^ 2) (fun _ _ ↦ sq_nonneg _)
+          (hw.mem_of_mem_support hy)
+    _ = ∑ z ∈ s, ⟪z, v⟫ ^ 2 := by rw [← Finset.sum_mul, hw.sum_eq_one, one_mul]
+
+/-- The quadratic form of the design matrix `|s|⁻¹ ∑_{y ∈ s} y yᵀ` of the uniform design on a
+finite set `s`. -/
+lemma mahalanobisSq_inv_card_smul_sum_outerSelf (s : Finset (EuclideanSpace ℝ ι))
+    (v : EuclideanSpace ℝ ι) :
+    mahalanobisSq ((s.card : ℝ)⁻¹ • ∑ y ∈ s, outerSelf y) v =
+      (s.card : ℝ)⁻¹ * ∑ y ∈ s, ⟪y, v⟫ ^ 2 := by
+  simp_rw [mahalanobisSq_smul_left, mahalanobisSq_sum_left, mahalanobisSq_outerSelf]
+
+end QuadraticForm
+
+/-! ### Designs with prescribed weights on a finite set -/
+
+section Weights
+
+open scoped Classical in
+/-- The design on the finite set `𝒳` with weight `q a` at each point `a ∈ 𝒳` (a design when the
+weights are nonnegative and sum to `1`, `isDesign_designOfWeights`). For instance, the expected
+frequencies `q a = (1/T) ∑_{t < T} P(X_t = a)` of the arms played by a bandit algorithm. -/
+noncomputable def designOfWeights (𝒳 : Finset (EuclideanSpace ℝ ι)) (q : 𝒳 → ℝ) :
+    EuclideanSpace ℝ ι →₀ ℝ :=
+  Finsupp.onFinset 𝒳 (fun x ↦ if hx : x ∈ 𝒳 then q ⟨x, hx⟩ else 0) fun x hx ↦ by
+    by_contra h
+    simp [h] at hx
+
+variable {s : Finset (EuclideanSpace ℝ ι)} {q : s → ℝ}
+
+/-- Sums against the design of weights `q` on `s` are weighted sums over `s`. -/
+lemma sum_designOfWeights_mul (f : EuclideanSpace ℝ ι → ℝ) :
+    ∑ x ∈ (designOfWeights s q).support, designOfWeights s q x * f x = ∑ a : s, q a * f a := by
+  classical
+  have hsupp : (designOfWeights s q).support ⊆ s := Finsupp.support_onFinset_subset
+  rw [Finset.sum_subset hsupp fun x _ hx ↦ by rw [Finsupp.notMem_support_iff.1 hx, zero_mul]]
+  simp only [designOfWeights, Finsupp.onFinset_apply, dite_mul, zero_mul]
+  exact Finset.sum_dite_of_true (fun _ h ↦ h) _ _
+
+/-- Nonnegative weights summing to `1` on a finite set define a design on it. -/
+lemma isDesign_designOfWeights (hq0 : ∀ a, 0 ≤ q a) (hq1 : ∑ a, q a = 1) :
+    IsDesign s (designOfWeights s q) where
+  support_subset := by exact_mod_cast Finsupp.support_onFinset_subset
+  nonneg x := by
+    simp only [designOfWeights, Finsupp.onFinset_apply]
+    split_ifs
+    exacts [hq0 _, le_rfl]
+  sum_eq_one := by
+    have h := sum_designOfWeights_mul (q := q) fun _ ↦ 1
+    simp only [mul_one] at h
+    rw [h, hq1]
+
+/-- The quadratic form of the design of weights `q` on `s` is `v ↦ ∑_{a ∈ s} q a ⟪a, v⟫²`. -/
+lemma mahalanobisSq_designMatrix_designOfWeights (v : EuclideanSpace ℝ ι) :
+    Matrix.mahalanobisSq (designMatrix (designOfWeights s q)) v
+      = ∑ a : s, q a * ⟪(a : EuclideanSpace ℝ ι), v⟫ ^ 2 := by
+  rw [mahalanobisSq_designMatrix, sum_designOfWeights_mul]
+
+end Weights
 
 variable [DecidableEq ι]
 

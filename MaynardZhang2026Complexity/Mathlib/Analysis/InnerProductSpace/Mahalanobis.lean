@@ -31,6 +31,10 @@ the learning problems live.
 * `Matrix.PosSemidef.mahalanobisSq_nonneg`, `Matrix.PosDef.mahalanobisSq_pos`;
 * `Matrix.mahalanobisSq_one`: `‖x‖_1² = ‖x‖²`;
 * `Matrix.norm_toEuclideanCLM_sqrt_sq`: `‖√A x‖² = ‖x‖_A²` for `A` positive semidefinite;
+* `Matrix.mahalanobisSq_le_of_le`: `A ≤ B` in the Loewner order implies `‖x‖_A² ≤ ‖x‖_B²`;
+* `Matrix.mahalanobisSq_eq_inner`: `‖x‖_A² = ⟪x, A x⟫`;
+* `Matrix.PosDef.inner_sq_le_mahalanobisSq_inv_mul`: the Cauchy–Schwarz inequality
+  `⟪x, y⟫² ≤ ‖x‖_{A⁻¹}² ‖y‖_A²` for a positive definite matrix `A`;
 * `Continuous.mahalanobisSq`, `Measurable.mahalanobisSq` (`@[fun_prop]`),
   `Matrix.continuous_mahalanobisSq`, `Matrix.bddAbove_range_mahalanobisSq` (bounded on compact
   sets).
@@ -81,6 +85,12 @@ lemma mahalanobisSq_smul_left (c : ℝ) (A : Matrix ι ι ℝ) (x : EuclideanSpa
     mahalanobisSq (c • A) x = c * mahalanobisSq A x := by
   simp [mahalanobisSq, smul_mulVec, dotProduct_smul]
 
+/-- The squared Mahalanobis norm is additive in the matrix. -/
+lemma mahalanobisSq_sum_left {κ : Type*} (s : Finset κ) (A : κ → Matrix ι ι ℝ)
+    (x : EuclideanSpace ℝ ι) :
+    mahalanobisSq (∑ k ∈ s, A k) x = ∑ k ∈ s, mahalanobisSq (A k) x := by
+  simp [mahalanobisSq, sum_mulVec, dotProduct_sum]
+
 /-- For the identity matrix, the squared Mahalanobis norm is the squared Euclidean norm. -/
 @[simp]
 lemma mahalanobisSq_one [DecidableEq ι] (x : EuclideanSpace ℝ ι) :
@@ -96,6 +106,12 @@ lemma PosSemidef.mahalanobisSq_nonneg {A : Matrix ι ι ℝ} (hA : A.PosSemidef)
 lemma PosDef.mahalanobisSq_pos {A : Matrix ι ι ℝ} (hA : A.PosDef) {x : EuclideanSpace ℝ ι}
     (hx : x ≠ 0) : 0 < mahalanobisSq A x := by
   simpa [mahalanobisSq] using hA.dotProduct_mulVec_pos (x := WithLp.ofLp x) (by simpa using hx)
+
+open scoped MatrixOrder in
+/-- The squared Mahalanobis norm is monotone in the matrix for the Loewner order. -/
+lemma mahalanobisSq_le_of_le {A B : Matrix ι ι ℝ} (h : A ≤ B) (x : EuclideanSpace ℝ ι) :
+    mahalanobisSq A x ≤ mahalanobisSq B x := by
+  simpa [mahalanobisSq] using dotProduct_mulVec_le_of_le h (WithLp.ofLp x)
 
 section Sqrt
 
@@ -117,6 +133,34 @@ lemma norm_toEuclideanCLM_sqrt_inv_sq (hA : A.PosDef) (x : EuclideanSpace ℝ ι
   norm_toEuclideanCLM_sqrt_sq hA.inv.posSemidef x
 
 end Sqrt
+
+section Inner
+
+open scoped RealInnerProductSpace MatrixOrder
+
+variable [DecidableEq ι] {A : Matrix ι ι ℝ}
+
+/-- `‖x‖_A² = ⟪x, A x⟫`. -/
+lemma mahalanobisSq_eq_inner (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) :
+    mahalanobisSq A x = ⟪x, toEuclideanCLM (𝕜 := ℝ) A x⟫ := by
+  rw [mahalanobisSq_apply, EuclideanSpace.inner_eq_star_dotProduct, ofLp_toEuclideanCLM,
+    star_trivial, dotProduct_comm]
+
+/-- `‖A⁻¹ x‖_A² = ‖x‖_{A⁻¹}²` for an invertible matrix `A`. -/
+lemma mahalanobisSq_toEuclideanCLM_inv (hA : IsUnit A.det) (x : EuclideanSpace ℝ ι) :
+    mahalanobisSq A (toEuclideanCLM (𝕜 := ℝ) A⁻¹ x) = mahalanobisSq A⁻¹ x := by
+  rw [mahalanobisSq_apply, mahalanobisSq_apply, ofLp_toEuclideanCLM, mulVec_mulVec,
+    mul_nonsing_inv A hA, one_mulVec, dotProduct_comm]
+
+/-- **Cauchy–Schwarz inequality** for the squared Mahalanobis norms of a positive definite matrix
+and of its inverse: `⟪x, y⟫² ≤ ‖x‖_{A⁻¹}² ‖y‖_A²`. -/
+lemma PosDef.inner_sq_le_mahalanobisSq_inv_mul (hA : A.PosDef) (x y : EuclideanSpace ℝ ι) :
+    ⟪x, y⟫ ^ 2 ≤ mahalanobisSq A⁻¹ x * mahalanobisSq A y := by
+  rw [← norm_toEuclideanCLM_sqrt_inv_sq hA, ← norm_toEuclideanCLM_sqrt_sq hA.posSemidef,
+    ← mul_pow, ← real_inner_comm x y, ← inner_toEuclideanCLM_sqrt_sqrt_inv hA y x, mul_comm]
+  exact sq_le_sq' (neg_le_of_abs_le (abs_real_inner_le_norm _ _)) (real_inner_le_norm _ _)
+
+end Inner
 
 end Matrix
 

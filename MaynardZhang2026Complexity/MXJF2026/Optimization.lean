@@ -6,8 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import MaynardZhang2026Complexity.MXJF2026.Lemma4
-public import MaynardZhang2026Complexity.LeanMachineLearning.DesignMahalanobis
-public import MaynardZhang2026Complexity.Mathlib.Analysis.Convex.AdjacentNonempty
+public import MaynardZhang2026Complexity.LeanMachineLearning.Design
 
 /-!
 # The optimization problems of the lower bound

@@ -9,7 +9,7 @@ public import MaynardZhang2026Complexity.MXJF2026.Setting
 public import Mathlib.Probability.Moments.SubGaussian
 public import MaynardZhang2026Complexity.Mathlib.MeasureTheory.MeasurableSpace.Instances
 public import MaynardZhang2026Complexity.Mathlib.Probability.Moments.SamplingWithoutReplacement
-public import MaynardZhang2026Complexity.LeanMachineLearning.LeastSquares
+public import MaynardZhang2026Complexity.LeanMachineLearning.DesignMatrix
 
 /-!
 # Lemma 9: sub-Gaussianity of a randomly permuted linear statistic

@@ -8,7 +8,7 @@ module
 public import MaynardZhang2026Complexity.MXJF2026.Setting
 public import MaynardZhang2026Complexity.MXJF2026.Lemma2
 public import MaynardZhang2026Complexity.MXJF2026.Optimization
-public import MaynardZhang2026Complexity.LeanMachineLearning.DesignOfWeights
+public import MaynardZhang2026Complexity.LeanMachineLearning.Design
 public import MaynardZhang2026Complexity.LeanMachineLearning.SequentialLearning.AgreeingEnvironments
 public import MaynardZhang2026Complexity.Mathlib.InformationTheory.KullbackLeibler.Gaussian
 
@@ -56,7 +56,11 @@ lemma isBestArm_iff_eq_of_forall_vertices {𝒳 : Set (EuclideanSpace ℝ ι)} (
     (hx : x ∈ 𝒳) (h : ∀ y ∈ vertices 𝒳, y ≠ x → Δ ≤ ⟪x - y, avgParam θ T⟫)
     {z : EuclideanSpace ℝ ι} :
     IsBestArm 𝒳 θ T z ↔ z = x := by
-  have hlt := (h𝒳.mem_vertices_of_forall_vertices hΔ hx h).2
+  have hlt : ∀ y ∈ 𝒳, y ≠ x → ⟪y, avgParam θ T⟫ < ⟪x, avgParam θ T⟫ := fun y hy hyx ↦
+    h𝒳.inner_lt_of_forall_mem_vertices (fun v hv hvx ↦ by
+      have := h v hv hvx
+      rw [inner_sub_left] at this
+      linarith) hy hyx
   refine ⟨fun ⟨hz, hzmax⟩ ↦ ?_, ?_⟩
   · by_contra hzx
     exact (hlt z hz hzx).not_ge (hzmax x hx)
@@ -126,7 +130,11 @@ theorem exists_minGapGE_le_max_error_optValue (𝒳 : Finset (EuclideanSpace ℝ
   have hq1 : ∑ a, q a = 1 := by
     rw [hq, ← Finset.mul_sum, Finset.sum_comm, Finset.sum_congr rfl fun t _ ↦ h1 t]
     simp [hT']
-  obtain ⟨w, hw, hw_quad⟩ := exists_isDesign_mahalanobisSq_eq 𝒳 q hq0 hq1
+  set w := designOfWeights 𝒳 q with hw_def
+  have hw : IsDesign 𝒳 w := isDesign_designOfWeights hq0 hq1
+  have hw_quad : ∀ v, mahalanobisSq (designMatrix w) v
+      = ∑ a, q a * ⟪(a : EuclideanSpace ℝ ι), v⟫ ^ 2 :=
+    mahalanobisSq_designMatrix_designOfWeights
   -- a pair of distinct vertices and a feasible point
   obtain ⟨x, x', θ₀, v, hxx', hfeas, hlt⟩ := exists_pairFeasible_lt_two_mul_optValue 𝒳 h𝒳 hΔ hw
   have hx : x ∈ 𝒳 := vertices_subset hxx'.1

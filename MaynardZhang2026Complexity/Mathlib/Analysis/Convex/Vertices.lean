@@ -15,27 +15,31 @@ public import Mathlib.Analysis.LocallyConvex.Separation
 /-!
 # Vertices and edges of the convex hull of a finite set
 
-For a finite set `𝒳` of a finite-dimensional real inner product space, the vertices of `conv 𝒳`
-(`Set.vertices`) and its edges (`Set.IsAdjacent`) are characterized through directions `w`, and
-a vertex that is not beaten by its adjacent vertices in a direction `θ` is a maximizer of `θ` over
-`𝒳` (local optimality implies global optimality, the *adjacency lemma*).
+For a finite set `𝒳` of a real inner product space (complete, for the characterizations through
+inner products), the vertices of `conv 𝒳` (`Set.vertices`) and its edges (`Set.IsAdjacent`) are
+characterized through directions `w`, and a vertex that is not beaten by its adjacent vertices in a
+direction `θ` is a maximizer of `θ` over `𝒳` (local optimality implies global optimality, the
+*adjacency lemma*).
 
 ## Main statements
 
 * `Set.mem_convexHull_setOf_inner_eq`: the maximizers of a linear form over `conv s` are the
   convex combinations of its maximizers in `s`;
-* `Set.mem_vertices_iff_exists_inner_lt`: a point of `𝒳` is a vertex iff some direction
-  makes it strictly better than the other points of `𝒳`;
+* `Set.mem_vertices_iff_exists_inner_lt`: a point of `𝒳` is a vertex iff some direction makes it
+  strictly better than the other points of `𝒳`;
+* `Set.mem_vertices_of_forall_norm_le`: a point of maximal norm is a vertex;
 * `Set.Finite.convexHull_vertices`: `conv 𝒳` is the convex hull of its vertices;
 * `Set.Finite.isAdjacent_iff_exists_inner`: two distinct vertices are adjacent iff some direction
   makes them tie and beat every other vertex;
 * `Set.Finite.exists_mem_adjacentTo_inner_pos`: if some point of `𝒳` beats the vertex `x` in the
-  direction `θ`, then some vertex adjacent to `x` beats it;
+  direction `θ`, then some vertex adjacent to `x` beats it (the adjacency lemma);
 * `Set.Finite.exists_mem_adjacentTo_inner_nonneg`: the same with weak inequalities;
-* `Set.Finite.adjacentTo_nonempty`: a vertex of a set with another point has an adjacent vertex;
+* `Set.Finite.adjacentTo_nonempty`, `Set.Finite.exists_isAdjacent`: a vertex of a set with another
+  point has an adjacent vertex, and a set with two points has an edge;
 * `Set.Finite.smul_mem_convexHull_image_adjacentTo`: the cone property at a strict maximizer;
-* `Set.Finite.mem_vertices_of_forall_vertices`: a point beating every other vertex by `Δ > 0`
-  is a vertex and beats every other point.
+* `Set.Finite.inner_lt_of_forall_mem_vertices`, `Set.Finite.mem_vertices_of_forall_mem_vertices`:
+  a point strictly better than every other vertex in some direction is strictly better than every
+  other point, and is a vertex.
 
 ## Implementation notes
 
@@ -44,7 +48,13 @@ expose the vertex `x`; every other point of `𝒳` is `y = x + d_y a_y` with `d_
 and `⟪a_y, w⟫ = -1`. A vertex `b` of the finite set `{a_y}` maximizing `⟪·, θ⟫` is strictly
 exposed by some `ψ`; then `φ = ψ + ⟪b, ψ⟫ w` is maximized over `𝒳` exactly at `x` and at the
 points of the ray `x + ℝ₊ b`, and the farthest such point `z` is a vertex adjacent to `x` with
-`⟪z - x, θ⟫ > 0`.
+`⟪z - x, θ⟫ > 0`. The usual proof deduces the adjacency lemma from the cone property of polytopes
+(Ziegler, *Lectures on Polytopes*, Lemma 3.6), which is proved here as a consequence
+(`Set.Finite.smul_mem_convexHull_image_adjacentTo`).
+
+## Tags
+
+polytope, vertex, edge, exposed point, adjacency, convex hull
 -/
 
 @[expose] public section
@@ -134,6 +144,19 @@ lemma mem_vertices_iff_exists_inner_lt [CompleteSpace E] (hx : x ∈ 𝒳) :
     x ∈ vertices 𝒳 ↔ ∃ w, ∀ y ∈ 𝒳, y ≠ x → ⟪y, w⟫ < ⟪x, w⟫ :=
   ⟨exists_inner_lt_of_mem_vertices, fun ⟨_, hw⟩ ↦ mem_vertices_of_inner_lt hx hw⟩
 
+/-- A point of a set with maximal norm is a vertex of its convex hull: it is strictly exposed by
+itself. -/
+lemma mem_vertices_of_forall_norm_le (hx : x ∈ 𝒳) (h : ∀ y ∈ 𝒳, ‖y‖ ≤ ‖x‖) :
+    x ∈ vertices 𝒳 := by
+  refine mem_vertices_of_inner_lt hx (w := x) fun y hy hyx ↦ ?_
+  have h1 : 0 < ‖y - x‖ ^ 2 := by
+    have : y - x ≠ 0 := sub_ne_zero.2 hyx
+    positivity
+  have h2 : ‖y‖ ^ 2 ≤ ‖x‖ ^ 2 := pow_le_pow_left₀ (norm_nonneg y) (h y hy) 2
+  rw [norm_sub_sq_real] at h1
+  rw [real_inner_self_eq_norm_sq]
+  linarith
+
 namespace Finite
 
 /-- The vertices adjacent to a vertex of a finite set form a finite set. -/
@@ -211,7 +234,7 @@ end Set
 
 namespace Set.Finite
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
   {𝒳 : Set E} {x x' y : E}
 
 /-- Two distinct vertices of a finite set are adjacent if and only if some direction makes them
@@ -438,29 +461,33 @@ lemma smul_mem_convexHull_image_adjacentTo (h𝒳 : 𝒳.Finite) {θ : E} (hx : 
   rw [h1] at hzpos
   nlinarith
 
-/-- A point of a finite set beating every other vertex by `Δ > 0` in the direction `θ` is a
-vertex and beats every other point of the set. -/
-lemma mem_vertices_of_forall_vertices (h𝒳 : 𝒳.Finite) {Δ : ℝ} (hΔ : 0 < Δ) (hx : x ∈ 𝒳)
-    {θ : E} (h : ∀ y ∈ vertices 𝒳, y ≠ x → Δ ≤ ⟪x - y, θ⟫) :
-    x ∈ vertices 𝒳 ∧ ∀ y ∈ 𝒳, y ≠ x → ⟪y, θ⟫ < ⟪x, θ⟫ := by
-  have hlt : ∀ y ∈ vertices 𝒳, y ≠ x → ⟪y, θ⟫ < ⟪x, θ⟫ := fun y hy hyx ↦ by
-    have := h y hy hyx
-    rw [inner_sub_left] at this
-    linarith
-  have hV : ∀ y ∈ vertices 𝒳, ⟪y, θ⟫ ≤ ⟪x, θ⟫ := fun y hy ↦ by
-    rcases eq_or_ne y x with rfl | hyx
-    exacts [le_rfl, (hlt y hy hyx).le]
-  have hsub : {y ∈ vertices 𝒳 | ⟪y, θ⟫ = ⟪x, θ⟫} ⊆ {x} := fun y hy ↦ by
-    by_contra hyx
-    exact (hlt y hy.1 hyx).ne hy.2
-  -- a point of `𝒳` at least as good as `x` is a convex combination of maximizing vertices
-  have key : ∀ z ∈ 𝒳, ⟪x, θ⟫ ≤ ⟪z, θ⟫ → z = x ∧ x ∈ vertices 𝒳 := by
-    intro z hz hzθ
-    have hmem := mem_convexHull_setOf_inner_eq hV
-      (h𝒳.convexHull_vertices.symm ▸ subset_convexHull ℝ 𝒳 hz) hzθ
-    obtain ⟨y, hy⟩ := convexHull_nonempty_iff.mp ⟨_, hmem⟩
-    have hyx : y = x := hsub hy
-    exact ⟨by simpa using convexHull_mono hsub hmem, hyx ▸ hy.1⟩
-  exact ⟨(key x hx le_rfl).2, fun y hy hyx ↦ lt_of_not_ge fun hle ↦ hyx (key y hy hle).1⟩
+/-- A point of a finite set strictly better than every other vertex in the direction `θ` is
+strictly better than every other point of the set. -/
+lemma inner_lt_of_forall_mem_vertices (h𝒳 : 𝒳.Finite) {θ : E}
+    (h : ∀ v ∈ vertices 𝒳, v ≠ x → ⟪v, θ⟫ < ⟪x, θ⟫) (hy : y ∈ 𝒳) (hyx : y ≠ x) :
+    ⟪y, θ⟫ < ⟪x, θ⟫ := by
+  have hV : ∀ v ∈ vertices 𝒳, ⟪v, θ⟫ ≤ ⟪x, θ⟫ := fun v hv ↦ by
+    rcases eq_or_ne v x with rfl | hvx
+    exacts [le_rfl, (h v hv hvx).le]
+  have hsub : {v ∈ vertices 𝒳 | ⟪v, θ⟫ = ⟪x, θ⟫} ⊆ {x} := fun v hv ↦ by
+    by_contra hvx
+    exact (h v hv.1 hvx).ne hv.2
+  refine lt_of_not_ge fun hle ↦ hyx ?_
+  -- `y` is a convex combination of maximizing vertices, and `x` is the only one
+  simpa using convexHull_mono hsub (mem_convexHull_setOf_inner_eq hV
+    (h𝒳.convexHull_vertices.symm ▸ subset_convexHull ℝ 𝒳 hy) hle)
+
+/-- A point of a finite set strictly better than every other vertex in some direction is a
+vertex. -/
+lemma mem_vertices_of_forall_mem_vertices (h𝒳 : 𝒳.Finite) (hx : x ∈ 𝒳) {θ : E}
+    (h : ∀ v ∈ vertices 𝒳, v ≠ x → ⟪v, θ⟫ < ⟪x, θ⟫) : x ∈ vertices 𝒳 :=
+  mem_vertices_of_inner_lt hx fun _ hy hyx ↦ h𝒳.inner_lt_of_forall_mem_vertices h hy hyx
+
+/-- A finite set with two points has two adjacent vertices. -/
+lemma exists_isAdjacent (h𝒳 : 𝒳.Finite) (hnt : 𝒳.Nontrivial) : ∃ x x', IsAdjacent 𝒳 x x' := by
+  obtain ⟨x, hx, hmax⟩ := Set.exists_max_image 𝒳 (fun y ↦ ‖y‖) h𝒳 hnt.nonempty
+  obtain ⟨y, hy, hyx⟩ := hnt.exists_ne x
+  obtain ⟨x', hx'⟩ := h𝒳.adjacentTo_nonempty (mem_vertices_of_forall_norm_le hx hmax) hy hyx
+  exact ⟨x, x', hx'⟩
 
 end Set.Finite

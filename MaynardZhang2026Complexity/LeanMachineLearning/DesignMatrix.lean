@@ -7,6 +7,7 @@ module
 
 public import MaynardZhang2026Complexity.Mathlib.Analysis.Convex.CompactHull
 public import MaynardZhang2026Complexity.Mathlib.Analysis.CStarAlgebra.Matrix
+public import MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis
 public import MaynardZhang2026Complexity.Mathlib.Analysis.Matrix.Order
 public import MaynardZhang2026Complexity.Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import Mathlib.Analysis.Convex.Hull
@@ -40,6 +41,12 @@ is compact (`isCompact_designSet`); empirical designs `T⁻¹ ∑ₜ xₜ xₜ�
 (`inv_smul_sum_outerSelf_mem_designSet`); if `𝒳` spans the space, there is a positive definite
 design matrix (`exists_posDef_mem_designSet`); the design set of the image of `𝒳` by a matrix `M`
 is the image of `designSet 𝒳` by `A ↦ M A Mᵀ` (`designSet_image_toEuclideanCLM`).
+
+On the Gram matrix `A = ∑_t x_t x_tᵀ` of finitely many points (least squares): the points span the
+space when `A` is positive definite (`span_range_eq_top_of_posDef`),
+`∑_t ⟪z, A⁻¹ x_t⟫² = zᵀ A⁻¹ z` (`sum_inner_toEuclideanCLM_inv_sum_outerSelf_sq`) and
+`⟪z, θ⟫ = ∑_t ⟪z, A⁻¹ x_t⟫ ⟪x_t, θ⟫` for invertible `A`
+(`inner_eq_sum_inner_toEuclideanCLM_inv_mul`: least squares is exact on noiseless observations).
 -/
 
 @[expose] public section
@@ -310,5 +317,68 @@ lemma designSet_image_toEuclideanCLM (M : Matrix ι ι ℝ) :
   congr 2 with x
   rw [outerSelf_toEuclideanCLM]
   rfl
+
+/-! ### Gram matrices of finitely many points: least squares -/
+
+section LeastSquares
+
+variable {T : ℕ}
+
+omit [Fintype ι] [DecidableEq ι] in
+/-- If `A = ∑_t x_t x_tᵀ` is positive definite, the `x_t` span the space. -/
+lemma span_range_eq_top_of_posDef [Finite ι] (x : Fin T → EuclideanSpace ℝ ι)
+    (hA : (∑ s, outerSelf (x s)).PosDef) :
+    Submodule.span ℝ (Set.range x) = ⊤ := by
+  have := Fintype.ofFinite ι
+  rw [← Submodule.orthogonal_eq_bot_iff, Submodule.eq_bot_iff]
+  intro v hv
+  by_contra hv0
+  have h0 : ∀ t, ⟪v, x t⟫ = 0 := fun t ↦ by
+    rw [real_inner_comm]
+    exact Submodule.inner_right_of_mem_orthogonal
+      (Submodule.subset_span (Set.mem_range_self t)) hv
+  have hpos := hA.mahalanobisSq_pos hv0
+  rw [mahalanobisSq_apply, sum_mulVec, dotProduct_sum] at hpos
+  simp [dotProduct_outerSelf_mulVec, h0] at hpos
+
+/-- For `A = ∑_t x_t x_tᵀ`, `∑_t ⟪z, A⁻¹ x_t⟫² = zᵀ A⁻¹ z` (both sides vanish if `A` is not
+invertible, `A⁻¹` being `0`). -/
+lemma sum_inner_toEuclideanCLM_inv_sum_outerSelf_sq (x : Fin T → EuclideanSpace ℝ ι)
+    (z : EuclideanSpace ℝ ι) :
+    ∑ t, ⟪z, toEuclideanCLM (𝕜 := ℝ) (∑ s, outerSelf (x s))⁻¹ (x t)⟫ ^ 2
+      = mahalanobisSq (∑ s, outerSelf (x s))⁻¹ z := by
+  set A := ∑ s, outerSelf (x s) with hA
+  have hherm : (A⁻¹).IsHermitian := by
+    rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, transpose_nonsing_inv, hA,
+      transpose_sum_outerSelf]
+  set w := toEuclideanCLM (𝕜 := ℝ) A⁻¹ z with hw
+  have h1 (t : Fin T) : ⟪z, toEuclideanCLM (𝕜 := ℝ) A⁻¹ (x t)⟫ ^ 2
+      = WithLp.ofLp w ⬝ᵥ outerSelf (x t) *ᵥ WithLp.ofLp w := by
+    have hs : ⟪w, x t⟫ = ⟪z, toEuclideanCLM (𝕜 := ℝ) A⁻¹ (x t)⟫ :=
+      (isSymmetric_toEuclideanLin_iff.2 hherm) z (x t)
+    rw [← hs, dotProduct_outerSelf_mulVec]
+  simp_rw [h1]
+  rw [← dotProduct_sum, ← sum_mulVec, ← hA, hw, ofLp_toEuclideanCLM, mulVec_mulVec]
+  by_cases hdet : IsUnit A.det
+  · rw [mul_nonsing_inv A hdet, one_mulVec, dotProduct_comm, mahalanobisSq_apply]
+  · rw [nonsing_inv_apply_not_isUnit A hdet]
+    simp [mahalanobisSq_apply]
+
+/-- For an invertible `A = ∑_t x_t x_tᵀ`, `⟪z, θ⟫ = ∑_t ⟪z, A⁻¹ x_t⟫ ⟪x_t, θ⟫`: the
+least-squares estimator is exact on noiseless observations. -/
+lemma inner_eq_sum_inner_toEuclideanCLM_inv_mul (x : Fin T → EuclideanSpace ℝ ι)
+    (hA : IsUnit (∑ s, outerSelf (x s)).det) (z θ : EuclideanSpace ℝ ι) :
+    ⟪z, θ⟫ = ∑ t, ⟪z, toEuclideanCLM (𝕜 := ℝ) (∑ s, outerSelf (x s))⁻¹ (x t)⟫ * ⟪x t, θ⟫ := by
+  have h : θ = toEuclideanCLM (𝕜 := ℝ) (∑ s, outerSelf (x s))⁻¹
+      (toEuclideanCLM (𝕜 := ℝ) (∑ s, outerSelf (x s)) θ) := by
+    apply WithLp.ofLp_injective
+    rw [ofLp_toEuclideanCLM, ofLp_toEuclideanCLM, mulVec_mulVec, nonsing_inv_mul _ hA,
+      one_mulVec]
+  conv_lhs => rw [h]
+  rw [toEuclideanCLM_sum_outerSelf_apply, map_sum, inner_sum]
+  refine Finset.sum_congr rfl fun t _ ↦ ?_
+  rw [map_smul, real_inner_smul_right, mul_comm]
+
+end LeastSquares
 
 end Learning

@@ -18,7 +18,7 @@ Adjacent-BAI run on an allocation satisfying the rounding guarantee errs with pr
 `|ℐ^{x⋆}| exp(-T / (36 H_Adjacent(𝒳, Δ)))`.
 
 The arm of the min-gap is the best arm `x⋆`, a vertex beating every other arm
-(`Set.Finite.mem_vertices_of_forall_vertices`). If the output `x̂` (an argmax of `⟪·, θ̂_T⟫`) is
+(`Set.Finite.mem_vertices_of_forall_mem_vertices`). If the output `x̂` (an argmax of `⟪·, θ̂_T⟫`) is
 not `x⋆`, then `⟪x̂ - x⋆, θ̂_T⟫ ≥ 0` and the adjacency lemma
 (`Set.Finite.exists_mem_adjacentTo_inner_nonneg`) gives an adjacent vertex `z` with
 `⟪z - x⋆, θ̂_T⟫ ≥ 0`, hence `⟪z - x⋆, θ̂_T - θ̄_T⟫ ≥ Δ`. The union bound over `ℐ^{x⋆}`, the
@@ -64,7 +64,15 @@ theorem prob_ne_bestArm_le (𝒳 : Finset (EuclideanSpace ℝ ι))
   have h𝒳 : (𝒳 : Set (EuclideanSpace ℝ ι)).Finite := 𝒳.finite_toSet
   -- the arm of the min-gap is the best arm `xstar`, a vertex
   obtain ⟨x₀, hx₀, hgap₀⟩ := hgap
-  obtain ⟨hx₀v, hx₀max⟩ := h𝒳.mem_vertices_of_forall_vertices hΔ hx₀ hgap₀
+  have hgap₀' : ∀ v ∈ vertices (𝒳 : Set (EuclideanSpace ℝ ι)), v ≠ x₀ →
+      ⟪v, avgParam θ T⟫ < ⟪x₀, avgParam θ T⟫ := fun v hv hvx ↦ by
+    have := hgap₀ v hv hvx
+    rw [inner_sub_left] at this
+    linarith
+  have hx₀v := h𝒳.mem_vertices_of_forall_mem_vertices hx₀ hgap₀'
+  have hx₀max : ∀ y ∈ (𝒳 : Set (EuclideanSpace ℝ ι)), y ≠ x₀ →
+      ⟪y, avgParam θ T⟫ < ⟪x₀, avgParam θ T⟫ := fun _ hy hyx ↦
+    h𝒳.inner_lt_of_forall_mem_vertices hgap₀' hy hyx
   have hstar_eq : xstar = x₀ := by
     by_contra hne
     exact absurd (hstar.2 x₀ hx₀) (not_le.2 (hx₀max xstar hstar.1 hne))

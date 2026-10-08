@@ -29,8 +29,8 @@ through the Helmert identity for the centered sums of squares (`sum_norm_sub_mea
 
 ## Main statements
 
-* `ProbabilityTheory.sum_norm_sub_mean_sq`: `∑_s ‖a_s - ā‖² = ∑_s ‖a_s‖² - ‖∑_s a_s‖² / n`;
-* `ProbabilityTheory.sum_norm_sub_mean_sq_succ`: the Helmert identity
+* `sum_norm_sub_mean_sq`: `∑_s ‖a_s - ā‖² = ∑_s ‖a_s‖² - ‖∑_s a_s‖² / n`;
+* `sum_norm_sub_mean_sq_succ`: the Helmert identity
   `∑_s ‖a_s - ā‖² = ∑_{s ≥ 1} ‖a_s - ā'‖² + n / (n + 1) ‖a_0 - ā'‖²`;
 * `ProbabilityTheory.hasSubgaussianMGF_sum_inner_perm`: sampling without replacement.
 -/
@@ -40,8 +40,6 @@ through the Helmert identity for the centered sums of squares (`sum_norm_sub_mea
 open MeasureTheory Finset
 
 open scoped RealInnerProductSpace
-
-namespace ProbabilityTheory
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
@@ -71,6 +69,8 @@ lemma sum_norm_sub_mean_sq_succ {n : ℕ} (hn : n ≠ 0) (a : Fin (n + 1) → E)
   push_cast
   field_simp
   ring
+
+namespace ProbabilityTheory
 
 /-- **Sampling without replacement.** Let `a_0, …, a_{n-1}` and `g_0, …, g_{n-1}` be vectors with
 `‖g_k‖ ≤ M` and `π` a uniformly random permutation of `{0, …, n - 1}`. Then

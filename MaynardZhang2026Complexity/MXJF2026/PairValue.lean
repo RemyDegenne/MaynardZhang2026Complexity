@@ -7,7 +7,7 @@ module
 
 public import MaynardZhang2026Complexity.MXJF2026.Setting
 public import MaynardZhang2026Complexity.Mathlib.Analysis.Convex.Vertices
-public import MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.MahalanobisInner
+public import MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis
 
 /-!
 # The inner optimization problem of the lower bound
