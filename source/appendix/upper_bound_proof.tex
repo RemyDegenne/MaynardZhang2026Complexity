@@ -1,0 +1,175 @@
+\section{Error probability of Algorithm \ref{algo:adjacent-bai}}\label{appendixupper}
+\subsection{Proof of Theorem \ref{thm:upper_bound1}}
+\begin{proof}
+    We have
+    \begin{align*}
+        \P\Sp{\widehat{x}\neq x_*}&=\P\Sp{\exists x 
+        \in \X  \text{ s.t. }x^\top\htheta_T>x_*^\top\htheta_T}\\
+        &= \P\Sp{\exists x\in \I^{x_*}\text{ s.t. }x^\top\htheta_T> x_*^\top\htheta_T}  \tag{Lemma \ref{lem:adjacency_optimal}}\\
+        &\leq  \sum_{x \in \I^{x_*} }\P\Sp{\htheta_T^\top(x-x_*)> 0}\\
+        &= \sum_{x \in \I^{x_*}}\P\Sp{\htheta_T^\top(x-x_*) - \otheta_T^\top(x-x_*)>-\otheta_T^\top(x-x_*)}\\
+        &\leq \sum_{x \in \I^{x_*}}\P\Sp{\htheta_T^\top(x-x_*) - \otheta_T^\top(x-x_*)> \Delta_{(1)}}. \\
+        &=  \sum_{x \in \I^{x_*}}\P\Sp{(x-x_*)^\top\left(\htheta_T -\otheta_T\right)> \Delta_{(1)}} \\
+        &\leq \sum_{x \in \I^{x_*}}\exp\left(- \frac{\Delta_{(1)}^2}{2\cdot 3^2 \cdot \|x - x_*\|_{\left(\sum_{t=1}^Tx_tx_t^\top\right)^{-1}}^2}\right) \tag{Lemma \ref{lem:sub-Gaussian2} and Hoeffding's inequality}\\
+        &= \sum_{x \in \I^{x_*}}\exp\left(- \frac{\Delta_{(1)}^2}{18 \cdot\|x-x_*\|_{\left(\sum_{t=1}^Tx_{\pi(t)}x_{\pi(t)}^\top\right)^{-1}}^2}\right) \\
+        &\leq \sum_{x \in \I^{x_*}}\exp\left(- \frac{\Delta_{(1)}^2}{18 \cdot \max_{(x, x') \in \mc{I}}\|x - x'\|_{\left(\sum_{t=1}^Tx_{\pi(t)}x_{\pi(t)}^\top\right)^{-1}}^2}\right) \\
+        &\leq \sum_{x \in \I^{x_*}}\exp\left(- \frac{T\Delta_{(1)}^2}{18 \cdot2\max_{(x, x') \in \mc{I}}\|x - x'\|_{A(\lambda^{*})^{-1}}^2}\right) \tag{Rounding error of $\lambda^*$}\\
+        &= \sum_{x \in \I^{x_*}}\exp\left(- \frac{T\Delta_{(1)}^2}{36 \cdot \min_{\lambda \in \triangle_{\X}} \max_{(x, x') \in \mc{I}}\|x - x'\|_{A(\lambda)^{-1}}^2}\right) \\
+        &= \left|\I^{x_*}\right| \cdot \exp\left(- \frac{T\Delta_{(1)}^2}{36 \cdot \min_{\lambda \in \triangle_{\X}} \max_{(x, x') \in \mc{I}}\|x - x'\|_{A(\lambda)^{-1}}^2}\right).
+    \end{align*}
+\end{proof}
+\subsection{Technical Lemmas for Theorem \ref{thm:upper_bound1}}
+
+\subsubsection{Proof of Lemma \ref{lem:adjacency_optimal}}
+\begin{proof}
+    The backward direction is trivial. We now prove the forward direction. Consider $x \in \X$, $\theta \in \R^d$, such that there exists $y \in \X $ with $(y-x)^\top \theta > 0$. By Lemma 3.6 of \cite{Ziegler1995}, $\conv(\X) \subset x + \mathrm{cone}\left(\{z -x: z \in \I^x\}\right)$. Thus $y \in x + \mathrm{cone}\left(\{z -x: z \in \I^x\}\right)$, that is $y - x \in\mathrm{cone}(\{z -x: z \in \I^x\})$. Equivalently $\exists \alpha_z \geq 0$ for each $z \in \I^x$, such that $y-x = \sum_{z \in \I^x} \alpha_z (z-x)$. Suppose for contradiction that for every $z \in \I^x$, $(z-x)^\top\theta \leq  0$. We have: 
+    \begin{align*}
+        (y-x)^{\top}\theta &= \sum_{z \in \I^x} \alpha_z (z-x)^{\top}\theta \\
+        &\leq  0. 
+    \end{align*}
+    Which is a contradiction. Thus there exists $z \in \I^x$ such that $(z-x)^\top \theta >0$. 
+\end{proof}
+\subsubsection{Proof of Lemma \ref{lem:sub-Gaussian2}}
+\begin{proof}
+ Denote $A := \sum_{t=1}^Tx_tx_t^\top$. Expanding $z^\top\left(\widehat{\theta}_T -\otheta_{T}\right)$ we have
+    \begin{align*}
+    z^\top\left(\widehat{\theta}_T -\otheta_{T}\right) &= z^\top\left(A^{-1} \sum_{t=1}^Tx_{\pi(t)}r_t - \otheta_{T}\right)\\
+    &= z^\top\left(A^{-1}\sum_{t=1}^Tx_{\pi(t)}x_{\pi(t)}^\top\theta_t - \otheta_{T} + A^{-1}\sum_{t=1}^Tx_{\pi(t)}\epsilon_t\right) \\
+    &= z^\top\left(A^{-1}\sum_{t=1}^Tx_tx_t^\top\theta_{\pi^{-1}(t)} - \otheta_{T} + A^{-1}\sum_{t=1}^Tx_{t}\epsilon_{\pi^{-1}(t)}\right)\\
+        &= z^\top\left(A^{-1}\sum_{t=1}^Tx_tx_t^\top\theta_{\pi^{-1}(t)} - A^{-1}\sum_{t=1}^Tx_tx_t^\top\otheta_{T} + A^{-1}\sum_{t=1}^Tx_{t}\epsilon_{\pi^{-1}(t)}\right) \\
+        &= z^\top\left(A^{-1}\sum_{t=1}^Tx_tx_t^\top(\theta_{\pi^{-1}(t)} - \otheta_{T}) + A^{-1}\sum_{t=1}^Tx_{t}\epsilon_{\pi^{-1}(t)}\right) \\
+        &= z^\top\left(\sum_{t=1}^TA^{-1}x_tx_t^\top(\theta_{\pi^{-1}(t)} - \otheta_{T}) + \sum_{t=1}^TA^{-1}x_{t}\epsilon_{\pi^{-1}(t)}\right) \\
+        &= z^\top\sum_{t=1}^TA^{-1}x_tx_t^\top(\theta_{\pi^{-1}(t)} - \otheta_{T}) + z^\top\sum_{t=1}^TA^{-1}x_{t}\epsilon_{\pi^{-1}(t)}.
+    \end{align*}
+    Denote \begin{equation}S = z^\top\sum_{t=1}^TA^{-1}x_tx_t^\top(\theta_{\pi^{-1}(t)} - \otheta_{T}),\end{equation}
+    and \begin{equation}\eta = z^\top\sum_{t=1}^TA^{-1}x_{t}\epsilon_{\pi^{-1}(t)}.\end{equation}  Note that $\pi^{-1} \sim \mathrm{Unif}(\Pi(T))$, thus, by Lemma \ref{lem:sub-Gaussian1} we have $S$ is $\sqrt{8}\|z\|_{A^{-1}}$-sub-Gaussian. Observe that each $\epsilon_{\pi^{-1}(t)}$ is conditionally independent and 1-sub-Gaussian given $\pi^{-1}$. Analyzing the conditional MGF of $\eta$ for some $\lambda$, we have:
+\begin{align*}
+    \mathbb{E}\left[\exp\left(\lambda z^\top\sum_{t=1}^TA^{-1}x_{t}\epsilon_{\pi^{-1}(t)}\right) \, \Bigg | \, \pi^{-1} \right]
+    &=  \prod_{t=1}^T\mathbb{E}\left[\exp\left(\lambda z^\top A^{-1}x_{t}\epsilon_{\pi^{-1}(t)}\right) \mid \pi^{-1} \right]  \tag{Cond. Ind. given  $\pi^{-1}$} \\
+    &\leq \prod_{t=1}^T\exp\left(\frac{\lambda^2 z^\top A^{-1}x_{t}x_{t}^\top A^{-1} z}{2}\right)  \tag{Cond. 1-sub-G. given $\pi^{-1}$} \\
+    &= \exp\left(\frac{\lambda^2 z^\top A^{-1}\sum_{t=1}^Tx_{t}x_{t}^\top A^{-1} z}{2}\right)\\
+    &= \exp\left(\frac{\lambda^2 \|z\|_{A^{-1}}^2}{2}\right).    
+\end{align*}
+So $\eta$ is conditionally $\|z\|_{A^{-1}}$-sub-Gaussian given $\pi^{-1}$. Analyzing the MGF of $z^\top\left(\widehat{\theta}_T -\otheta_{T}\right)$, for some $\lambda$ we have \begin{align*}
+    \E \left[\exp\left(\lambda z^\top\left(\widehat{\theta}_T -\otheta_{T}\right)\right)\right] &= \E \left[\exp\left(\lambda S + \lambda \eta\right)\right] \\
+    &= \E \left[\exp\left(\lambda S\right)\exp\left(\lambda\eta\right)\right]\\
+    &= \E \left[\exp\left(\lambda S\right)\E \left[\exp\left(\lambda\eta\right) \mid \pi^{-1}\right]\right] \\
+    &\leq \E \left[\exp\left(\lambda S\right)\right] \cdot \exp\left(\frac{\lambda^2 \|z\|_{A^{-1}}^2}{2}\right)\\
+    &\leq  \exp\left(\frac{\lambda^28\|z\|_{A^{-1}}^2}{2}\right)\cdot \exp\left(\frac{\lambda^2 \|z\|_{A^{-1}}^2}{2}\right) \\
+    &= \exp\left(\frac{\lambda^2(1+8)\|z\|_{A^{-1}}^2}{2}\right).
+    \end{align*}
+    Thus $z^\top\left(\widehat{\theta}_T -\otheta_{T}\right)$is $\sqrt{9}\|z\|_{A^{-1}}$-sub-Gaussian.
+\end{proof}
+
+\begin{lemma}\label{lem:sub-Gaussian1}
+   Consider fixed sequences $\{x_t\}_{t=1}^T$ spanning $\R^d$ and $\{\theta_t\}_{t=1}^T$, with $\max_t\|x_t\| \leq B$ and $\max_t\|\theta_t\| \leq M$. Denote $\otheta_{T} = \frac{1}{T}\sum_{t=1}^T \theta_t$, $A = \sum_{t=1}^{T} x_{t}x_{t}^\top$, and $\tilde{\theta}_t = \theta_{t} - \otheta_{T}$ for each $t \in [T]$. Let $\pi \sim \mathrm{Unif}(\Pi(T))$. For any $z \in \R^d$ we have that $z^\top\sum_{t=1}^TA^{-1}x_tx_t^\top\tilde{\theta}_{\pi(t)}$ is $\sqrt{8}MB\|z\|_{A^{-1}}$-sub-Gaussian.
+\end{lemma}
+\begin{proof}
+   Fix $z \in \R^d$, and denote $S = z^\top\sum_{t=1}^TA^{-1}x_tx_t^\top\tilde{\theta}_{\pi(t)} $. For $t \in [T]$ define $Z_t = \E[S \mid \mc{F}_t]$, with $\mc{F}_t = \sigma(\pi(1),\dots,\pi(t))$. Further define $Z_0 = \E[S]$. By construction, we have that $\{Z_t\}_{t=0}^T$ is a martingale and $Z_T = S$. Also note that $Z_0 = \E[S] = 0$, since $\sum_{t=1}^{T}\tilde{\theta}_t = 0$. Denote $\Delta_t = Z_t - Z_{t-1}$. We begin by bounding $|\Delta_t|$ for some $t< T$. To ease notation, let us denote \begin{equation}a_t = x_tx_t^\top A^{-1}z,\end{equation} and  \begin{equation}\mu_t = \frac{1}{T-t+1}\sum_{k \in [T] \setminus \{\pi(1),\dots,\pi(t-1)\}} \tilde{\theta}_k.\end{equation} Let $t < T$. We have:
+   \begin{align*}
+       Z_{t-1} &= \sum_{s=1}^{t - 1} a_s^\top\tilde{\theta}_{\pi(s)}   + \sum_{s = t }^T a_s^\top\left(\frac{1}{T - t+1}\sum_{k \in [T] \setminus \{\pi(1),\dots,\pi(t-1)\}} \tilde{\theta}_k\right) \\
+       &= \sum_{s=1}^{t - 1} a_s^\top\tilde{\theta}_{\pi(s)}   + \sum_{s = t }^T a_s^\top\mu_t \\
+       &= \sum_{s=1}^{t - 1} a_s^\top\tilde{\theta}_{\pi(s)}   + a_t^\top\mu_t + \sum_{s = t +1}^T a_s^\top\mu_t,
+   \end{align*}
+    and
+    \begin{align*}
+        Z_{t} &= \sum_{s=1}^{t} a_s^\top\tilde{\theta}_{\pi(s)}   + \sum_{s = t +1}^T a_s^\top\left(\frac{1}{T - t}\sum_{k \in [T] \setminus \{\pi(1),\dots,\pi(t)\}} \tilde{\theta}_k\right)\\
+        &=\sum_{s=1}^{t - 1} a_s^\top\tilde{\theta}_{\pi(s)}  + a_t^\top\tilde{\theta}_{\pi(t)} + \sum_{s = t +1}^T a_s^\top\left(\frac{1}{T - t}\left(\sum_{k \in [T] \setminus \{\pi(1),\dots,\pi(t-1)\}} \tilde{\theta}_k - \tilde{\theta}_{\pi(t)}\right)\right) \\
+    &= \sum_{s=1}^{t - 1} a_s^\top\tilde{\theta}_{\pi(s)}  + a_t^\top\tilde{\theta}_{\pi(t)} + \sum_{s = t +1}^T a_s^\top\left(\frac{(T-t+1)\mu_t - \tilde{\theta}_{\pi(t)}}{T-t}\right).\\
+    \end{align*}
+It follows that:
+\begin{align*}
+    \Delta_{t} &= Z_t - Z_{t-1} \\
+    &= a_t^\top\tilde{\theta}_{\pi(t)} - a_t^\top\mu_t+ \sum_{s = t +1}^T a_s^\top  \left(\frac{(T-t+1)\mu_t - \tilde{\theta}_{\pi(t)}}{T-t}  - \mu_t\right)\\
+    &= a_t^\top\left(\tilde{\theta}_{\pi(t)} - \mu_t\right) + \sum_{s = t +1}^T a_s^\top   \left(\frac{(T-t+1)\mu_t - \tilde{\theta}_{\pi(t)}}{T-t}  - \mu_t\right)\\
+    &= a_t^\top\left(\tilde{\theta}_{\pi(t)} -\mu_t\right) + \frac{1}{T-t}\sum_{s = t +1}^T a_s^\top  \left((T-t+1)\mu_t - \tilde{\theta}_{\pi(t)} - (T-t)\mu_t\right)\\
+    &= a_t^\top\left(\tilde{\theta}_{\pi(t)} - \mu_t\right) + \frac{1}{T-t}\sum_{s = t +1}^T a_s^\top \left(\mu_t -\tilde{\theta}_{\pi(t)}\right) \\
+    &= \left(a_t - \frac{1}{T-t}\sum_{s = t +1}^T a_s\right)^\top\left(\tilde{\theta}_{\pi(t)} - \mu_t\right).
+\end{align*}
+We have \begin{align*}
+    |\Delta_{t}| &= \left|\left(a_t - \frac{1}{T-t}\sum_{s = t +1}^T a_s\right)^\top\left(\tilde{\theta}_{\pi(t)} - \mu_t\right)\right| \\
+    &\leq \left\|a_t - \frac{1}{T-t}\sum_{s = t +1}^T a_s\right\|_2 \cdot \left\|\tilde{\theta}_{\pi(t)} - \mu_t\right\|_2 \\
+    &= \left\|a_t - \frac{1}{T-t}\sum_{s = t +1}^T a_s\right\|_2 \cdot \left\|\tilde{\theta}_{\pi(t)} - \frac{1}{T-t+1}\sum_{k \in [T] \setminus \{\pi(1),\dots,\pi(t-1)\}} \tilde{\theta}_k\right\|_2\\
+    &= \left\|a_t - \frac{1}{T-t}\sum_{s = t +1}^T a_s\right\|_2 \cdot \left\|\theta_{\pi(t)} -\otheta_{T} - \frac{1}{T-t+1}\sum_{k \in [T] \setminus \{\pi(1),\dots,\pi(t-1)\}} \theta_k +\otheta_{T}\right\|_2\\
+    &= \left\|a_t - \frac{1}{T-t}\sum_{s = t +1}^T a_s\right\|_2 \cdot \left\|\theta_{\pi(t)}  - \frac{1}{T-t+1}\sum_{k \in [T] \setminus \{\pi(1),\dots,\pi(t-1)\}} \theta_k \right\|_2\\
+    &\leq \left\|a_t - \frac{1}{T-t}\sum_{s = t +1}^T a_s\right\|_2 \cdot \left(\left\|\theta_{\pi(t)}\right\|_2  + \frac{1}{T-t+1}\sum_{k \in [T] \setminus \{\pi(1),\dots,\pi(t-1)\}} \left\|\theta_k \right\|_2\right)\\
+    &\leq \left\|a_t - \frac{1}{T-t}\sum_{s = t +1}^T a_s\right\|_2 \cdot \left(M  + \frac{1}{T-t+1}\sum_{k \in [T] \setminus \{\pi(1),\dots,\pi(t-1)\}} M\right) \\
+    &= \left\|a_t - \frac{1}{T-t}\sum_{s = t +1}^T a_s\right\|_2 \cdot 2M \\
+    &:= c_t.
+\end{align*}
+Bounding $|\Delta_T|$ we have \begin{align*}
+    |\Delta_T| &= |Z_T - Z_{T-1}| \\
+    &= \left|a_{T}^{\top}\tilde{\theta}_{\pi(T)} - a_{T}^{\top}\tilde{\theta}_{\pi(T)}\right| \\
+    &= 0 \\
+    &:= c_T.
+\end{align*}
+Note that by construction, $\E[\Delta_t \mid \mc{F}_{t-1}] = 0$ for any $t$. For some $\lambda$, we have:
+    \begin{align*}
+        \E\left[\exp\left(\lambda S\right)\right] &= \E\left[\exp\left(\lambda (Z_T - Z_0)\right)\right] \\
+        &= \E\left[\exp\left(\lambda \sum_{t=1}^T\Delta_t\right)\right] \\
+        &= \E\left[\exp\left(\lambda \sum_{t=1}^{T-1}\Delta_t\right)\cdot\exp\left(\lambda \Delta_T\right)\right] \\
+        &= \E\left[\exp\left(\lambda \sum_{t=1}^{T-1}\Delta_t\right)\cdot\E\left[\exp\left(\lambda \Delta_T\right) \mid \mc{F}_{T-1}\right]\right] && (\text{Tower rule}) \\
+        &\leq \E\left[\exp\left(\lambda \sum_{t=1}^{T-1}\Delta_t\right)\right] \cdot\exp\left(\frac{\lambda^2}{2} \cdot  c_T^2\right) && (\text{Hoeffding's lemma}) \\
+        &\leq \cdots \\
+        &\leq \exp\left(\frac{\lambda^2}{2} \cdot  \sum_{t=1}^T c_{t}^2\right). && 
+        (\text{Induction})
+    \end{align*}
+It now only remains to bound: \begin{equation}\sum_{t=1}^{T} c_t^2 = 4M^2 \cdot \sum_{t=1}^{T-1}\left\|a_t - \frac{1}{T-t}\sum_{s = t +1}^T a_s\right\|_2^2.\end{equation}For each $t \in [T-1]$ denote $d_t = a_t - \frac{1}{T-t}\sum_{s = t +1}^T a_s$, and construct the matrices
+\begin{equation}\mathbf{a} : = \begin{bmatrix}
+    a_1 & \cdots &a_{T}
+\end{bmatrix} \in \R^{d \times T}\end{equation}
+\begin{equation}\mathbf{d} : = \begin{bmatrix}
+    d_1 & \cdots & d_{T-1}
+\end{bmatrix} \in \R^{d \times  T-1}.\end{equation}Further consider the matrix $D \in \R^{T \times T-1}$ \begin{equation}D_{i,j} := \begin{cases}
+    1 & i = j \\
+    -\frac{1}{T - j} & i > j \\
+    0 &i < j
+\end{cases}.\end{equation}
+It follows by construction that $\mathbf{a} D = \mathbf{d}$. Let $D_i$ denote the $i$th column of $D$. Note that for any $i \in [T -1]$ we have
+\begin{align*}
+    \|D_i\|_2^2 &= 1^2 + (T- i)\left(\frac{1}{T-i}\right)^2 \\
+    &= 1 + \frac{1}{T-i} \\
+    &\leq 2.
+\end{align*}
+Consider $D_i$, $D_j$, for $i < j$. Note that \begin{align*}
+    D_i^\top D_j &= \left( \frac{-1}{T-i}\right) \cdot 1 + \sum_{k =j +1}^{T}\left( \frac{-1}{T-i}\right)\left( \frac{-1}{T-j}\right) \\
+    &= \left( \frac{-1}{T-i}\right) + (T-j)\left( \frac{-1}{T-i}\right)\left( \frac{-1}{T-j}\right) \\
+    &= 0.
+\end{align*}
+Thus, each column of $D$ is orthogonal. This means \begin{equation}D^\top D = \text{diag}\left(\|D_1\|_2^2 ,\dots ,\|D_{T-1}\|_2^2\right)\end{equation}
+and so,
+\begin{align*}
+    \|D\|_{\text{op}}^2 &= \lambda_{\max}\left(D^\top D\right) \\
+    &= \max_{i} \|D_i\|_2^2 \\
+    &\leq 2.
+\end{align*}
+It follows that
+\begin{align*}
+    \sum_{t=1}^{T} c_t^2 &=4M^2 \cdot \sum_{t=1}^{T-1}\left\|a_t - \frac{1}{T-t}\sum_{s = t +1}^T a_s\right\|_2^2 \\
+    & =4M^2 \cdot \| \mathbf{d}\|_F^2  \\
+    &= 4M^2 \cdot\| \mathbf{a}D\|_F^2 \\ 
+    &\leq 4M^2 \cdot\| \mathbf{a}\|_F^2\|D\|_{\text{op}}^2 \\
+    &\leq 2 \cdot4M^2 \cdot   \| \mathbf{a}\|_F^2\\
+    &= 8M^2 \sum_{t=1}^{T}\left\|a_t\right\|_2^2 \\
+    &= 8M^2 \sum_{t=1}^{T} z^\top A^{-1}x_tx_t^\top x_tx_t^\top A^{-1}z \\
+    &\leq 8M^2B^2 \sum_{t=1}^{T} z^\top A^{-1}x_tx_t^\top A^{-1}z \\
+    &= 8M^2B^2  z^\top A^{-1}\sum_{t=1}^{T}x_tx_t^\top  A^{-1}z \\
+    &= 8M^2B^2 \|z\|_{A^{-1}}^2.
+\end{align*}
+It follows that, for all $\lambda$ we have: 
+\begin{align*}
+        \E\left[\exp\left(\lambda S\right)\right] &\leq \exp\left(\frac{\lambda^2}{2} \cdot  \sum_{t=1}^T c_{t}^2\right) \\
+        &\leq \exp\left(\frac{\lambda^2}{2} \cdot  8M^2B^2\|z\|_{A^{-1}}^2\right).
+    \end{align*}
+Thus $S$ is $\sqrt{8}MB\|z\|_{A^{-1}}$-sub-Gaussian.
+\end{proof}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,36 @@
+{
+    "challenge_module": "Challenge_hasSubgaussianMGF_lsEstimator",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "MaynardZhang2026Complexity.hasSubgaussianMGF_lsEstimator",
+        "Learning.IdentAlg.instIsMarkovKernelHistFixedBudgetOutput",
+        "exists_argmax",
+        "MaynardZhang2026Complexity.measurable_recommend",
+        "Learning.IdentAlg.ofStop._proof_1",
+        "ProbabilityTheory.Kernel.sigma._proof_1",
+        "Learning.IdentAlg.ofStop._proof_2",
+        "Learning.IdentAlg.fixedBudget._proof_1",
+        "Learning.IdentAlg.fixedBudgetOutput._proof_1",
+        "Learning.Algorithm.randomOrder._proof_2",
+        "Learning.Algorithm.randomOrder._proof_3",
+        "Learning.Algorithm.randomOrder._proof_1",
+        "Learning.Algorithm.randomOrder._proof_4",
+        "MaynardZhang2026Complexity.adjacentBAI._proof_1",
+        "MaynardZhang2026Complexity.IsBestArm._proof_1",
+        "MaynardZhang2026Complexity.lsEstimator._proof_1",
+        "MaynardZhang2026Complexity.lsEstimator._proof_2",
+        "MaynardZhang2026Complexity.lsEstimator._proof_3",
+        "MaynardZhang2026Complexity.lsEstimator._proof_4",
+        "MaynardZhang2026Complexity.adjacentBAI._proof_2",
+        "Learning.Environment.IsOblivious._proof_1",
+        "Learning.Environment.oblivious._proof_1",
+        "Learning.Environment.oblivious._proof_2",
+        "Learning.Environment.banditSeq._proof_1",
+        "Bandits.Linear.nonstationaryLinearEnv._proof_1"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

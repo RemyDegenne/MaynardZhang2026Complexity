@@ -1,0 +1,314 @@
+\chapter{Lower bound (Section 4 and Appendix A)}
+\label{chap:lower_bound}
+
+\section{A lower bound for non-stationary bandits}
+
+A non-stationary bandit with finitely many arms $\mathcal{A}$ is a sequence
+$\nu = (\nu_{t, a})_{t \in \N, a \in \mathcal{A}}$ of probability measures on $\R$, played through
+LML's environment \texttt{Environment.banditSeq}. For an identification algorithm with budget
+$T$, $X_t$ is the arm of round $t$ and $\hat k$ the output.
+
+\begin{lemma}[Non-stationary Kaufmann--Capp\'e--Garivier bound, Lemma 2]
+  \label{lem:gen_lower}
+  \lean{MaynardZhang2026Complexity.le_max_prob_ne}
+  \leanok
+  \uses{lem:bretagnolle_huber, lem:data_processing_output, lem:chain_rule_nonstationary}
+  Let $\nu, \nu'$ be non-stationary bandits with $\KL(\nu_{t, a} \,\|\, \nu'_{t, a}) < \infty$ for
+  all $t, a$, let $k \ne k'$ be arms and let $A$ be an identification algorithm with budget $T$.
+  For every run of $A$ against $\nu$ (law $\Prob_\nu$) and every run against $\nu'$,
+  \[
+    \max\left(\Prob_\nu(\hat k \ne k), \Prob_{\nu'}(\hat k \ne k')\right)
+    \ge \frac14 \exp\left(-\sum_{a} \sum_{t < T} \Prob_\nu(X_t = a)\,
+      \KL(\nu_{t, a} \,\|\, \nu'_{t, a})\right).
+  \]
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:bretagnolle_huber, lem:data_processing_output, lem:chain_rule_nonstationary}
+  Let $E = \{\hat k \ne k\}$; since $k \ne k'$, $E^c \subseteq \{\hat k \ne k'\}$. By the
+  Bretagnolle--Huber inequality (Lemma~\ref{lem:bretagnolle_huber}) for the laws of the outputs,
+  $\Prob_\nu(E) + \Prob_{\nu'}(E^c) \ge \frac12 \exp(-\KL)$, so the maximum is at least
+  $\frac14 \exp(-\KL)$, where $\KL$ is the divergence between the laws of the outputs. It is at
+  most the divergence between the laws of the histories of the $T$ rounds
+  (Lemma~\ref{lem:data_processing_output}), which is the sum in the statement
+  (Lemma~\ref{lem:chain_rule_nonstationary}).
+\end{proof}
+
+\begin{remark}
+  The paper states Lemma~\ref{lem:gen_lower} for the best arms $k$ and $k'$ of $\nu$ and $\nu'$,
+  assumed different; only $k \ne k'$ is used. Its proof goes through the change of measure at a
+  stopping time (Lemma~\ref{lem:change_of_measure}) and Lemma 19 of
+  \cite{kaufmann2016complexity}; the route above, through the chain rule for the divergence of the
+  histories, avoids both.
+\end{remark}
+
+\begin{lemma}[Change of measure at a stopping time, Lemma 6]
+  \label{lem:change_of_measure}
+  \lean{MaynardZhang2026Complexity.trajMeasure_eq_lintegral_exp_neg_llrProcess,
+    Bandits.llrProcess}
+  \leanok
+  Let $\nu, \nu'$ be non-stationary bandits with countably many arms and $\nu_{t,a}$, $\nu'_{t,a}$
+  mutually absolutely continuous, and let $\Prob_\nu$, $\Prob_{\nu'}$ be the laws of the
+  trajectory of an algorithm against them. Let
+  $L_n = \sum_{s < n} \log \frac{d\nu_{s, X_s}}{d\nu'_{s, X_s}}(Y_s)$ be the log-likelihood ratio.
+  For every stopping time $\sigma$ of the history filtration, finite everywhere, and every
+  $E \in \mathcal{F}_\sigma$, $\Prob_{\nu'}(E) = \E_\nu[\indic_E \exp(-L_\sigma)]$.
+\end{lemma}
+
+\begin{proof}
+  For $E \in \mathcal{F}_n$, by induction on $n$: the trajectory law restricted to the first
+  $n + 1$ rounds is the composition of the law of the first $n$ rounds, the policy kernel of round
+  $n$ and the reward kernel $\nu_{n, \cdot}$; on the last factor, $d\nu'_{n,a} = \exp(-\log
+  \frac{d\nu_{n,a}}{d\nu'_{n,a}}) d\nu_{n,a}$ almost everywhere by mutual absolute continuity. For
+  $E \in \mathcal{F}_\sigma$, $E \cap \{\sigma = n\} \in \mathcal{F}_n$ and $E$ is the disjoint union
+  of these sets over $n \in \N$.
+\end{proof}
+
+\section{The optimization problem}
+
+\begin{definition}[Optimization problem of Lemma 3]
+  \label{def:opt_value}
+  \lean{MaynardZhang2026Complexity.PairFeasible, MaynardZhang2026Complexity.pairValue,
+    MaynardZhang2026Complexity.optValue}
+  \leanok
+  \uses{def:adjacency, def:design}
+  For a pair $(x, x')$ of vertices, $(\theta, v)$ is \emph{feasible} if
+  $(x - y)^\top \theta \ge \Delta$ for every vertex $y \ne x$ and $(x' - y)^\top (\theta + v) \ge
+  \Delta$ for every vertex $y \ne x'$. For a matrix $A$, $p_A(x, x') = \inf\{v^\top A v : (\theta,
+  v) \text{ feasible}\}$, and
+  \[
+    f(\X, \Delta) = \max_{\lambda \in \triangle_{\X}} \min_{(x, x') \in \Y} p_{A(\lambda)}(x, x'),
+  \]
+  the maximum being over all designs (a supremum in Lean).
+\end{definition}
+
+\begin{lemma}[Feasible points exist]
+  \label{lem:pair_feasible_nonempty}
+  \uses{def:opt_value, lem:strict_expose}
+  For distinct vertices $x, x'$ there is a feasible $(\theta, v)$. For $A$ positive semidefinite,
+  $p_A(x, x') \ge 0$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:strict_expose}
+  Let $w$, $w'$ strictly expose $x$ and $x'$ (Lemma~\ref{lem:strict_expose}); for $c$ large,
+  $\theta = c w$ and $\theta + v = c w'$ satisfy the finitely many constraints.
+\end{proof}
+
+\begin{lemma}[Lower bound on the inner problem, Lemma 7]
+  \label{lem:pair_value_lower}
+  \lean{MaynardZhang2026Complexity.le_pairValue}
+  \leanok
+  \uses{def:opt_value, lem:pair_feasible_nonempty}
+  Let $\Delta > 0$, $A$ positive definite and $(x, x') \in \Y$. Then
+  $p_A(x, x') \ge 4\Delta^2 / \norm{x - x'}^2_{A^{-1}}$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:pair_feasible_nonempty}
+  The constraints at $y = x'$ and at $y = x$ add up to $(x' - x)^\top v \ge 2\Delta$ for every
+  feasible $(\theta, v)$. By the Cauchy--Schwarz inequality for the inner products of $A^{-1}$ and
+  $A$, $(x' - x)^\top v \le \norm{x - x'}_{A^{-1}} \norm{v}_A$; square. The infimum is over a
+  nonempty set (Lemma~\ref{lem:pair_feasible_nonempty}).
+\end{proof}
+
+\begin{lemma}[Upper bound on the inner problem, Lemma 8]
+  \label{lem:pair_value_upper}
+  \lean{MaynardZhang2026Complexity.pairValue_le}
+  \leanok
+  \uses{def:opt_value, lem:is_adjacent_iff, lem:pair_feasible_nonempty}
+  Let $A$ be positive definite and $(x, x') \in \I$. Then
+  $p_A(x, x') \le 4\Delta^2 / \norm{x - x'}^2_{A^{-1}}$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:is_adjacent_iff, lem:pair_feasible_nonempty}
+  Let $w$ and $\eps$ be given by Lemma~\ref{lem:is_adjacent_iff}, $c = \norm{x - x'}^2_{A^{-1}} > 0$,
+  $\theta = \frac{\Delta}{c} A^{-1}(x - x') + \alpha w$ and $v = -\frac{2\Delta}{c} A^{-1}(x - x')$.
+  Then $v^\top A v = 4\Delta^2 / c$, the constraints at $y = x'$ and $y = x$ hold with equality
+  ($(x - x')^\top w = 0$), and the other constraints hold for $\alpha$ large since
+  $(x - y)^\top w = (x' - y)^\top w \ge \eps$. The values are nonnegative, so the infimum is at most
+  $4\Delta^2 / c$.
+\end{proof}
+
+\begin{remark}
+  The paper assumes $\Delta > 0$ in Lemma~\ref{lem:pair_value_upper}; the construction works for
+  every $\Delta$. The same construction with $\theta = -v/2 + \alpha w$ shows that, for an adjacent
+  pair, the feasible $v$ are exactly the half-space $(x' - x)^\top v \ge 2\Delta$.
+\end{remark}
+
+\begin{lemma}[Closed form for adjacent pairs, Lemma 4]
+  \label{lem:equality}
+  \lean{MaynardZhang2026Complexity.pairValue_eq}
+  \leanok
+  \uses{lem:pair_value_lower, lem:pair_value_upper}
+  Let $\Delta > 0$, $A$ positive definite and $(x, x') \in \I$. Then
+  $p_A(x, x') = 4\Delta^2 / \norm{x - x'}^2_{A^{-1}}$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:pair_value_lower, lem:pair_value_upper}
+  Lemmas~\ref{lem:pair_value_lower} and~\ref{lem:pair_value_upper}. (The paper states it for the
+  design matrices of full rank.)
+\end{proof}
+
+\begin{lemma}[Monotonicity of the inner problem]
+  \label{lem:pair_value_mono}
+  \uses{def:opt_value, lem:pair_feasible_nonempty}
+  For $(x, x') \in \Y$, $A \mapsto p_A(x, x')$ is monotone for the Loewner order on positive
+  semidefinite matrices, and $p_{cA}(x, x') = c\, p_A(x, x')$ for $c \ge 0$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:pair_feasible_nonempty}
+  Pointwise in $v$; the feasible set does not depend on $A$ and is nonempty
+  (Lemma~\ref{lem:pair_feasible_nonempty}).
+\end{proof}
+
+\begin{lemma}[Positivity of $f$]
+  \label{lem:opt_value_pos}
+  \uses{def:opt_value, lem:pair_feasible_nonempty}
+  If $\Delta > 0$ and $\X$ has at least two points, then $0 < f(\X, \Delta) < \infty$ (the supremum
+  over designs is bounded).
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:pair_feasible_nonempty, lem:strict_expose}
+  $\Y$ is nonempty ($\X$ has at least two vertices, Lemma~\ref{lem:strict_expose}) and finite.
+  Bounded: for each pair fix a feasible $v$; $A(\lambda) \le (\max_{x \in \X} \norm{x}^2) I$, so
+  $p_{A(\lambda)} \le (\max \norm{x}^2) \norm{v}^2$ for every design. Positive: let $A_u$ be the design
+  matrix of the uniform design, $n = \abs{\X}$. For $(x, x') \in \Y$ write
+  $x' - x = \sum_{y \in \X} c_y y$; every feasible $v$ has
+  $2\Delta \le (x' - x)^\top v = \sum_y c_y\, y^\top v \le \norm{c} (\sum_y (y^\top v)^2)^{1/2}
+  = \norm{c} (n\, v^\top A_u v)^{1/2}$, so $p_{A_u}(x, x') \ge 4\Delta^2 / (n \norm{c}^2) > 0$;
+  take the minimum over the finitely many pairs.
+\end{proof}
+
+\section{Lower bounds on the error}
+
+\begin{lemma}[Runs agreeing before a round]
+  \label{lem:actions_law_agree}
+  Let two environments have the same feedback kernels at rounds $0, \dots, t - 1$. For a given
+  algorithm, the law of $X_t$ (and of the history of the first $t$ rounds) is the same in every run
+  against either environment.
+\end{lemma}
+
+\begin{proof}
+  The law of the history of the first $t$ rounds followed by the action of round $t$ is the
+  composition of the policy kernels of rounds $0, \dots, t$ and of the feedback kernels of rounds
+  $0, \dots, t - 1$ (uniqueness of the law of a run).
+\end{proof}
+
+\begin{lemma}[Optimization-based lower bound, Lemma 3]
+  \label{lem:opt_lower}
+  \lean{MaynardZhang2026Complexity.exists_minGapGE_le_max_error_optValue}
+  \leanok
+  \uses{lem:gen_lower, def:opt_value, def:min_gap, lem:opt_value_pos, lem:actions_law_agree,
+    lem:kl_gaussian, lem:min_gap_best_arm}
+  Let $\X$ have at least two points, $\Delta > 0$, $T \ge 1$ and $A$ an identification algorithm
+  with budget $T$. There are parameter sequences $\theta$, $\theta'$, both with min-gap at least
+  $\Delta$, such that for every run of $A$ against $\theta$ and against $\theta'$ with standard
+  Gaussian noise,
+  \[
+    \max\left(\Prob_\theta(\hat x \text{ is not a best arm}),
+      \Prob_{\theta'}(\hat x \text{ is not a best arm})\right)
+    \ge \frac14 \exp\left(-T f(\X, \Delta)\right).
+  \]
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:gen_lower, lem:opt_value_pos, lem:actions_law_agree, lem:kl_gaussian,
+    lem:min_gap_best_arm}
+  Let $P_0$ be the law of a run of $A$ against $\theta \equiv 0$ and
+  $\lambda_x = \frac1T \sum_{t < T} P_0(X_t = x)$, a design. Let $(x, x') \in \Y$ minimize
+  $p_{A(\lambda)}$; since $p_{A(\lambda)}(x, x') \le f(\X, \Delta) < 2 f(\X, \Delta)$
+  (Lemma~\ref{lem:opt_value_pos}), there is a feasible $(\tilde\theta, \tilde v)$ with
+  $\tilde v^\top A(\lambda) \tilde v \le 2 f(\X, \Delta)$. Let
+  \[
+    \theta_t = 0,\ \theta'_t = \tilde v \ (t < T - 1), \qquad
+    \theta_{T - 1} = T \tilde\theta,\ \theta'_{T - 1} = T \tilde\theta + \tilde v.
+  \]
+  Then $\thetabar_T = \tilde\theta$ and $\thetabar'_T = \tilde\theta + \tilde v$, so by feasibility
+  both sequences have min-gap at least $\Delta$, with best arms $x$ and $x'$
+  (Lemma~\ref{lem:min_gap_best_arm}). The law of $X_t$, $t \le T - 1$, under $\theta$ depends only
+  on $\theta_0, \dots, \theta_{T - 2} = 0$, so it is its law under $P_0$
+  (Lemma~\ref{lem:actions_law_agree}). The divergence between the reward laws of arm $a$ at round
+  $t$ is $(a^\top \tilde v)^2 / 2$ (Lemma~\ref{lem:kl_gaussian}), so Lemma~\ref{lem:gen_lower} with
+  $k = x$, $k' = x'$ gives the bound with exponent
+  $\sum_{t < T} \sum_a P_0(X_t = a) (a^\top \tilde v)^2 / 2 = \frac{T}{2} \tilde v^\top A(\lambda)
+  \tilde v \le T f(\X, \Delta)$. The error events $\{\hat x \ne x\}$ and $\{\hat x \ne x'\}$ are the
+  events that $\hat x$ is not a best arm, the best arms being unique.
+\end{proof}
+
+\begin{remark}
+  \label{rem:opt_lower_route}
+  The paper takes $\theta_t = 0$, $\theta'_t = v$ in the first half of the horizon and
+  $\theta_t = \theta'_t = \theta$ in the second, ``assuming without loss of generality that $T$ is
+  even''. This yields the exponent $T \tilde v^\top A(\lambda) \tilde v$, so the bound
+  $\exp(-T f)$ needs a feasible point attaining the inner infimum $p_{A(\lambda)}$ (true, by a
+  Frank--Wolfe argument for a convex quadratic on a polyhedron, but not available in Mathlib), and
+  for $T = 1$ the first half is the whole horizon, where $\thetabar = 0$ has no min-gap. The
+  construction above spreads the difference between the instances over all $T$ rounds, while the
+  parameters of $\theta$ before the last round vanish, so that the law of the actions under
+  $\theta$ is fixed before $(\tilde\theta, \tilde v)$ is chosen. This halves the exponent, so no
+  attainment is needed, and works for every $T \ge 1$.
+\end{remark}
+
+\begin{lemma}[Bound on $f$]
+  \label{lem:opt_value_le}
+  \uses{lem:equality, lem:pair_value_mono, def:h_adjacent, lem:local_global}
+  If $\X$ spans $\R^d$ and has at least two points and $\Delta > 0$, then the value of the adjacent
+  design is positive and $f(\X, \Delta) \le 4 / \Hadj(\X, \Delta)$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:equality, lem:pair_value_mono, lem:local_global}
+  Positivity: an adjacent pair exists (Lemma~\ref{lem:local_global}), and for every design,
+  $A(\lambda) \le R^2 I$ with $R = \max_{x \in \X} \norm{x}$, so
+  $\norm{x - x'}^2_{A(\lambda)^{-1}} \ge \norm{x - x'}^2 / R^2$.
+  Let $a$ be the value of the adjacent design, $\lambda$ a design and $\eps > 0$. Let $A_u$ be
+  the (positive definite, since $\X$ spans) design matrix of the uniform design; then
+  $A_\eps = (A(\lambda) + \eps A_u)/(1 + \eps)$ is the positive definite design matrix of a design,
+  and $A(\lambda) \le (1 + \eps) A_\eps$. By Lemmas~\ref{lem:pair_value_mono} and~\ref{lem:equality},
+  \[
+    \min_{\Y} p_{A(\lambda)} \le \min_{\I} p_{A(\lambda)} \le (1 + \eps) \min_{(x, x') \in \I}
+    \frac{4\Delta^2}{\norm{x - x'}^2_{A_\eps^{-1}}}
+    = (1 + \eps) \frac{4 \Delta^2}{\max_{\I} \norm{x - x'}^2_{A_\eps^{-1}}}
+    \le (1 + \eps) \frac{4\Delta^2}{a}.
+  \]
+  Let $\eps \to 0$ and take the supremum over $\lambda$: $f(\X, \Delta) \le 4\Delta^2 / a = 4 /
+  \Hadj(\X, \Delta)$.
+\end{proof}
+
+\begin{theorem}[Lower bound, Theorem 1]
+  \label{thm:lower_bound}
+  \lean{MaynardZhang2026Complexity.exists_minGapGE_le_max_error}
+  \leanok
+  \uses{lem:opt_lower, lem:opt_value_le}
+  Let $\X$ span $\R^d$ and have at least two points, $\Delta > 0$, $T \ge 1$ and $A$ an
+  identification algorithm with budget $T$. There are parameter sequences $\theta$, $\theta'$, both
+  with min-gap at least $\Delta$, such that for every run of $A$ against $\theta$ and against
+  $\theta'$ with standard Gaussian noise,
+  \[
+    \max\left(\Prob_\theta(\hat x \text{ is not a best arm}),
+      \Prob_{\theta'}(\hat x \text{ is not a best arm})\right)
+    \ge \frac14 \exp\left(-\frac{4T}{\Hadj(\X, \Delta)}\right).
+  \]
+\end{theorem}
+
+\begin{proof}
+  \uses{lem:opt_lower, lem:opt_value_le}
+  Lemma~\ref{lem:opt_lower} and $T f(\X, \Delta) \le 4T / \Hadj(\X, \Delta)$
+  (Lemma~\ref{lem:opt_value_le}).
+\end{proof}
+
+\begin{remark}
+  \label{rem:lower_bound_degenerate}
+  The paper states Theorem~\ref{thm:lower_bound} and Lemma~\ref{lem:opt_lower} without $T \ge 1$
+  and without requiring two arms. Both are needed: for $T = 0$, $\thetabar_0 = 0$ and no parameter
+  sequence has min-gap $\Delta > 0$; for $\X = \{x\}$ there are no adjacent pairs, so
+  $\Hadj(\X, \Delta) = 0$ and $f(\X, \Delta) = 0$ (with the conventions $a / 0 = 0$ and
+  $\min \emptyset = 0$), and the bound would claim an error of at least $1/4$, while every algorithm
+  outputs the only arm, which is a best arm. Lemma~\ref{lem:opt_lower} holds without the assumption
+  that $\X$ spans $\R^d$.
+\end{remark}

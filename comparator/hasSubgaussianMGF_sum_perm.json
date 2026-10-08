@@ -1,0 +1,12 @@
+{
+    "challenge_module": "Challenge_hasSubgaussianMGF_sum_perm",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "MaynardZhang2026Complexity.hasSubgaussianMGF_sum_perm"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

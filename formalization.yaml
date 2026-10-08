@@ -1,0 +1,126 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+# formalization.yaml (v0.4): repo-root metadata for formalization projects.
+# See https://github.com/mathlib-initiative/formalization.yaml for the fields.
+
+version: "v0.4"
+
+project:
+  name: "MaynardZhang2026Complexity"
+  description: >-
+    A Lean 4 / Mathlib formalization of "On the Complexity of Best-Arm Identification in
+    Non-Stationary Linear Bandits" (Maynard-Zhang, Xiong, Jamieson, Fazel, COLT 2026): the
+    arm-set-dependent complexity H_Adjacent(X, Δ) = min_λ max_{(x, x') adjacent}
+    ‖x - x'‖²_{A(λ)⁻¹} / Δ² of fixed-budget best-arm identification in linear bandits with a
+    parameter sequence fixed in advance, through a lower bound exp(-4T / H_Adjacent) for every
+    algorithm and the matching upper bound of the Adjacent-BAI algorithm, both resting on the
+    adjacency lemma (a vertex of the convex hull of the arms that is not beaten by its adjacent
+    vertices is optimal). Algorithms and environments are those of the LML (Lean Machine
+    Learning) library; the geometry of the vertices and edges of the convex hull of a finite set,
+    the information-theoretic lower bound for non-stationary bandits and the concentration of
+    sums over random permutations are written in library generality, to be contributed to LML and
+    Mathlib. The development is blueprint-driven and proceeds in two phases: phase 1 states the
+    results (this file lists them; their statements are `sorry`-ed challenge statements for
+    leanprover/comparator), phase 2 proves them.
+  authors:
+    - "Rémy Degenne"
+  responsible_maintainers:
+    - "Rémy Degenne"
+  license: "Apache-2.0"
+  # extra keys (tolerated by the schema), kept for convenience:
+  repository: "https://github.com/RemyDegenne/MaynardZhang2026Complexity"
+  blueprint: "https://remydegenne.github.io/MaynardZhang2026Complexity/blueprint/"
+
+# This repository is the substantive formalization, not a packaging or comparison layer.
+repository:
+  role: "substantive-development"
+
+sources:
+  - title: "On the Complexity of Best-Arm Identification in Non-Stationary Linear Bandits"
+    authors:
+      - "Leo Maynard-Zhang"
+      - "Zhihan Xiong"
+      - "Kevin Jamieson"
+      - "Maryam Fazel"
+    id: "COLT 2026; arXiv:2603.10346"
+    type: "conference-paper"
+    location: "Lemmas 1-10, Theorems 1-2, Proposition 1; see status.scope"
+    relationship: "formalizes"
+    license: ""
+    author_endorsement: "not-contacted"
+    note: >-
+      The LaTeX source of the paper (arXiv 2603.10346) is vendored in this repository under
+      `source/`. The formalization is driven by a blueprint (`blueprint/src/`, written by Claude
+      with the formalizer's review) that decomposes the paper's proofs into small lemmas, proves
+      the adjacency lemma without the theory of polytopes, and replaces the half-horizon
+      construction of the lower bound by one with slack; the blueprint is a derived artifact of
+      this project, not an independent source. The statements started from the statement-only
+      formalization of the paper in `LMLPapers` (COLT2026/MaynardZhang2026Complexity). The
+      formalizer is not an author of the paper.
+
+related_formalizations: []   # no earlier or parallel formalization with proofs is known
+
+# Bandits, best-arm identification, optimal design, polytopes.
+classification:
+  arxiv: ["cs.LG", "stat.ML"]
+  msc2020:
+    - "68T05"   # learning and adaptive systems
+    - "62L05"   # sequential statistical design
+    - "62K05"   # optimal statistical designs
+    - "52B05"   # combinatorial properties of polytopes
+
+status:
+  scope: >-
+    Phase 1 (statements), 2026-10-08. The results of the paper are stated in Lean, each as a
+    `sorry`-ed theorem (headline results, comparator targets listed in `comparator/targets.txt`),
+    over definitions written in library generality. Namespace `MaynardZhang2026Complexity`, files
+    `MaynardZhang2026Complexity/MXJF2026/<Result>.lean`; blueprint labels in parentheses.
+
+    Setting (Sections 2-3, `Setting.lean`): a finite arm set `𝒳 ⊆ ℝ^d`
+    (`Finset (EuclideanSpace ℝ ι)`), the non-stationary linear bandit `nonstationaryLinearEnv`
+    (reward `⟪x, θ_t⟫ + ε_t`), fixed-budget LML identification algorithms, best arm for the
+    average parameter `θ̄_T` (`IsBestArm`), min-gap over the vertices of `conv 𝒳` (`MinGapGE`),
+    vertices and adjacent pairs (exposed points and exposed segments of `conv 𝒳`), designs and
+    the complexity `H_Adjacent` (`hAdjacent`, minimum over designs with positive definite design
+    matrix), the optimization problem `f(𝒳, Δ)` (`optValue`), Algorithm 1 (`adjacentBAI`, with
+    the guarantee of the rounding procedure as the hypothesis `IsAdjacentRounding`).
+    Lemma 1 (`exists_pos_inner_iff`, `lem:adjacency`): adjacency lemma.
+    Theorem 1 (`exists_minGapGE_le_max_error`, `thm:lower_bound`): lower bound
+    `(1/4) exp(-4T / H_Adjacent)`; `T ≥ 1` and two arms added (false otherwise).
+    Lemma 2 (`le_max_prob_ne`, `lem:gen_lower`): non-stationary Kaufmann-Cappé-Garivier bound, for
+    any two distinct arms.
+    Lemma 3 (`exists_minGapGE_le_max_error_optValue`, `lem:opt_lower`): lower bound
+    `(1/4) exp(-T f(𝒳, Δ))`; `T ≥ 1` and two arms added, spanning not needed.
+    Lemma 4 (`pairValue_eq`, `lem:equality`), Lemma 7 (`le_pairValue`), Lemma 8 (`pairValue_le`):
+    the inner problem for adjacent pairs.
+    Theorem 2 (`prob_ne_bestArm_le`, `thm:upper_bound`): error of Adjacent-BAI at most
+    `|ℐ^{x⋆}| exp(-T / (36 H_Adjacent))`.
+    Lemma 5 (`hasSubgaussianMGF_lsEstimator`, `lem:ls_subgaussian`): `3 ‖z‖_{A⁻¹}`-sub-Gaussian
+    least-squares error; the bounds `‖x_t‖ ≤ 1`, `‖θ_t‖ ≤ 1` added (false otherwise).
+    Lemma 6 (`trajMeasure_eq_lintegral_exp_neg_llrProcess`, `lem:change_of_measure`): change of
+    measure at a stopping time, countably many arms.
+    Lemma 9 (`hasSubgaussianMGF_sum_perm`, `lem:perm_subgaussian`): sums over a uniform random
+    permutation.
+    Lemma 10 (`ratio_le_iSup_adjacentTo`), Proposition 1 (`iInf_iSup_ratio_eq`,
+    `prop:stat_equiv`): the stationary fixed-confidence complexity only involves the arms
+    adjacent to the best arm.
+    Not formalized: the rounding procedure and the computation of the adjacent pairs
+    (Appendix C), which are algorithms whose guarantees the statements take as hypotheses or do
+    not need.
+
+    Corrections to the paper's statements (`notes/blueprint-outline.md`, section 3): Lemma 5 is
+    false without the norm bounds of Theorem 2 (counterexample `x = (1, 2)`, `θ = (-10, 10)`);
+    Theorem 1 and Lemma 3 are false for `T = 0` and for a single arm. Hypotheses that the proofs
+    do not use are dropped (best arms in Lemma 2, spanning in Lemma 3 and Proposition 1, design
+    matrices in Lemma 4, `Δ > 0` in Lemma 8, `T ≥ d²` in Theorem 2). Proof routes that differ
+    from the paper: the adjacency lemma is proved by induction on the number of points (the
+    paper cites the cone property of polytopes, not in Mathlib); the lower bound of Lemma 3
+    spreads the difference between the two instances over all rounds with zero parameters before
+    the last round, which halves the exponent (the paper's half-horizon split needs the inner
+    minimum to be attained and fails for `T = 1`); Lemma 2 goes through the chain rule for the
+    divergence of the histories instead of Lemma 6; Lemma 9 by induction on the horizon instead
+    of a Doob martingale.
+
+    The blueprint (7 chapters) decomposes every proof into labelled lemmas; the plan is in
+    `notes/blueprint-outline.md`. The 13 comparator challenges compile (`lake build Comparator`).
+  sorry_count: 13
+  sorry_in_definitions: 0

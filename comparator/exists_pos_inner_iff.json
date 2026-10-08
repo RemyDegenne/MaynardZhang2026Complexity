@@ -1,0 +1,12 @@
+{
+    "challenge_module": "Challenge_exists_pos_inner_iff",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "MaynardZhang2026Complexity.exists_pos_inner_iff"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

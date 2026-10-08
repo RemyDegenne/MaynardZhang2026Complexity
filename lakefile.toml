@@ -1,0 +1,48 @@
+name = "MaynardZhang2026Complexity"
+defaultTargets = ["MaynardZhang2026Complexity"]
+lintDriver = "batteries/runLinter"
+
+[leanOptions]
+pp.unicode.fun = true
+autoImplicit = false
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+
+[[require]]
+name = "LeanMachineLearning"
+git = "https://github.com/LeanMachineLearning/LML"
+rev = "rename"
+
+[[require]]
+name = "checkdecls"
+git = "https://github.com/PatrickMassot/checkdecls.git"
+
+[[lean_lib]]
+name = "MaynardZhang2026Complexity"
+
+# Comparator (https://github.com/leanprover/comparator) challenge/solution modules for the
+# headline results listed in formalization.yaml; see comparator/README.md. One library with a
+# stub root: tools that import every library root (checkdecls, referee) must not load the
+# challenge modules, which redeclare project and LML names, so those are globs, not roots.
+# Add one "Challenge_<name>" entry per line of comparator/targets.txt.
+[[lean_lib]]
+name = "Comparator"
+srcDir = "comparator"
+leanOptions = { weak.linter.mathlibStandardSet = false }
+globs = [
+  "Comparator",
+  "Solution",
+  "Challenge_exists_pos_inner_iff",
+  "Challenge_exists_minGapGE_le_max_error",
+  "Challenge_le_max_prob_ne",
+  "Challenge_exists_minGapGE_le_max_error_optValue",
+  "Challenge_pairValue_eq",
+  "Challenge_prob_ne_bestArm_le",
+  "Challenge_hasSubgaussianMGF_lsEstimator",
+  "Challenge_trajMeasure_eq_lintegral_exp_neg_llrProcess",
+  "Challenge_le_pairValue",
+  "Challenge_pairValue_le",
+  "Challenge_hasSubgaussianMGF_sum_perm",
+  "Challenge_ratio_le_iSup_adjacentTo",
+  "Challenge_iInf_iSup_ratio_eq",
+]

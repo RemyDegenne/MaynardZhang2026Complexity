@@ -1,0 +1,44 @@
+% In this file you should put the actual content of the blueprint.
+% It will be used both by the web and the print version.
+% It should *not* include the \begin{document}
+
+\part{Best-arm identification in non-stationary linear bandits}
+\label{part:main}
+
+\textbf{Overview}
+
+This blueprint guides the Lean formalization of the paper \emph{On the Complexity of Best-Arm
+Identification in Non-Stationary Linear Bandits} by Leo Maynard-Zhang, Zhihan Xiong, Kevin Jamieson
+and Maryam Fazel (COLT 2026, \cite{maynardzhang2026complexity}). A learner plays arms $x_t$ from a
+finite set $\X \subset \R^d$ against parameters $\theta_1, \dots, \theta_T$ fixed in advance by an
+adversary, observes the rewards $x_t^\top \theta_t + \eps_t$, and must identify after $T$ rounds the
+hindsight best arm $x_\star = \argmax_{x \in \X} x^\top \thetabar_T$, $\thetabar_T = \frac1T
+\sum_t \theta_t$. The paper shows that the error probability of the best algorithm is
+$\exp(-\Theta(T / \Hadj(\X, \Delta)))$, where
+$\Hadj(\X, \Delta) = \min_\lambda \max_{(x, x') \in \I} \norm{x - x'}^2_{A(\lambda)^{-1}} / \Delta^2$
+only involves the \emph{adjacent} pairs of vertices of $\conv \X$: a lower bound for every algorithm
+(Theorem~\ref{thm:lower_bound}) and a matching upper bound for the algorithm Adjacent-BAI
+(Theorem~\ref{thm:upper_bound}). The key geometric fact is the adjacency lemma
+(Lemma~\ref{lem:adjacency}): a vertex that is not beaten by its adjacent vertices is optimal.
+
+\textbf{Formalization.} The protocol is that of the \emph{Lean Machine Learning} library (LML):
+algorithms are LML identification algorithms with a fixed budget, the environment is the
+non-stationary linear bandit, and the statements quantify over all runs of the algorithms. The
+statements were checked against the paper; four of them are corrected
+(Remarks~\ref{rem:lower_bound_degenerate} and~\ref{rem:ls_bounds}), and several hypotheses that the
+proofs do not use are dropped. The proof of the lower bound uses a construction with a factor $2$
+of slack in place of the paper's half-horizon split (Remark~\ref{rem:opt_lower_route}), and the
+adjacency lemma is proved from scratch by induction on the number of points, in place of the
+appeal to the theory of polytopes (Chapter~\ref{chap:prereq_polytope}).
+
+\input{chapters/setting.tex}
+\input{chapters/lower_bound.tex}
+\input{chapters/upper_bound.tex}
+\input{chapters/stationary.tex}
+
+\part{Prerequisites to be added to Mathlib and LML}
+\label{part:prereq}
+
+\input{chapters/prereq_polytope.tex}
+\input{chapters/prereq_information.tex}
+\input{chapters/prereq_concentration.tex}

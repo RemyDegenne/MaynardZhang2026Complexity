@@ -1,0 +1,18 @@
+{
+    "challenge_module": "Challenge_exists_minGapGE_le_max_error",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "MaynardZhang2026Complexity.exists_minGapGE_le_max_error",
+        "MaynardZhang2026Complexity.IsBestArm._proof_1",
+        "Learning.Environment.IsOblivious._proof_1",
+        "Learning.Environment.oblivious._proof_1",
+        "Learning.Environment.oblivious._proof_2",
+        "Learning.Environment.banditSeq._proof_1",
+        "Bandits.Linear.nonstationaryLinearEnv._proof_1"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

@@ -1,0 +1,22 @@
+\section{Computing The Adjacent Set $\mc{I}$}\label{appendixadjacent}
+
+Consider $\mathcal{X} \subset \R^d$ with $|\X| = K$. If one has access to the convex hull of $\mathcal{X}$, the adjacent set $\mathcal{I}$ can be extracted in $O(|\mc{I}|) =O(K^2)$ time. If one does not have access to the convex hull, one can compute it in $O\left(K \log K +K^{\lfloor d/2 \rfloor}\right)$ time \citep{10.1007/BF02573985}, which is efficient for small $d$. When $d$ is large, one can use the following procedure to compute $\mathcal{I}$ in time polynomial in $K$ and $d$. First center $\X$, that is, denoting $\bar{x} = \frac{1}{K}\sum_{x \in \X} x$, compute \begin{equation}
+    \X' \gets \left\{x - \bar{x}:x \in \X\right\}.
+\end{equation}
+This shift ensures $0 \in \mathrm{int}(\conv(\X'))$, which will be important later on. For each $x \in \mathcal{X}'$ solve:
+$$\begin{array}{rl}
+        \max_{\epsilon,w} & \epsilon \\
+        \text{subject to} & x^\top w = 1\\
+        & y^\top w\leq  1 - \epsilon\quad\forall~ y \in \mathcal{X}' \setminus \{x\}
+    \end{array}.\quad (\text{LP}1)$$
+Then, check if the resulting $\epsilon > 0$. If so, add $x$ to the set $\mathcal{V}_{\X'}$. It follows that $\mathcal{V}_{\X'}$ is exactly the set of all extreme points of $\mathcal{X}'$. Now, for each linearly independent pair $x,x' \in \mathcal{V}_{\X'}$ solve:
+$$\begin{array}{rl}
+        \max_{\epsilon,w} & \epsilon \\
+        \text{subject to} & x^\top w = 1\\
+        & x'^\top w = 1\\
+        & y^\top w\leq  1 - \epsilon\quad\forall~ y \in \mathcal{V}_{\X'} \setminus \{x,x'\}
+    \end{array}. \quad (\text{LP}2)$$
+Then, check if the resulting $\epsilon > 0$. If so, add $(x,x')$ to the set $\mathcal{I}_{\X'}$. It follows that $\mathcal{I}_{\X'}$ is exactly the set of all adjacent pairs of $\mathcal{X}'$. Since the structure of a polytope is preserved under translation, we have \begin{equation}
+    \V_{\X} = \left\{x + \bar{x}:x \in \mathcal{V}_{\X'}\right\},
+\end{equation} and \begin{equation}\I_{\X} = \left\{(x + \bar{x}, x' + \bar{x}):(x,x') \in \mathcal{I}_{\X'}\right\}. 
+\end{equation} The correctness of LP1 is the following. Consider some $x \in \X'$. Since $0 \in \mathrm{int}(\conv(\X'))$, any hyperplane strictly supporting $x$ must be of the form $\left\{y \in \R^d : y^\top h = c\right\}$, for $c > 0$ and normal vector $h$. Thus $\left\{y \in \R^d : y^\top \frac{h}{c} = 1\right\}$ also strictly supports $x$. Hence, to find whether or not $x$ has a strict supporting hyperplane, it suffices to restrict our attention to normal vectors in the set $W(x) = \left\{w:x^\top w =1\right\}$. If $\epsilon > 0$, $w$ corresponds exactly to a strict supporting hyperplane of $x$, and the definition of extreme point is satisfied. If $\epsilon \leq 0$, then no $w \in W(x)$ is a strict supporting hyperplane of $x$, and the definition cannot be satisfied. The correctness of LP2 follows analogously, with one extra caveat: checking only linearly independent pairs is sufficient; if $x,x'$ are linearly dependent then for any $w$ we have $x^\top w = x'^\top w\Rightarrow x^\top w =0$, hence no $w$ strictly supports both $x$ and $x'$ since $0 \in \mathrm{int}(\conv(\X'))$. Finally, both LP1 and LP2 have $d+1$ variables and at most $K$ constraints, so each can be solved in $\text{poly}(K,d)$ time \citep{10.1145/800057.808695}. Thus, the extreme point procedure takes in total $K \cdot \text{poly}(K,d)$, and the adjacent procedure takes in total $K^2 \cdot \text{poly}(K,d)$. Thus, the total run time remains $\text{poly}(K,d)$.

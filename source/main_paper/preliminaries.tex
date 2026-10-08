@@ -1,0 +1,20 @@
+\section{Preliminaries} \label{sec:preliminaries}
+\paragraph{Notation.} 
+For $n \in \N$, denote $[n] = \{1,\dots,n\}$. For a vector $x \in \R^d$ and a positive semidefinite matrix $A \in \mathbb{S}_{+}^d$, denote $\|x\|_{A} = \sqrt{x^\top Ax}$ as the Mahalanobis norm. For finite set $\X \subset \R^d$, and distribution $\lambda \in \triangle_\X$ over $\X$, denote $A(\lambda) = \sum_{x\in\X} \lambda_{x} xx^\top$. For $n \in \N$, denote $\Pi(n)$ as the set of all permutations on $[n]$.
+\begin{definition}
+    \label{def:adjacency}
+    Given a finite set $\X\subset \R^d$, let $\mc{P}=\mathrm{conv}(\X)$ be the convex hull of $\X$, which is a polytope. We say $x\in\X$ is an \textbf{extreme point} if there exists $w \in \R^d$ such that \begin{equation}   
+    \{x\} = \argmax_{y \in \mc{P}} y^\top w.\end{equation} Equivalently, the extreme points of $\X$ are the vertices of $\mc{P}$. Two distinct extreme points $x, x'\in\X$ are \textbf{adjacent} if there exists $w \in \R^d$ such that \begin{equation}  \conv(\{x,x'\}) = \argmax_{y\in \mc{P}} y^\top w.\end{equation} Equivalently, $x$ and $x'$ are adjacent if the line segment connecting them is an edge of $\mc{P}$.
+\end{definition}
+Let $\mc{V}_{\X}$ denote the set of extreme points of $\X$. We denote \begin{equation}
+    \mc{Y}_{\X} := \left\{(x,x') \in \V_\X \times \V_\X: x\neq x'\right\}
+\end{equation} as the set of all distinct extreme point pairs of $\X$. Further, we denote\begin{equation}
+    \mc{I}_{\X} :=  \left\{(x,x') \in \Y_{\X} :x\text{ is adjacent to }x'\right\}
+\end{equation}
+ as the set of all adjacent pairs of $\X$, and, for $x\in \V_{\X}$, we denote \begin{equation}
+    \mc{I}^{x}_{\X}:=\left\{x' \in \V_{\X} : (x,x') \in \I_{\X}
+    \right\}
+\end{equation} as the set of all points adjacent to $x$. It follows from this notation that \begin{equation}\label{eq:adjacentdef}(x,x') \in \mc{I}_{\X} \iff \exists~w \in \R^d \text{ s.t. } \{x,x'\} = \argmax_{y \in \V_{\X}} y^\top w.\end{equation}
+We omit the $\X$ subscript when clear from context.
+
+

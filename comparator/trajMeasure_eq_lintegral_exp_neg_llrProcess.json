@@ -1,0 +1,27 @@
+{
+    "challenge_module": "Challenge_trajMeasure_eq_lintegral_exp_neg_llrProcess",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "MaynardZhang2026Complexity.trajMeasure_eq_lintegral_exp_neg_llrProcess",
+        "ProbabilityTheory.Kernel.instIsMarkovKernelForallValNatMemFinsetIicHAddOfNatIicOfFin",
+        "Learning.instIsMarkovKernelHistProdStepKernel",
+        "MeasurableEquiv.finSuccPiIic._proof_1",
+        "MeasurableEquiv.finSuccPiIic._proof_2",
+        "MeasurableEquiv.finSuccPiIic._proof_4",
+        "MeasurableEquiv.finSuccPiIic._proof_3",
+        "MeasurableEquiv.finSuccPiIic._proof_6",
+        "MeasurableEquiv.finSuccPiIic._proof_5",
+        "MeasurableEquiv.finSuccPiIic._proof_7",
+        "MeasurableEquiv.finSuccPiIic._proof_8",
+        "ProbabilityTheory.Kernel.iicOfFin._proof_1",
+        "Learning.Environment.IsOblivious._proof_1",
+        "Learning.Environment.oblivious._proof_1",
+        "Learning.Environment.oblivious._proof_2",
+        "Learning.Environment.banditSeq._proof_1"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

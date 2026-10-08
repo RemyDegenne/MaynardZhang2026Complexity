@@ -1,0 +1,21 @@
+\section{Proof of Proposition \ref{prop:statequiv}}\label{appendixadditional}
+\begin{proof}
+    Note that since $\mc{I}^{x_*} \subseteq \X \setminus \{x_*\}$ we have $$\min_{\lambda \in \triangle_{\X}} \max_{x \in \X \setminus \{x_*\}} \frac{\|x_* -x\|^2_{A(\lambda)^{-1}}}{((x_* - x)^\top\theta)^2} \geq \min_{\lambda \in \triangle_{\X}} \max_{x \in \mc{I}^{x_*}} \frac{\|x_* -x\|^2_{A(\lambda)^{-1}}}{((x_* - x)^\top\theta)^2}. $$
+    By Lemma \ref{lem:equivalence} we have 
+    $$\min_{\lambda \in \triangle_{\X}} \max_{x \in \X \setminus \{x_*\}} \frac{\|x_* -x\|^2_{A(\lambda)^{-1}}}{((x_* - x)^\top\theta)^2} \leq \min_{\lambda \in \triangle_{\X}} \max_{x \in \mc{I}^{x_*}} \frac{\|x_* -x\|^2_{A(\lambda)^{-1}}}{((x_* - x)^\top\theta)^2}. $$
+\end{proof}
+\begin{lemma}\label{lem:equivalence}
+    Consider $\theta \in \mathbb{R}^d$ and $M \succ 0$, and let $x_* = \argmax_{x \in \X}x^\top\theta$. Consider $x \in \X \setminus \{x_*\}$. We have $$\frac{\|x_* - x\|_{M}^{2}}{((x_* - x)^{\top}\theta)^{2}}  \leq\max_{x' \in \mc{I}^{x_*}}\frac{\|x_* - x'\|_{M}^{2}}{((x_* - x')^{\top}\theta)^{2}}.$$
+\end{lemma}
+\begin{proof}
+     By Lemma 3.6 of \cite{Ziegler1995} we have $\X \subset x_* + \text{cone}\left(\{y -x_*: y \in \mc{I}^{x_*}\}\right)$. Thus $\exists~\alpha_y \geq 0$ for each $y \in \mc{I}^{x_*}$, such that $x_*-x = \sum_{y \in \mc{I}^{x_*}} \alpha_y (x_*-y)$. Thus we have 
+    \begin{align*}
+        \left|\left|\frac{x_* - x}{(x_* - x)^{\top}\theta}\right|\right|_{M}^2 &= \left|\left|\frac{\sum_{y \in \mc{I}^{x_*}} \alpha_y (x_*-y)}{\sum_{x \in \mc{I}^{x_*}} \alpha_x (x_*-x)^{\top}\theta}\right|\right|_{M}^2 \\
+        &= \left|\left|\sum_{y \in \mc{I}^{x_*}} \frac{\alpha_y (x_*-y)}{\sum_{x \in \mc{I}^{x_*}} \alpha_x (x_*-x)^{\top}\theta}\right|\right|_{M}^2 \\
+        &= \left|\left|\sum_{y \in \mc{I}^{x_*}} \frac{\alpha_y (x_*-y)^\top\theta}{\sum_{x \in \mc{I}^{x_*}} \alpha_x (x_*-x)^{\top}\theta} \cdot \frac{ (x_*-y)}{(x_*-y)^\top\theta}\right|\right|_{M}^2 \\
+        &\leq \sum_{y \in \mc{I}^{x_*}}\frac{\alpha_y (x_*-y)^\top\theta}{\sum_{x \in \mc{I}^{x_*}} \alpha_x (x_*-x)^{\top}\theta} \cdot \left|\left|  \frac{ (x_*-y)}{(x_*-y)^\top\theta}\right|\right|_{M}^2 && \text{(Jensen's inequality)} \\
+        &\leq \sum_{y \in \mc{I}^{x_*}}\frac{\alpha_y (x_*-y)^\top\theta}{\sum_{x \in \mc{I}^{x_*}} \alpha_x (x_*-x)^{\top}\theta}\cdot\max_{x' \in \mc{I}^{x_*}}\left|\left|  \frac{ (x_*-x')}{(x_*-x')^\top\theta}\right|\right|_{M}^2 \\
+        &= \max_{x' \in \mc{I}^{x_*}}\left|\left|  \frac{ (x_*-x')}{(x_*-x')^\top\theta}\right|\right|_{M}^2 \cdot \sum_{y \in \mc{I}^{x_*}}\frac{\alpha_y (x_*-y)^\top\theta}{\sum_{x \in \mc{I}^{x_*}} \alpha_x (x_*-x)^{\top}\theta}\\
+        &= \max_{x' \in \mc{I}^{x_*}}\left|\left|  \frac{ (x_*-x')}{(x_*-x')^\top\theta}\right|\right|_{M}^2.
+    \end{align*}
+\end{proof}

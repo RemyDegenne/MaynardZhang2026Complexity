@@ -1,0 +1,143 @@
+\chapter{Matching upper bound (Section 5 and Appendix B)}
+\label{chap:upper_bound}
+
+\begin{definition}[Adjacent-BAI, Algorithm 1]
+  \label{def:adjacent_bai}
+  \lean{MaynardZhang2026Complexity.allocMatrix, MaynardZhang2026Complexity.IsAdjacentRounding,
+    MaynardZhang2026Complexity.lsEstimator, MaynardZhang2026Complexity.recommend,
+    MaynardZhang2026Complexity.adjacentBAI, Learning.Algorithm.randomOrder,
+    Learning.IdentAlg.fixedBudget}
+  \leanok
+  \uses{def:h_adjacent, def:setting}
+  Let $x_0, \dots, x_{T-1} \in \X$ be an allocation, $A = \sum_{t} x_t x_t^\top$. It satisfies the
+  \emph{rounding guarantee} if $\frac1T A$ is positive definite and
+  $\max_{(x, x') \in \I} \norm{x - x'}^2_{(A/T)^{-1}} \le 2 \min_\lambda \max_{(x, x') \in \I}
+  \norm{x - x'}^2_{A(\lambda)^{-1}}$ (Eq.~(roundingerror); the rounding procedure of
+  \cite{pukelsheim2006optimal} provides such an allocation when $T \ge d^2$). Adjacent-BAI plays the
+  allocation in uniformly random order (at each round, a uniform arm among those of the allocation
+  not yet played), computes the least-squares estimator
+  $\thetahat_T = A^{-1} \sum_{t < T} r_t X_t$ from the arms $X_t$ played and the rewards $r_t$, and
+  outputs $\argmax_{x \in \X} x^\top \thetahat_T$ (with a fixed tie-breaking).
+\end{definition}
+
+\begin{lemma}[Sum over a random permutation, Lemma 9]
+  \label{lem:perm_subgaussian}
+  \lean{MaynardZhang2026Complexity.hasSubgaussianMGF_sum_perm}
+  \leanok
+  \uses{lem:sampling_without_replacement, lem:column_bessel}
+  Let $x_0, \dots, x_{T-1}$ span $\R^d$ with $\norm{x_t} \le B$, $\theta_0, \dots, \theta_{T-1}$ with
+  $\norm{\theta_t} \le M$, $\bar\theta = \frac1T \sum_t \theta_t$, $A = \sum_t x_t x_t^\top$ and $\pi$
+  a uniform permutation of $\{0, \dots, T - 1\}$. For every $z$,
+  $S = \sum_t (z^\top A^{-1} x_t) \, x_t^\top (\theta_{\pi(t)} - \bar\theta)$ is sub-Gaussian with
+  variance proxy $8 M^2 B^2 \norm{z}^2_{A^{-1}}$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:sampling_without_replacement, lem:column_bessel}
+  $S = \sum_t a_t^\top (\theta_{\pi(t)} - \bar\theta)$ with $a_t = x_t x_t^\top A^{-1} z$. By
+  Lemma~\ref{lem:sampling_without_replacement}, $S$ is sub-Gaussian with proxy
+  $4M^2 \sum_{t < T - 1} \norm{d_t}^2$, $d_t = a_t - \frac{1}{T - 1 - t} \sum_{s > t} a_s$. By
+  Lemma~\ref{lem:column_bessel}, $\sum_t \norm{d_t}^2 \le 2 \sum_t \norm{a_t}^2$, and
+  $\norm{a_t} = \abs{x_t^\top A^{-1} z} \norm{x_t} \le B \abs{x_t^\top A^{-1} z}$, with
+  $\sum_t (x_t^\top A^{-1} z)^2 = z^\top A^{-1} A A^{-1} z = \norm{z}^2_{A^{-1}}$.
+\end{proof}
+
+\begin{remark}
+  The paper proves Lemma~\ref{lem:perm_subgaussian} with the Doob martingale of $S$ for the
+  filtration of $\pi(0), \dots, \pi(t)$ and an Azuma--Hoeffding argument; the induction of
+  Lemma~\ref{lem:sampling_without_replacement} is the same computation without the martingale
+  machinery.
+\end{remark}
+
+\begin{lemma}[Runs of Adjacent-BAI]
+  \label{lem:run_adjacent_bai}
+  \uses{def:adjacent_bai}
+  In a run of Adjacent-BAI, there is a uniform permutation $\pi$ such that $X_t = x_{\pi(t)}$ for
+  $t < T$ almost surely, and the noises $\eps_t = r_t - X_t^\top \theta_t$, $t < T$, are independent
+  with laws $\xi_t$ and independent of $\pi$.
+\end{lemma}
+
+\begin{proof}
+  Build the random variables on an explicit probability space ($\pi$ uniform, independent noises),
+  check that they form a run (the law of the next arm given the past is uniform on the arms not yet
+  played, which is the law of $x_{\pi(t)}$ given $\pi(0), \dots, \pi(t-1)$), and use the uniqueness
+  of the law of a run.
+\end{proof}
+
+\begin{lemma}[Sub-Gaussian error of the least-squares estimator, Lemma 5]
+  \label{lem:ls_subgaussian}
+  \lean{MaynardZhang2026Complexity.hasSubgaussianMGF_lsEstimator}
+  \leanok
+  \uses{lem:perm_subgaussian, lem:run_adjacent_bai, lem:weighted_noise_subgaussian}
+  Let the allocation have $A = \sum_t x_t x_t^\top$ positive definite and $\norm{x_t} \le 1$, let
+  $\norm{\theta_t} \le 1$ for $t < T$, and let the noise be centered $1$-sub-Gaussian. In every run of
+  Adjacent-BAI, for every $z$, $z^\top(\thetahat_T - \thetabar_T)$ is sub-Gaussian with variance
+  proxy $9 \norm{z}^2_{A^{-1}}$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:perm_subgaussian, lem:run_adjacent_bai, lem:weighted_noise_subgaussian}
+  By Lemma~\ref{lem:run_adjacent_bai}, $r_t = x_{\pi(t)}^\top \theta_t + \eps_t$, and since
+  $\sum_s x_s x_s^\top \thetabar_T = A \thetabar_T$,
+  \[
+    z^\top(\thetahat_T - \thetabar_T)
+    = \sum_s (z^\top A^{-1} x_s)\, x_s^\top (\theta_{\pi^{-1}(s)} - \thetabar_T)
+      + \sum_t (z^\top A^{-1} X_t)\, \eps_t = S + \eta.
+  \]
+  $S$ is the statistic of Lemma~\ref{lem:perm_subgaussian} for the uniform permutation $\pi^{-1}$,
+  with $B = M = 1$: sub-Gaussian with proxy $8 \norm{z}^2_{A^{-1}}$. Conditionally on $\pi$, $\eta$
+  is a weighted sum of independent $1$-sub-Gaussian variables with weights
+  $z^\top A^{-1} x_{\pi(t)}$, sub-Gaussian with proxy $\sum_s (z^\top A^{-1} x_s)^2 =
+  \norm{z}^2_{A^{-1}}$ (Lemma~\ref{lem:weighted_noise_subgaussian}). Hence
+  $\E[e^{\mu(S + \eta)}] = \E[e^{\mu S} \E[e^{\mu \eta} \mid \pi]] \le e^{\mu^2 (8 + 1)
+  \norm{z}^2_{A^{-1}} / 2}$.
+\end{proof}
+
+\begin{remark}
+  \label{rem:ls_bounds}
+  The paper states Lemma~\ref{lem:ls_subgaussian} without the bounds $\norm{x_t} \le 1$ and
+  $\norm{\theta_t} \le 1$, which are the assumptions of Theorem~\ref{thm:upper_bound} and are used
+  by its proof (through Lemma~\ref{lem:perm_subgaussian} with $B = M = 1$). Without them the lemma
+  is false: for $d = 1$, $T = 2$, $x = (1, 2)$, $\theta = (-10, 10)$, the term $S$ is
+  $\pm 6 z$ with probability $1/2$ each, of variance $36 z^2$, while
+  $9 \norm{z}^2_{A^{-1}} = 9 z^2 / 5$ (a sub-Gaussian proxy bounds the variance).
+\end{remark}
+
+\begin{theorem}[Error probability of Adjacent-BAI, Theorem 2]
+  \label{thm:upper_bound}
+  \lean{MaynardZhang2026Complexity.prob_ne_bestArm_le}
+  \leanok
+  \uses{lem:ls_subgaussian, lem:adjacency_ge, lem:min_gap_best_arm, def:adjacent_bai}
+  Let $\norm{x} \le 1$ for $x \in \X$, let the allocation satisfy the rounding guarantee, let
+  $\norm{\theta_t} \le 1$ for $t < T$, let $\theta$ have min-gap at least $\Delta > 0$ and best arm
+  $x_\star$, and let the noise be centered $1$-sub-Gaussian. In every run of Adjacent-BAI,
+  \[
+    \Prob(\hat x \ne x_\star) \le \abs{\I^{x_\star}}
+      \exp\left(-\frac{T}{36\, \Hadj(\X, \Delta)}\right).
+  \]
+\end{theorem}
+
+\begin{proof}
+  \uses{lem:ls_subgaussian, lem:adjacency_ge, lem:min_gap_best_arm, lem:local_global}
+  By Lemma~\ref{lem:min_gap_best_arm}, $x_\star$ is the arm of the min-gap, a vertex, and
+  $(x_\star - z)^\top \thetabar_T \ge \Delta$ for every $z \in \I^{x_\star}$. If $\hat x \ne x_\star$,
+  then $(\hat x - x_\star)^\top \thetahat_T \ge 0$, and Lemma~\ref{lem:adjacency_ge} gives
+  $z \in \I^{x_\star}$ with $(z - x_\star)^\top \thetahat_T \ge 0$, hence
+  $(z - x_\star)^\top (\thetahat_T - \thetabar_T) \ge \Delta$. By the union bound and the
+  sub-Gaussian tail bound (Lemma~\ref{lem:ls_subgaussian}),
+  \[
+    \Prob(\hat x \ne x_\star) \le \sum_{z \in \I^{x_\star}}
+      \exp\left(-\frac{\Delta^2}{18 \norm{z - x_\star}^2_{A^{-1}}}\right),
+  \]
+  and $\norm{z - x_\star}^2_{A^{-1}} = \frac1T \norm{z - x_\star}^2_{(A/T)^{-1}} \le \frac2T
+  \min_\lambda \max_{\I} \norm{x - x'}^2_{A(\lambda)^{-1}}$ by the rounding guarantee. If the value
+  of the adjacent design is $0$, there is no adjacent pair, so $\X = \{x_\star\}$
+  (Lemma~\ref{lem:local_global}) and the probability is $0$.
+\end{proof}
+
+\begin{remark}
+  The paper assumes $T \ge d^2$, which serves only to obtain an allocation with the rounding
+  guarantee; with the guarantee as a hypothesis it is not needed. The paper's union bound uses the
+  strict inequalities $x^\top \thetahat_T > x_\star^\top \thetahat_T$; with the tie-breaking of the
+  argmax, the weak form of the adjacency lemma (Lemma~\ref{lem:adjacency_ge}) is used instead.
+\end{remark}

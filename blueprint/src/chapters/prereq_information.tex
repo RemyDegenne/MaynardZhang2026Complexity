@@ -1,0 +1,54 @@
+\chapter{Information-theoretic tools}
+\label{chap:prereq_information}
+
+These lemmas are in \texttt{LMLPapers} (\texttt{ForMathlib/InformationTheory/KullbackLeibler/},
+\texttt{Identification/ChangeOfMeasure.lean}) or in LML
+(\texttt{SequentialLearning/DivergenceDecomposition.lean}), and are to be copied or adapted.
+
+\begin{lemma}[Bretagnolle--Huber inequality]
+  \label{lem:bretagnolle_huber}
+  For probability measures $\mu, \nu$ and a measurable set $E$,
+  $\mu(E) + \nu(E^c) \ge \frac12 \exp(-\KL(\mu \,\|\, \nu))$.
+\end{lemma}
+
+\begin{proof}
+  $\mu(E) + \nu(E^c) \ge \int \min(d\mu, d\nu) \ge \frac12 (\int \sqrt{d\mu\, d\nu})^2 \ge \frac12
+  \exp(-\KL(\mu \,\|\, \nu))$, by the Cauchy--Schwarz inequality and Jensen's inequality.
+\end{proof}
+
+\begin{lemma}[Divergence between Gaussian laws]
+  \label{lem:kl_gaussian}
+  $\KL(\Gauss(m, 1) \,\|\, \Gauss(m', 1)) = (m - m')^2 / 2$. In particular the reward laws of the
+  arm $x$ in the linear bandits of parameters $\theta$ and $\theta'$ with standard Gaussian noise
+  have divergence $(x^\top(\theta - \theta'))^2 / 2$.
+\end{lemma}
+
+\begin{proof}
+  Direct computation of the integral of the log-likelihood ratio, an affine function.
+\end{proof}
+
+\begin{lemma}[Data processing for the output]
+  \label{lem:data_processing_output}
+  For an identification algorithm with budget $T$ and runs against two environments, the divergence
+  between the laws of the outputs is at most the divergence between the laws of the histories of
+  the first $T$ rounds.
+\end{lemma}
+
+\begin{proof}
+  The output is drawn from the same kernel applied to the history of the $T$ rounds; data
+  processing inequality for kernels.
+\end{proof}
+
+\begin{lemma}[Chain rule for non-stationary bandits]
+  \label{lem:chain_rule_nonstationary}
+  For runs of one algorithm against the non-stationary bandits $\nu$ and $\nu'$, the divergence
+  between the laws of the histories of the first $T$ rounds is
+  $\sum_{t < T} \sum_a \Prob_\nu(X_t = a)\, \KL(\nu_{t, a} \,\|\, \nu'_{t, a})$ (finitely many arms).
+\end{lemma}
+
+\begin{proof}
+  LML's chain rule for histories (\texttt{IsAlgEnvSeq.klDiv\_map\_history\_stepKernel}): the
+  divergence of the step of round $t$ given the history is that of the reward kernels, the policy
+  kernels being equal; the divergence of $\Prob_\nu(X_t \in \cdot) \otimes \nu_{t, \cdot}$ and
+  $\Prob_\nu(X_t \in \cdot) \otimes \nu'_{t, \cdot}$ is the average of the divergences.
+\end{proof}

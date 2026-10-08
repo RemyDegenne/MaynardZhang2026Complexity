@@ -1,0 +1,13 @@
+{
+    "challenge_module": "Challenge_le_pairValue",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "MaynardZhang2026Complexity.le_pairValue",
+        "MaynardZhang2026Complexity.IsBestArm._proof_1"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

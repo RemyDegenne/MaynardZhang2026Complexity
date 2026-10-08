@@ -1,0 +1,89 @@
+\section{Lower Bound of BAI in Non-Stationary Linear Bandits} \label{sec:lower_bound}
+We present, to the best of our knowledge, the first arm-set-dependent lower bound for BAI in the non-stationary linear bandit setting.
+\begin{theorem}
+    \label{thm:finallower}
+    Fix $\X \subset \R^d$ and $\Delta_{(1)} > 0$. For any algorithm, there exist parameter sequences $\Bp{\theta_t}_{t=1}^{T}$ and $\Bp{\theta'_t}_{t=1}^{T}$, both with min-gap at least $\Delta_{(1)}$, such that \begin{equation}\label{eq:lower-main}
+    \max\Bp{\P_{\Bp{\theta_t}_{t=1}^{T}}\Sp{\widehat{x}\neq x_*}, \P_{\Bp{\theta'_t}_{t=1}^{T}}\Sp{\widehat{x}\neq x_*}}\geq\frac{1}{4}\exp\Sp{-\frac{4T}{H_{\mathrm{Adjacent}}\left(\X, \Delta_{(1)}\right)}},
+    \end{equation}
+    where $ H_{\mathrm{Adjacent}}\left(\X, \Delta_{(1)}\right)$ is given by Eq. \eqref{eq:hadj-def}.
+\end{theorem}
+
+The proof is deferred to Appendix \ref{appendixlower}, of which we include a sketch in the next subsection. In Section \ref{sec:algorithm}, we present an algorithm that achieves the lower bound in Theorem \ref{thm:finallower}, verifying the tightness of our bound, and establishing $ H_{\mathrm{Adjacent}}$ as the arm-set-dependent complexity of this setting.
+
+\subsection{Proof Sketch of Theorem \ref{thm:finallower}}
+In this section, we give a proof sketch of Theorem \ref{thm:finallower}. We first obtain Lemma \ref{thm:genlower}, which characterizes the lower bound by the \emph{KL divergence} between two non-stationary multi-armed bandit instances and is a generalization of the stationary lower bound proposed in Lemma 15 of \citet{kaufmann2016complexity}. Generalizing the notation from \citet{kaufmann2016complexity}, the statement of Lemma \ref{thm:genlower} is as follows:
+\begin{lemma}
+    \label{thm:genlower}
+    Let $\nu = \Bp{\nu_t}_{t=1}^{T}$ and $\nu' =\Bp{\nu'_t}_{t=1}^{T} $ be non-stationary bandit models with different best arms. Then
+    \begin{equation}\label{eq:genlower}
+    \max\left(\P_{\nu}\Sp{\widehat{k}\neq k_*}, \P_{\nu'}\Sp{\widehat{k}\neq k_*}\right) \geq \frac{1}{4} \exp \left(-\sum_{k=1}^K\sum_{t=1}^T\P_{\nu}(A_t=k) \mathrm{KL}(\nu_{t,k}, \nu'_{t,k})\right).
+    \end{equation}
+\end{lemma}
+The proof of this lemma is deferred to Appendix \ref{appendixlower} and very closely follows that of Lemma 15 in \citet{kaufmann2016complexity}. Applying Lemma \ref{thm:genlower} requires two instances with different best arms, which motivates the following definition.
+\begin{definition}
+    \label{def:feasibility}
+    Given fixed arm set $\X$ and $\Delta_{(1)} > 0$, two parameter sequences $\{\theta_t\}_{t=1}^{T}$ and $\{\theta'_t\}_{t=1}^{T}$ are \textbf{feasible} if they have different best arms, and each has min-gap at least $\Delta_{(1)}$.
+\end{definition}
+We now proceed with the proof sketch of Theorem \ref{thm:finallower}.
+\paragraph{First step.} We use Lemma \ref{thm:genlower} to obtain Lemma \ref{thm:optlower} which states the following.
+\begin{lemma}[Optimization-based Lower Bound]
+    \label{thm:optlower}
+    Fix $\X \subset \R^d$ and $\Delta_{(1)} > 0$. For any algorithm, there exist parameter sequences $\Bp{\theta_t}_{t=1}^{T}$ and $\Bp{\theta'_t}_{t=1}^{T}$, both with min-gap at least $\Delta_{(1)}$, such that 
+    \begin{equation}
+        \max\Bp{\P_{\Bp{\theta_t}_{t=1}^{T}}\Sp{\widehat{x}\neq x_*}, \P_{\Bp{\theta'_t}_{t=1}^{T}}\Sp{\widehat{x}\neq x_*}} \geq \frac{1}{4} \exp \left(- T f\left(\X, \Delta_{(1)}\right) \right),
+    \end{equation}
+    where
+    \begin{equation}\label{eq:optimization}f\left(\X, \Delta_{(1)}\right) := \begin{array}{rl}
+        \max_{\lambda\in\triangle_{\X}}\min_{(x,x') \in \mc{Y}}\min_{\theta, v\in\R^d} & v^\top A(\lambda)v \\
+        \mbox{\rm subject to} & (x - y)^\top\theta\geq \Delta_{(1)} \quad\forall~ y \in \V \setminus \{x\}\\
+        & (x' - y)^\top(\theta + v)\geq \Delta_{(1)}\quad\forall~ y \in \V \setminus \{x'\}
+    \end{array}.
+    \end{equation}
+\end{lemma}
+ To prove Lemma \ref{thm:optlower}, the core idea behind our construction is to split the horizon into two distinct halves, similar to that of \citet{abbasi2018best}. Unlike their explicit construction, however, we characterize the hard instance through an optimization problem. At a high level, the first half allows us to minimize the KL divergence of the two instances, while the second half ensures feasibility. Concretely, first, we pick a candidate pair of distinct arms $(x,x') \in \Y$ as potential best arms for the two instances. Then, we proceed to construct the parameter sequences $\{\theta_t\}_{t=1}^{T}$ and $\{\theta'_t\}_{t=1}^{T}$. For $t \leq \frac{T}{2}$ we choose $\theta_t = 0$\footnote{The choice of $\theta_t = 0$ is arbitrary, any fixed choice such that $\theta_t'-\theta_t = v$ works.} and $\theta_t' =v$, for perturbation $v$ of our choice. Then for $t > \frac{T}{2}$ we set $\theta_t = \theta_t' = \theta$ for some $\theta$ of our choice. Further, we use the noise distribution $\epsilon_t \sim \mc{N}(0,1)$ for each $t$, resulting in a KL divergence between the reward distributions of arm $x$ at time step $t$ of \begin{equation}
+     \mathrm{KL}\left(\mc{N}\left(x^\top\theta_t,1\right), \mc{N}\left(x_t^\top\theta_t',1\right)\right) =\frac{(x^\top (\theta_t - \theta'_t))^2}{2}.
+ \end{equation} For such a construction, applying Lemma \ref{thm:genlower}, we obtain the lower bound\begin{equation}
+     \frac{1}{4} \exp \left(-\sum_{x \in \X}\sum_{t=1}^{T/2}\P_{\{\theta_t\}_{t=1}^{T}}(x_t=x)\frac{(x^\top v)^2}{2}  \right).
+ \end{equation}
+ An algorithm cannot depend on the future, so for any $t \leq T/2$ we have that \begin{equation}
+     \P_{\{\theta_t\}_{t=1}^{T}}(x_t=x) =\P_{\{\theta_t\}_{t=1}^{T/2}}(x_t=x).
+ \end{equation}Define $\lambda \in \triangle_{\X}$ such that for each $x \in \X$
+ \begin{equation}
+     \lambda_x := \frac{2\sum_{t=1}^{T/2}\P_{\{\theta_t\}_{t=1}^{T/2}}(x_t = x)}{T}.
+ \end{equation} Then, with some algebra, we can show that \begin{equation}
+     \sum_{x \in \X}\sum_{t=1}^{T/2}\P_{\{\theta_t\}_{t=1}^{T/2}}(x_t = x) \; \frac{(x^\top v)^2}{2} =\frac{T}{4} v^\top A(\lambda)v,
+ \end{equation}yielding the objective in $f\left(\X, \Delta_{(1)}\right)$. The choice of $\theta$ in the second half enforces feasibility with respect to $(x,x')$, giving rise to the constraints of $f\left(\X, \Delta_{(1)}\right)$. Crucially, since $v$, $\theta$, and $(x, x')$ are independent of $\{\theta_t\}_{t=1}^{T/2}$, we may choose them freely without affecting $\lambda$. To obtain the hardest feasible instance, we minimize over arm pairs $(x, x')$, perturbations $v$, and parameters $\theta$ to make the KL divergence as small as possible. Finally, maximizing over $\lambda$ ensures the lower bound holds for any algorithm, concluding the proof of Lemma \ref{thm:optlower}.
+\paragraph{Second step.}We bound the previous optimization problem by solving the following relaxed version of the optimization problem introduced in Lemma \ref{thm:optlower}:
+\begin{equation}\label{eq:optimizationrelaxed}\widehat{f}\left(\X, \Delta_{(1)}\right) := \begin{array}{rl}
+        \max_{\lambda\in\triangle_{\X}}\min_{(x, x')\in\mc{I}}\min_{\theta, v\in\R^d} & v^\top A(\lambda)v \\
+        \mbox{\rm subject to} & (x - y)^\top\theta\geq \Delta_{(1)} \quad\forall~y \in \V \setminus \{x\}\\
+    & (x' - y)^\top(\theta + v)\geq \Delta_{(1)}\quad\forall~ y \in \V \setminus \{x'\}
+    \end{array}.\end{equation}
+This is a relaxation because $\widehat{f}\left(\X, \Delta_{(1)}\right)$ minimizes only over adjacent pairs $(x, x')\in\mc{I}$ rather than all extreme point pairs $(x, x')\in\mc{Y}$. Since, $\I \subseteq \Y$, and hence $\widehat{f}\left(\X, \Delta_{(1)}\right) \geq f\left(\X, \Delta_{(1)}\right)$, we can substitute $f$ by $\widehat{f}$ in the bound corresponding to Lemma \ref{thm:optlower}. Requiring $(x,x')$ to be adjacent is crucial: it enables a closed-form solution of the inner $(\theta,v)$ problem, described by the following lemma.
+\begin{lemma} \label{lem:equality}
+Let $\X \subset \mathbb{R}^d$ and $\Delta_{(1)} > 0$. Consider $\lambda \in \triangle_{\X}$ with $A(\lambda)$ full rank and $(x,x') \in \mc{I}$. We have:
+\begin{equation}\begin{array}{rl}
+    \min_{\theta, v\in\R^d} & v^\top A(\lambda)v \\
+   \mbox{\rm subject to}& (x - y)^\top\theta\geq \Delta_{(1)} \quad\forall~y \in \V \setminus \{x\}\\
+    & (x' - y)^\top(\theta + v)\geq\Delta_{(1)}\quad\forall~ y \in \V \setminus \{x'\}
+\end{array} = \frac{4\Delta_{(1)}^2}{\|x - x'\|^2_{A(\lambda)^{-1}}}.\end{equation}
+\end{lemma}
+The ideas behind the proof of Lemma \ref{lem:equality} are as follows. Denote $p^* :=\frac{4\Delta_{(1)}^2}{\|x - x'\|^2_{A(\lambda)^{-1}}}.$ We first lower bound the optimization problem by $p^*$ with a simple Cauchy-Schwarz argument. Then, to upper bound the optimization problem by $p^*$, we use the key fact that for adjacent $(x, x')$, by Eq. \eqref{eq:adjacentdef}, there exists some $w \in \R^d$ such that \begin{equation}
+    \{x, x'\} = \argmax_{y \in \V} y^\top w.
+\end{equation} Thus, there is some $\varepsilon > 0$ such that $x^\top w = x'^\top w \geq y^\top w + \varepsilon$ for all $y \in \V\setminus \{x,x'\}$. We choose $v,u$ such that $v^\top A(\lambda)^{-1}v = p^*$ and
+\begin{equation}
+    (x-x')^\top u = (x'-x)^\top (u +v)= \Delta_{(1)}.
+\end{equation}
+Then we pick $\theta = u + \alpha w$, for some $\alpha$ to be chosen. Note that since $x^\top w = x'^\top w$, we have \begin{equation}
+    (x-x')^\top\theta = (x-x')^\top u,
+\end{equation}and thus \begin{equation}
+    (x-x')^\top \theta = (x'-x)^\top (\theta +v)= \Delta_{(1)},
+\end{equation}
+regardless of the value of $\alpha$, so this constraint is always satisfied. For any $y \in \V\setminus \{x,x'\}$ we have 
+\begin{equation}
+    (x-y)^\top\theta \geq (x-y)^\top u + \alpha\varepsilon,
+\end{equation}
+and \begin{equation}
+    (x'-y)^\top(\theta + v) \geq (x-y)^\top (u + v) + \alpha\varepsilon.
+\end{equation}
+Hence, we can increase $\alpha$ until all other constraints are satisfied, thus $(\theta,v)$ is feasible, concluding the proof of Lemma \ref{lem:equality}. Combining Lemmas \ref{thm:optlower} and \ref{lem:equality}, we obtain Theorem \ref{thm:finallower}.

@@ -1,0 +1,68 @@
+\chapter{Concentration}
+\label{chap:prereq_concentration}
+
+\begin{lemma}[Hoeffding's lemma]
+  \label{lem:hoeffding_lemma}
+  \lean{ProbabilityTheory.hasSubgaussianMGF_of_mem_Icc_of_integral_eq_zero}
+  \leanok
+  A centered random variable with values in $[a, b]$ is sub-Gaussian with variance proxy
+  $((b - a)/2)^2$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  In Mathlib.
+\end{proof}
+
+\begin{lemma}[Sampling without replacement]
+  \label{lem:sampling_without_replacement}
+  \uses{lem:hoeffding_lemma}
+  Let $a_0, \dots, a_{n-1}$ and $g_0, \dots, g_{n-1}$ be vectors with $\norm{g_k} \le M$,
+  $\bar g = \frac1n \sum_k g_k$, and $\pi$ a uniform permutation of $\{0, \dots, n - 1\}$. Then
+  $\sum_s a_s^\top (g_{\pi(s)} - \bar g)$ is sub-Gaussian with variance proxy
+  $4M^2 \sum_{s < n - 1} \norm{d_s}^2$, where $d_s = a_s - \frac{1}{n - 1 - s} \sum_{s' > s} a_{s'}$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:hoeffding_lemma}
+  By induction on $n$; for $n \le 1$ the variable is $0$. Let $n \ge 2$. A uniform permutation of
+  $\{0, \dots, n - 1\}$ is the pair of a uniform first value $\pi(0)$ and an independent uniform
+  bijection from the remaining positions to the remaining values (\texttt{Equiv.Perm.decomposeFin}).
+  The average of the $g_k$, $k \ne \pi(0)$, is $\bar g' = (n \bar g - g_{\pi(0)}) / (n - 1)$, whence
+  \[
+    \sum_s a_s^\top (g_{\pi(s)} - \bar g) = d_0^\top (g_{\pi(0)} - \bar g)
+      + \sum_{s \ge 1} a_s^\top (g_{\pi(s)} - \bar g').
+  \]
+  The first term is centered and lies in $[-2M \norm{d_0}, 2M \norm{d_0}]$ (Hoeffding's lemma,
+  proxy $4M^2 \norm{d_0}^2$); conditionally on $\pi(0)$, the second is the statistic of the
+  remaining positions and values, sub-Gaussian with proxy $4M^2 \sum_{s \ge 1} \norm{d_s}^2$ by the
+  induction hypothesis. Multiply the moment generating functions (tower property).
+\end{proof}
+
+\begin{lemma}[Orthogonal columns]
+  \label{lem:column_bessel}
+  For vectors $a_0, \dots, a_{n-1}$ and $d_s = a_s - \frac{1}{n - 1 - s} \sum_{s' > s} a_{s'}$,
+  $\sum_{s < n - 1} \norm{d_s}^2 \le 2 \sum_s \norm{a_s}^2$.
+\end{lemma}
+
+\begin{proof}
+  $d_s = \sum_i D_{i s} a_i$ for the $n \times (n - 1)$ matrix with $D_{ss} = 1$,
+  $D_{is} = -1/(n - 1 - s)$ for $i > s$ and $0$ otherwise. Its columns are orthogonal, of squared
+  norms $1 + 1/(n - 1 - s) \le 2$. Coordinatewise, for a vector $r \in \R^n$,
+  $\sum_s (D_s^\top r)^2 \le 2 \sum_s (\hat D_s^\top r)^2 \le 2 \norm{r}^2$ by Bessel's inequality for
+  the orthonormal family of the normalized columns $\hat D_s$; sum over the coordinates.
+\end{proof}
+
+\begin{lemma}[Weighted sums of independent sub-Gaussian noises]
+  \label{lem:weighted_noise_subgaussian}
+  Let $\eps_0, \dots, \eps_{T-1}$ be independent centered $1$-sub-Gaussian variables, independent of
+  a random variable $\pi$, and $c_t(\pi)$ real weights. Conditionally on $\pi$,
+  $\sum_t c_t(\pi) \eps_t$ is sub-Gaussian with variance proxy $\sum_t c_t(\pi)^2$; in particular
+  $\E[e^{\mu S(\pi)} e^{\mu \sum_t c_t(\pi) \eps_t}] \le \E[e^{\mu S(\pi)}]\, e^{\mu^2 C / 2}$
+  for any function $S$ when $\sum_t c_t(\pi)^2 \le C$.
+\end{lemma}
+
+\begin{proof}
+  By independence, integrate first over the noises (Fubini on the product law): for fixed $\pi$ the
+  moment generating function of the weighted sum is the product of those of the $c_t \eps_t$.
+\end{proof}

@@ -1,0 +1,55 @@
+\chapter{The stationary fixed-confidence complexity (Section 6 and Appendix D)}
+\label{chap:stationary}
+
+For a stationary parameter $\theta$ with unique best arm $x_\star$, the instance-optimal sample
+complexity of fixed-confidence best-arm identification is of order
+$\min_\lambda \max_{x \in \X \setminus \{x_\star\}} \norm{x_\star - x}^2_{A(\lambda)^{-1}} /
+((x_\star - x)^\top \theta)^2$. The paper shows that the maximum can be restricted to the arms
+adjacent to $x_\star$.
+
+\begin{lemma}[Ratio at the adjacent arms, Lemma 10]
+  \label{lem:ratio_adjacent}
+  \lean{MaynardZhang2026Complexity.ratio_le_iSup_adjacentTo}
+  \leanok
+  \uses{lem:cone_form}
+  Let $M$ be positive definite, $\theta \in \R^d$ and $x_\star \in \X$ with
+  $y^\top \theta < x_\star^\top \theta$ for all $y \in \X \setminus \{x_\star\}$. For every
+  $x \in \X \setminus \{x_\star\}$,
+  \[
+    \frac{\norm{x_\star - x}_M^2}{((x_\star - x)^\top \theta)^2}
+    \le \max_{x' \in \I^{x_\star}} \frac{\norm{x_\star - x'}_M^2}{((x_\star - x')^\top \theta)^2}.
+  \]
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:cone_form}
+  With $u_y = (x_\star - y) / (x_\star - y)^\top \theta$, the ratio of $y$ is $\norm{u_y}_M^2$. By
+  Lemma~\ref{lem:cone_form}, $u_x$ lies in the convex hull of the $u_z$, $z \in \I^{x_\star}$. The
+  function $u \mapsto \norm{u}_M^2$ is convex, so its value at a point of the convex hull of a set
+  is at most its value at some point of the set (the paper's Jensen step); the maximum is over a
+  finite set.
+\end{proof}
+
+\begin{proposition}[Proposition 1]
+  \label{prop:stat_equiv}
+  \lean{MaynardZhang2026Complexity.iInf_iSup_ratio_eq}
+  \leanok
+  \uses{lem:ratio_adjacent, def:design}
+  Let $\theta \in \R^d$ and $x_\star \in \X$ with $y^\top \theta < x_\star^\top \theta$ for all
+  $y \in \X \setminus \{x_\star\}$. Then
+  \[
+    \min_\lambda \max_{x \in \X \setminus \{x_\star\}}
+      \frac{\norm{x_\star - x}^2_{A(\lambda)^{-1}}}{((x_\star - x)^\top \theta)^2}
+    = \min_\lambda \max_{x \in \I^{x_\star}}
+      \frac{\norm{x_\star - x}^2_{A(\lambda)^{-1}}}{((x_\star - x)^\top \theta)^2},
+  \]
+  the minima being over the designs with positive definite design matrix.
+\end{proposition}
+
+\begin{proof}
+  \uses{lem:ratio_adjacent, lem:vertices_subset}
+  For each design the two maxima are equal: $\le$ by Lemma~\ref{lem:ratio_adjacent}, $\ge$ since
+  $\I^{x_\star} \subseteq \X \setminus \{x_\star\}$ (Lemma~\ref{lem:vertices_subset}), both being
+  maxima of finitely many nonnegative numbers ($0$ when $\X = \{x_\star\}$). The paper's assumption
+  that $\X$ spans $\R^d$ is not needed.
+\end{proof}

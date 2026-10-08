@@ -1,0 +1,12 @@
+{
+    "challenge_module": "Challenge_iInf_iSup_ratio_eq",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "MaynardZhang2026Complexity.iInf_iSup_ratio_eq"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

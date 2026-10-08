@@ -1,0 +1,12 @@
+{
+    "challenge_module": "Challenge_ratio_le_iSup_adjacentTo",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "MaynardZhang2026Complexity.ratio_le_iSup_adjacentTo"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}

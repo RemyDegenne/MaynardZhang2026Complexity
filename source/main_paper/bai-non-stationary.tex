@@ -1,0 +1,44 @@
+\section{BAI in Non-Stationary Linear Bandits} \label{sec:bai}
+We adopt a standard model of non-stationary linear bandits with fixed horizon $T\in\mathbb{N}$. In particular, given a finite arm set $\X\subset \R^d$ with $|\X|=K$ and $\mathrm{span}(\X)=\R^d$, an adversary fixes the parameter sequence $\Bp{\theta_t}_{t=1}^T$, which remains unknown to the learner. Then, at each round $t=1, \dots, T$, the learner selects arm $x_t\in\X$ and observes a reward $r_t=x_t^\top\theta_t +\epsilon_t$, where each $\epsilon_t$ is independent, zero-mean, and 1-sub-Gaussian noise. Together, the arm set $\X$, parameter sequence $\Bp{\theta_t}_{t=1}^T$, and distribution of $\Bp{\epsilon_t}_{t=1}^T$ form an $\textbf{instance}$. The learner's objective is to identify the hindsight best arm $x_* =\argmax_{x\in\X}x^\top\otheta_T$, where $\otheta_T=\frac{1}{T}\sum_{t=1}^T\theta_t$, and for simplicity, we assume that this best arm is unique.
+
+
+A central measure of difficulty in bandit problems is the reward gap between the first and second best arm. Here, we deviate slightly from the standard definition by defining this gap only in terms of extreme points $\mc{V}$. This restriction is natural since by definition, non-extreme point arms can never be the best arm, and thus do not affect problem difficulty. Formally, we define the \textbf{min-gap} $\Delta_{(1)}$ as the following:
+\begin{equation}
+    \Delta_{(1)} := \min_{x \in \V\setminus \{x_*\}}(x_{_*} - x)^{\top}\otheta_{T}.
+\end{equation}Finally, for event $\mc{E}$, we denote $\P_{\Bp{\theta_t}_{t=1}^T}(\mc{E})$ as the probability of $\mc{E}$ under instance with parameter sequence $\Bp{\theta_t}_{t=1}^T$. Accordingly, we measure algorithmic performance by the error probability $\P_{\Bp{\theta_t}_{t=1}^T}(\widehat{x}\neq x_*)$, where $\widehat{x}$ denotes the arm output by the learner. We omit the dependence on $\Bp{\theta_t}_{t=1}^T$ when clear from context.
+
+
+\subsection{Minimax-Optimal Complexity in Non-Stationary BAI}
+In prior work in the non-stationary setting, \citet{xiong2024b} showed that uniform sampling from the well-known G-optimal design \citep{lattimore2020bandit}
+\begin{equation}\label{eq:g-optimal}
+    \lambda^{G} := \argmin_{\lambda \in \triangle_{\X}} \max_{x\in\X}\|x\|^2_{A(\lambda)^{-1}}
+\end{equation}
+leads to a minimax-optimal error probability of \begin{equation}
+    \exp\left(-\Theta\left(\frac{T} {H_{G}\left(\Delta_{(1)}\right)} \right)\right),\end{equation} where \begin{equation}
+    H_{G}\left(\Delta_{(1)}\right) := \frac{d}{\Delta_{(1)}^2}.
+\end{equation} The relationship between $H_{G}$ and the G-optimal design stems from the Kiefer–Wolfowitz Theorem \citep{lattimore2020bandit}, which states that \begin{equation}\label{eq:kiefer}
+    \min_{\lambda \in \triangle_{\X}} \max_{x\in\X}\|x\|^2_{A(\lambda)^{-1}} = d.
+\end{equation} $H_{G}$ is minimax-optimal since if the arm set is restricted to the standard basis vectors, $H_{G}$ matches the optimal complexity for the multi-armed bandit setting of $H_{\mathrm{UNIF}} = \frac{K}{\Delta_{(1)}^2}$ \citep{abbasi2018best}. However, this notion of complexity is overly pessimistic in the linear bandit setting as it ignores potential advantages arising from arm sets with more complex structure. In contrast, we refine this notion of complexity by establishing an arm-set-dependent complexity that adapts to the geometry of any given arm set.
+
+\subsection{Adjacency and Non-Stationary BAI}
+The main results of our paper are motivated by the following central lemma.
+\begin{lemma}[Adjacency Lemma]\label{lem:adjacency_optimal}
+    Let $\X \subset \R^d$, and $\theta\in\R^d$. For any $x \in \V$, there exists $y \in  \X $ such that $(y-x)^\top \theta > 0$ if and only if there exists $z \in \I^x$ such that $(z-x)^\top \theta > 0$.
+\end{lemma}
+ The formal proof of Lemma \ref{lem:adjacency_optimal} is given in Appendix \ref{appendixupper}. The idea behind the proof is quite simple: it is well known \citep{Ziegler1995} that for a polytope $P$ and a vertex $x \in P$,
+\begin{equation}\label{eq:cone}
+    P \subseteq x+ \mathrm{cone}\left( \left\{x'-x : x' \in \I^x\right\} \right).
+\end{equation}
+Thus, the quantity $(y-x)^\top \theta$ must be a conic (non-negative) combination of the points in the set $\left\{(x'-x)^\top\theta : x'\in \I^x\right\}$. Lemma \ref{lem:adjacency_optimal} follows immediately from this fact.
+
+One implication of Lemma \ref{lem:adjacency_optimal} is that the first and second best arms of any instance must be adjacent. When constructing hard instances for our lower bound in Section \ref{sec:lower_bound}, the key strategy is to construct two instances that are hard to distinguish from each other but have different best arms. Specifically, we construct one instance with best arm $x$ and second best arm $x'$, and another instance with best arm $x'$ and second best arm $x$. Lemma \ref{lem:adjacency_optimal} tells us that to be able to do this, $x$ and $x'$ need to be adjacent. Another implication of Lemma \ref{lem:adjacency_optimal} comes from its negation, that is, if an arm is better than all its adjacent arms, then it must be the optimal arm. This implies that when identifying the best arm, we need only accurate comparisons between adjacent arms, a detail we use to design our algorithm with matching upper bound in Section \ref{sec:algorithm}. The main takeaway is that the distinguishability between adjacent arms solely determines the difficulty of identification. Given this, we introduce the following complexity measure
+\begin{equation}\label{eq:hadj-def}
+    H_{\mathrm{Adjacent}}\left(\X, \Delta_{(1)}\right) :=\frac{\min_{\lambda\in\triangle_{\X}}\max_{(x, x')\in\mc{I}}\Norm{x-x'}^2_{A(\lambda)^{-1}}}{\Delta_{(1)}^2}.
+    \end{equation}
+ By Eq. \eqref{eq:kiefer}, we observe that for any arm set $\X$ \begin{equation}
+     H_{\mathrm{Adjacent}}\left(\X, \Delta_{(1)}\right) \leq 4H_{G}\left(\Delta_{(1)}\right).
+\end{equation} Importantly, the above inequality can be arbitrarily loose for dense arm sets, showing that $H_{\adj}$ strictly refines the minimax-optimal complexity of \citet{xiong2024b}. For example, let $\mathcal{C}(K) \subset \R^2$ represent the arm set consisting of $K$ uniformly spaced arms on the unit circle. It is not hard to see that \begin{equation}
+    \lim_{K \rightarrow \infty }\frac{H_{\mathrm{Adjacent}}\left(\mathcal{C}(K), \Delta_{(1)}\right)}{H_{G}\left(\Delta_{(1)}\right)} = \lim_{K \rightarrow \infty }\frac{\min_{\lambda\in\triangle_{\mathcal{C}(K)}}\max_{(x, x')\in\mc{I}_{\mathcal{C}(K)}}\Norm{x-x'}^2_{A(\lambda)^{-1}}}{2}= 0,
+\end{equation}
+since as the circle becomes more crowded, the distances between adjacent arms shrink toward zero. In the following sections, we establish $H_{\adj}$ as the arm-set-dependent complexity of this setting through a matching error probability lower and upper bound of \begin{equation}
+    \exp\left(- \Theta\left(\frac{T} {H_{\mathrm{Adjacent}}\left(\X, \Delta_{(1)}\right)}\right) \right).\end{equation} 

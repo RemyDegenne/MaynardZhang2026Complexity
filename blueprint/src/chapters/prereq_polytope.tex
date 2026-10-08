@@ -1,0 +1,146 @@
+\chapter{Vertices and edges of the convex hull of a finite set}
+\label{chap:prereq_polytope}
+
+Throughout, $\X$ is a finite subset of a real inner product space of finite dimension, $\V$ its set
+of vertices and $\I$ its set of adjacent pairs (Definition~\ref{def:adjacency}).
+
+\begin{lemma}[Vertices are points of the set]
+  \label{lem:vertices_subset}
+  \lean{Set.vertices_subset}
+  \leanok
+  \uses{def:adjacency}
+  $\V \subseteq \X$; in particular $\V$ and $\I$ are finite.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  An exposed point is an extreme point, and the extreme points of $\conv \X$ lie in $\X$.
+\end{proof}
+
+\begin{lemma}[Vertices of a finite set]
+  \label{lem:strict_expose}
+  \uses{lem:vertices_subset}
+  For $x \in \X$, the following are equivalent: $x$ is a vertex; there is $w$ with
+  $y^\top w < x^\top w$ for every $y \in \X \setminus \{x\}$; $x \notin \conv(\X \setminus \{x\})$.
+  Moreover $\conv \X = \conv \V$, and every point of $\X$ is a convex combination of vertices.
+\end{lemma}
+
+\begin{proof}
+  If $x$ is exposed by $w$, it is the unique maximizer of $w$ over $\conv \X$, hence strictly better
+  than the other points of $\X$. If $x$ strictly beats $\X \setminus \{x\}$ for $w$, it strictly
+  beats $\conv(\X \setminus \{x\})$, and $\conv \X = \conv(\{x\} \cup (\X \setminus \{x\}))$ is the
+  union of the segments from $x$ to points of $\conv(\X \setminus \{x\})$, so $x$ is the unique
+  maximizer of $w$ over $\conv \X$: an exposed point. If $x \notin \conv(\X \setminus \{x\})$,
+  separate $x$ strictly from this compact convex set (Hahn--Banach). Finally, if $x \in \X$ is
+  not a vertex then $x \in \conv(\X \setminus \{x\})$ and $\conv \X = \conv(\X \setminus \{x\})$;
+  remove the non-vertices one at a time (induction on the number of points of $\X \setminus \V$),
+  noting that the vertices of $\X \setminus \{x\}$ are those of $\X$ since the hulls coincide.
+\end{proof}
+
+\begin{lemma}[Adjacency through a direction]
+  \label{lem:is_adjacent_iff}
+  \uses{lem:strict_expose}
+  Two distinct vertices $x, x'$ are adjacent if and only if there is $w$ with
+  $x^\top w = x'^\top w$ and $y^\top w < x^\top w$ for every $y \in \X$ outside the segment
+  $[x, x']$. The only vertices in $[x, x']$ are $x$ and $x'$. In particular, if $x$ and $x'$ are
+  adjacent there are $w$ and $\eps > 0$ with $x^\top w = x'^\top w \ge y^\top w + \eps$ for every
+  vertex $y \notin \{x, x'\}$ (the paper's Eq.~(adjacentdef)).
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:strict_expose}
+  If $[x, x']$ is the set of maximizers over $\conv \X$ of the linear form $w$, the points of $\X$
+  outside the segment are not maximizers. Conversely, the maximizers of $w$ over $\conv \X$ are the
+  convex combinations of maximizers in $\X$, here of points of $\X \cap [x, x']$, which together
+  with $x, x'$ have convex hull $[x, x']$. A vertex in $[x, x']$ is an extreme point of $\conv \X$
+  lying in a segment, hence an endpoint. For the last claim take $\eps$ the smallest gap over the
+  finitely many vertices.
+\end{proof}
+
+\begin{lemma}[Edges of a face]
+  \label{lem:adjacent_of_face}
+  \uses{lem:is_adjacent_iff}
+  Let $a$ be a direction, $\X' \subseteq \X$ the set of maximizers of $a$ over $\X$, and $x, x'$
+  adjacent vertices of $\X'$. Then $x$ and $x'$ are adjacent vertices of $\X$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:is_adjacent_iff}
+  Let $b$ be given for $\X'$ by Lemma~\ref{lem:is_adjacent_iff}. For $K$ large, $Ka + b$ has the
+  property of Lemma~\ref{lem:is_adjacent_iff} for $\X$: on $\X'$ it is $b$ plus a constant, and on
+  the finitely many points of $\X \setminus \X'$ the gap in $a$ dominates. The vertices of $\X'$
+  are vertices of $\X$ by the same argument with a strictly exposing direction
+  (Lemma~\ref{lem:strict_expose}).
+\end{proof}
+
+\begin{lemma}[Local optimality implies global optimality]
+  \label{lem:local_global}
+  \uses{lem:strict_expose, lem:adjacent_of_face, lem:is_adjacent_iff}
+  Let $x \in \V$.
+  \begin{enumerate}
+    \item If $\X$ has a point other than $x$, then $\I^x \ne \emptyset$.
+    \item If $(y - x)^\top \theta > 0$ for some $y \in \X$, then $(z - x)^\top \theta > 0$ for some
+      $z \in \I^x$.
+  \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:strict_expose, lem:adjacent_of_face, lem:is_adjacent_iff}
+  Both claims together, by strong induction on the number of points of $\X$. Let $w$ strictly
+  expose $x$ (Lemma~\ref{lem:strict_expose}).
+
+  \emph{Step.} Let $\theta$ be such that some $y \in \X$ has $(y - x)^\top \theta > 0$. Set
+  $s_\star = \max_{y \in \X \setminus \{x\}} \frac{(y - x)^\top \theta}{(x - y)^\top w} > 0$. Then
+  $x$ maximizes $\theta + s_\star w$ over $\X$, and the set $\X'$ of maximizers contains $x$ and a
+  point attaining $s_\star$; every $y \in \X' \setminus \{x\}$ satisfies
+  $(y - x)^\top \theta = s_\star (x - y)^\top w > 0$. If $\X' \ne \X$, the induction hypothesis for
+  $\X'$ (in which $x$ is a vertex, strictly exposed by $w$), claim 2 with $\theta$, gives
+  $z \in \I^x(\X')$ with $(z - x)^\top \theta > 0$, and $z \in \I^x$ by
+  Lemma~\ref{lem:adjacent_of_face}.
+
+  \emph{Claim 1.} Let $L$ be the span of $\{y - x : y \in \X\}$. If $\dim L \le 1$, the points of
+  $\X$ lie on a line through $x$, on one side of $x$ (since $x$ is a vertex); the farthest point
+  $y$ is a vertex and $[x, y] = \conv \X$ is exposed (by the zero form), so $y \in \I^x$. If
+  $\dim L \ge 2$, choose $\theta \in L$ with $(y - x)^\top \theta > 0$ for some $y \in \X$ and
+  $\theta$ not parallel to the projection of $w$ on $L$; then $\theta + s w$ is never constant on
+  $\X$, so $\X' \ne \X$ in the step, which gives an adjacent vertex.
+
+  \emph{Claim 2.} If $\X' \ne \X$, this is the step. If $\X' = \X$, every point of
+  $\X \setminus \{x\}$ beats $x$ for $\theta$, and any $z \in \I^x$, which exists by claim 1,
+  works.
+\end{proof}
+
+\begin{lemma}[Adjacency lemma, weak form]
+  \label{lem:adjacency_ge}
+  \uses{lem:local_global}
+  Let $x \in \V$. If $(y - x)^\top \theta \ge 0$ for some $y \in \X \setminus \{x\}$, then
+  $(z - x)^\top \theta \ge 0$ for some $z \in \I^x$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:local_global}
+  For $\eps > 0$, $(y - x)^\top(\theta + \eps (y - x)) > 0$, and Lemma~\ref{lem:local_global}
+  gives $z_\eps \in \I^x$ with $(z_\eps - x)^\top (\theta + \eps(y - x)) > 0$. As $\I^x$ is finite,
+  one $z$ works for a sequence $\eps_n \to 0$; let $n \to \infty$.
+\end{proof}
+
+\begin{lemma}[Cone property]
+  \label{lem:cone_form}
+  \uses{lem:local_global}
+  Let $\theta \in \R^d$ and $x_\star \in \X$ with $y^\top \theta < x_\star^\top \theta$ for every
+  $y \in \X \setminus \{x_\star\}$. For $y \in \X \setminus \{x_\star\}$ let
+  $u_y = (x_\star - y) / (x_\star - y)^\top \theta$. Then for every $x \in \X \setminus \{x_\star\}$,
+  $u_x \in \conv\{u_z : z \in \I^{x_\star}\}$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:local_global, lem:strict_expose}
+  $x_\star$ is a vertex (Lemma~\ref{lem:strict_expose}). The set $K = \conv\{u_z : z \in
+  \I^{x_\star}\}$ is compact and convex, and lies with $u_x$ in the affine hyperplane
+  $\{u : u^\top \theta = 1\}$. If $u_x \notin K$, a strict separation gives $\phi$ with
+  $\phi^\top u_x > \max_{u \in K} \phi^\top u =: c$; then $\psi = c\,\theta - \phi$ satisfies
+  $\psi^\top u_z \ge 0$ for $z \in \I^{x_\star}$ and $\psi^\top u_x < 0$, that is
+  $(z - x_\star)^\top \psi \le 0$ for every $z \in \I^{x_\star}$ and $(x - x_\star)^\top \psi > 0$,
+  contradicting Lemma~\ref{lem:local_global}. (If $\I^{x_\star} = \emptyset$, $\psi = x - x_\star$
+  contradicts it as well.)
+\end{proof}

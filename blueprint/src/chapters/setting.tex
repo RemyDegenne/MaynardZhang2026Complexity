@@ -1,0 +1,116 @@
+\chapter{Setting (Sections 2 and 3)}
+\label{chap:setting}
+
+Throughout, $\X \subset \R^d$ is a finite set of arms ($\R^d$ is \texttt{EuclideanSpace} over a finite type $\iota$, with
+$d = \abs{\iota}$) and $T \in \N$ is the budget. Rounds are numbered $0, \dots, T - 1$.
+
+\begin{definition}[Non-stationary linear bandit]
+  \label{def:setting}
+  \lean{MaynardZhang2026Complexity.avgParam, Bandits.Linear.nonstationaryLinearEnv}
+  \leanok
+  An instance is a parameter sequence $\theta = (\theta_t)_{t \in \N}$ in $\R^d$ and noise laws
+  $(\xi_t)_t$ on $\R$: at round $t$ the learner plays $x_t \in \X$ and observes
+  $r_t = x_t^\top \theta_t + \eps_t$ with $\eps_t \sim \xi_t$ independent of the past
+  (\texttt{nonstationaryLinearEnv}, an LML environment whose reward kernel at round $t$ is
+  the linear kernel of $\theta_t$). The noise is centered $1$-sub-Gaussian in the upper bound and
+  standard Gaussian in the lower bound. The average parameter is
+  $\thetabar_T = \frac1T \sum_{t < T} \theta_t$.
+\end{definition}
+
+\begin{definition}[Extreme points and adjacency, Definition 1]
+  \label{def:adjacency}
+  \lean{Set.vertices, Set.IsAdjacent, Set.adjacentPairs, Set.adjacentTo, Set.vertexPairs}
+  \leanok
+  The \emph{vertices} $\V$ of $\X$ are the exposed points of $\conv \X$. Two distinct vertices
+  $x, x'$ are \emph{adjacent} if the segment $[x, x']$ is an exposed subset of $\conv \X$ (an edge).
+  $\Y = \{(x, x') \in \V^2 : x \ne x'\}$ is the set of pairs of distinct vertices,
+  $\I \subseteq \Y$ the set of adjacent pairs, and $\I^x$ the set of vertices adjacent to $x$.
+\end{definition}
+
+\begin{definition}[Best arm and min-gap]
+  \label{def:min_gap}
+  \lean{MaynardZhang2026Complexity.IsBestArm, MaynardZhang2026Complexity.minGap,
+    MaynardZhang2026Complexity.MinGapGE}
+  \leanok
+  \uses{def:setting, def:adjacency}
+  An arm $x \in \X$ is a \emph{best arm} of $\theta$ over $T$ rounds if it maximizes
+  $y \mapsto y^\top \thetabar_T$ over $\X$. The \emph{min-gap} of the best arm $x_\star$ is
+  $\Delta_{(1)} = \min_{x \in \V \setminus \{x_\star\}} (x_\star - x)^\top \thetabar_T$. The sequence
+  $\theta$ has min-gap at least $\Delta$ if some $x \in \X$ satisfies $(x - y)^\top \thetabar_T \ge
+  \Delta$ for every vertex $y \ne x$; for $\Delta > 0$ this $x$ is then the unique best arm
+  (Lemma~\ref{lem:min_gap_best_arm}).
+\end{definition}
+
+\begin{definition}[Feasible sequences, Definition 2]
+  \label{def:feasible}
+  \lean{MaynardZhang2026Complexity.FeasibleSeqs}
+  \leanok
+  \uses{def:min_gap}
+  Two parameter sequences are \emph{feasible} for $(\X, \Delta)$ if they have different best arms
+  and each has min-gap at least $\Delta$.
+\end{definition}
+
+\begin{definition}[Designs and Mahalanobis norms]
+  \label{def:design}
+  \lean{Learning.IsDesign, Learning.designMatrix, Matrix.mahalanobisSq,
+    MaynardZhang2026Complexity.PosDefDesign}
+  \leanok
+  A \emph{design} on $\X$ is a probability vector $\lambda \in \triangle_{\X}$ (a finitely supported
+  function with positive weights on $\X$ summing to $1$); its design matrix is
+  $A(\lambda) = \sum_{x} \lambda_x x x^\top$. For a matrix $A$, $\norm{v}_A^2 = v^\top A v$.
+  \texttt{PosDefDesign} is the set of designs with positive definite design matrix.
+\end{definition}
+
+\begin{definition}[Adjacency complexity]
+  \label{def:h_adjacent}
+  \lean{MaynardZhang2026Complexity.adjValue, MaynardZhang2026Complexity.adjDesignValue,
+    MaynardZhang2026Complexity.hAdjacent}
+  \leanok
+  \uses{def:adjacency, def:design}
+  \[
+    \Hadj(\X, \Delta) = \frac{1}{\Delta^2} \min_{\lambda} \max_{(x, x') \in \I}
+      \norm{x - x'}^2_{A(\lambda)^{-1}},
+  \]
+  the minimum being over the designs with positive definite design matrix (an infimum in Lean,
+  \texttt{adjDesignValue}; the inner maximum is \texttt{adjValue}).
+\end{definition}
+
+\begin{lemma}[Adjacency lemma, Lemma 1]
+  \label{lem:adjacency}
+  \lean{MaynardZhang2026Complexity.exists_pos_inner_iff}
+  \leanok
+  \uses{def:adjacency, lem:local_global}
+  Let $x \in \V$ and $\theta \in \R^d$. There is $y \in \X$ with $(y - x)^\top \theta > 0$ if and
+  only if there is $z \in \I^x$ with $(z - x)^\top \theta > 0$.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:vertices_subset, lem:local_global}
+  Backward: adjacent vertices are points of $\X$ (Lemma~\ref{lem:vertices_subset}). Forward:
+  Lemma~\ref{lem:local_global}.
+\end{proof}
+
+\begin{remark}
+  The paper deduces Lemma~\ref{lem:adjacency} from the cone property of polytopes,
+  $\conv \X \subseteq x + \cone\{z - x : z \in \I^x\}$ (\cite[Lemma 3.6]{ziegler1995lectures}),
+  which is not in Mathlib. The blueprint proves the lemma directly
+  (Lemma~\ref{lem:local_global}) and deduces the cone property in the form needed for
+  Lemma~\ref{lem:ratio_adjacent} (Lemma~\ref{lem:cone_form}).
+\end{remark}
+
+\begin{lemma}[The arm of the min-gap is the best arm]
+  \label{lem:min_gap_best_arm}
+  \uses{def:min_gap, lem:strict_expose}
+  Let $\Delta > 0$ and let $x \in \X$ beat every other vertex by $\Delta$ for $\thetabar_T$. Then $x$
+  is a vertex, $x^\top \thetabar_T > y^\top \thetabar_T$ for all $y \in \X \setminus \{x\}$, and $x$
+  is the unique best arm.
+\end{lemma}
+
+\begin{proof}
+  \uses{lem:strict_expose}
+  Every point $y$ of $\X$ is a convex combination of vertices; if $y \ne x$, either $y$ is a vertex
+  other than $x$, or the combination puts weight less than $1$ on $x$ (otherwise $y = x$), and in
+  both cases $y^\top \thetabar_T < x^\top \thetabar_T$ (if $x$ were not a vertex, the same
+  argument applied to $x$ itself would give $x^\top \thetabar_T < x^\top \thetabar_T$). A strict
+  maximizer is a vertex (Lemma~\ref{lem:strict_expose}).
+\end{proof}

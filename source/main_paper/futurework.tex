@@ -1,0 +1,10 @@
+\section{Future Work} \label{sec:futurework}
+The most promising future direction is investigating whether adjacency can be leveraged to establish a stronger notion of complexity for the stationary fixed-budget setting. In the stationary fixed-budget setting, currently, no lower bound exists outside of a pessimistic minimax-optimal lower bound derived from a multi-armed bandit reduction \citep{NEURIPS2022_4f9342b7}. However, in the stationary fixed-\textit{confidence} setting, it is well-known \citep{soare2014best,NEURIPS2019_8ba6c657,NEURIPS2020_7212a656} that for arm set $\X$, and parameter vector $\theta$, the instance-optimal sample complexity is of order \begin{equation}    
+\min_{\lambda \in \triangle_{\X}} \max_{x \in \X \setminus \{x_*\}} \frac{\|x_* -x\|^2_{A(\lambda)^{-1}}}{((x_* - x)^\top\theta)^2}.\end{equation}
+Evaluating the above quantity, we obtain the following proposition:
+\begin{proposition}\label{prop:statequiv}
+     Given finite set $\X \subset\R^d$ and $\theta\in\R^d$, we have \begin{equation}
+         \min_{\lambda \in \triangle_{\X}} \max_{x \in \X \setminus \{x_*\}} \frac{\|x_* -x\|^2_{A(\lambda)^{-1}}}{((x_* - x)^\top\theta)^2} = \min_{\lambda \in \triangle_{\X}} \max_{x \in \mc{I}^{x_*}} \frac{\|x_* -x\|^2_{A(\lambda)^{-1}}}{((x_* - x)^\top\theta)^2}. \end{equation}
+\end{proposition}
+
+The proof is deferred to Appendix \ref{appendixadditional}, which consists of a combination of Eq. \eqref{eq:cone} and Jensen's inequality. Proposition \ref{prop:statequiv} shows that in the stationary fixed-\textit{confidence} setting, the instance-optimal sample complexity is determined solely by the arms adjacent to $x_*$. This suggests that adjacency is fundamentally tied to the difficulty of BAI even in stationary settings. This observation, together with what we have shown in the non-stationary setting, hints towards the possibility of establishing a stronger arm-set-dependent complexity in the stationary fixed-budget setting by exploiting the adjacent geometry of the arm set.

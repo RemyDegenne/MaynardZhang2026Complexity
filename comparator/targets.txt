@@ -1,0 +1,13 @@
+exists_pos_inner_iff
+exists_minGapGE_le_max_error
+le_max_prob_ne
+exists_minGapGE_le_max_error_optValue
+pairValue_eq
+prob_ne_bestArm_le
+hasSubgaussianMGF_lsEstimator
+trajMeasure_eq_lintegral_exp_neg_llrProcess
+le_pairValue
+pairValue_le
+hasSubgaussianMGF_sum_perm
+ratio_le_iSup_adjacentTo
+iInf_iSup_ratio_eq

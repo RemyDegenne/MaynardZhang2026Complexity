@@ -1,0 +1,93 @@
+\section{Matching Upper Bound}
+\label{sec:algorithm}
+
+In this section, we first introduce the Adjacent-optimal design, which is a modified version of the well-known $\mc{XY}$-optimal design. Based on this new design, we then develop the algorithm \algoname, and show that it achieves an error probability guarantee that matches the lower bound presented in Section \ref{sec:lower_bound}, verifying the tightness of our lower bound, and establishing the arm-set-dependent complexity of this setting.
+
+\subsection{The Adjacent-Optimal Design}
+
+A central quantity in BAI problems is the $\mathcal{XY}$-optimal design \citep{soare2014best}, which aims to uniformly minimize the variance of predictions in directions defined by the pairwise differences between all arms. Formally, the $\mathcal{XY}$-optimal design is defined as
+\begin{equation}\label{eq:xy-optimal}
+    \lambda^{\mc{XY}} := \argmin_{\lambda \in \triangle_{\X}} \max_{(x, x') \in \mc{Y}}\|x-x'\|^2_{A(\lambda)^{-1}}.\end{equation}
+The relevance of the $\mathcal{XY}$-optimal design stems from the ranking nature of BAI; identifying the best arm only requires accurate estimates of the relative ordering between arms. Motivated by Lemma \ref{lem:adjacency_optimal}, we refine this idea by introducing the \textit{Adjacent-optimal design}, which uniformly minimizes the variance over differences only between adjacent arms. Formally, it is defined as
+\begin{equation}\label{eq:adjacent-optimal}\lambda^{\mathrm{Adjacent}}:= \argmin_{\lambda \in \triangle_{\X}} \max_{(x, x') \in \mc{I}}\|x-x'\|^2_{A(\lambda)^{-1}}.\end{equation}
+
+\begin{comment}
+\end{comment}
+Lemma \ref{lem:adjacency_optimal} implies that if an arm is better than all its adjacent arms, then it must be the optimal arm. Thus, when identifying the best arm, only accurate comparisons between adjacent arms are needed. The Adjacent-optimal design embodies this principle: reducing the variance of estimation of the relative ordering between adjacent arms is sufficient for identifying the best arm. Focusing on fewer, more informative directions leads to stronger estimation, which we make use of in the algorithm presented in the next section.
+
+\subsection{Adjacent-Optimal Best-Arm Identification (Adjacent-BAI)}
+We now present the algorithm \algoname. In the first step, we compute the adjacent set $\mc{I}$, for which we provide a polynomial-time procedure in Appendix \ref{appendixadjacent}. We then compute the Adjacent-optimal design $\lambda^*$; however, we do not proceed by sampling directly from it. In order to obtain an optimal error rate using random sampling we would require an estimator that (i) admits sub-Gaussian, variance-only error and (ii) does not require a prespecified confidence level\footnote{This requirement is unnecessary in the fixed-confidence setting, hence the use of Catoni's estimator in \citet{pmlr-v139-camilleri21a}.}. According to \cite{devroye2016sub}, this is impossible without stronger distributional assumptions. Instead, we employ the classical rounding procedure of \citet{10.5555/1137748} to obtain a static allocation $\Bp{x_t}_{t=1}^{T}$ such that the empirical design matrix $\frac{1}{T}\sum_{t=1}^{T}x_tx_t^\top$ approximates the optimal design matrix $A(\lambda^*) =\sum_{x\in\X} \lambda^*_{x} xx^\top$. Specifically, the rounding procedure guarantees that if $T \geq d^2$,\footnote{We note the existence of a rounding procedure requiring only $T \geq \Omega(d)$ \citep{pmlr-v70-allen-zhu17e} at the cost of significantly looser constants. An insightful discussion on both rounding procedures is provided in Appendix B of \citet{NEURIPS2019_8ba6c657}.} the following holds:
+\begin{equation}\label{eq:roundingerror}
+    \max_{(x,x')\in \mc{I}}\|x - x'\|_{\left(\frac{1}{T}\sum_{t=1}^Tx_{t}x_{t}^\top\right)^{-1}}^2 \leq 2 \cdot \max_{(x,x')\in \mc{I}}\|x - x'\|_{A(\lambda^{*})^{-1}}^2.\end{equation}
+ Then, to ensure our estimator is unbiased, we inject the necessary randomness by playing the allocation in a uniformly random order. Finally, we compute the least-squares estimator $\widehat{\theta}_T$ and output its corresponding best arm. The complete procedure is summarized in Algorithm \ref{algo:adjacent-bai}.\begin{algorithm}[htbp]
+    \caption{Adjacent--BAI}
+    \label{algo:adjacent-bai}
+    \begin{algorithmic}[1]
+        \STATE \textbf{Input:} budget $T\in\mathbb{N}$; arm set $\mathcal{X}\subset\R^d$
+        \STATE Find $\mc{I}$, the adjacent pairs of $\mc{X}$
+        \STATE $\lambda^* \leftarrow \argmin_{\lambda \in \triangle_{\X}} \max_{(x, x') \in \mc{I}}\|x-x'\|^2_{A(\lambda)^{-1}}$
+        \STATE $\{x_{t}\}_{t=1}^{T} \leftarrow  \text{Round}(\lambda^*, T)$
+        \STATE Sample permutation $\pi \sim \mathrm{Unif(}\Pi(T))$
+        \FOR{$t=1, 2, \dots, T$}
+            \STATE Play $x_{\pi(t)}$ and receive reward $r_t$
+        \ENDFOR
+        \STATE $\widehat{\theta}_T\leftarrow \left(\sum_{t=1}^Tx_{t}x_{t}^\top\right)^{-1}\sum_{t=1}^Tx_{\pi(t)} r_t$ 
+        \STATE \textbf{return} $\widehat{x} =\argmax_{x\in\X}x^\top\widehat{\theta}_T$
+    \end{algorithmic}
+\end{algorithm} We characterize the error probability of Algorithm \ref{algo:adjacent-bai} in the following theorem.
+\begin{theorem}[Error probability of \textsf{Adjacent-BAI}]
+    \label{thm:upper_bound1}
+    Fix time horizon $T \geq d^2$. Consider arm set $\mathcal{X}\subset\R^d$, and arbitrary unknown parameter sequence $\Bp{\theta_t}_{t=1}^{T}$ with min-gap $\Delta_{(1)} > 0$. Assume $\max_{x\in \X}\|x\|_2 \leq 1$ and $\max_{t \in[T]} \|\theta_t\|_2 \leq 1$. If we run Algorithm \ref{algo:adjacent-bai} in this setting and obtain $\widehat{x}$, then it holds that
+    \begin{equation} \P\Sp{\widehat{x}\neq x_*}\leq \left|\I^{x_*}\right| \cdot \exp\Sp{-\frac{T}{36 \cdot H_{\mathrm{Adjacent}}\left(\X, \Delta_{(1)}\right)}},\end{equation}where $ H_{\mathrm{Adjacent}}\left(\X, \Delta_{(1)}\right)$ is given by Eq. \eqref{eq:hadj-def}.
+\end{theorem}
+The proof of Theorem \ref{thm:upper_bound1} is deferred to Appendix \ref{appendixupper}, of which we include a sketch in the next subsection. 
+Notably, the upper bound matches the lower bound presented in Theorem \ref{thm:finallower} up to constants, verifying the tightness of our lower bound, and establishing $H_{\mathrm{Adjacent}}$ as the arm-set-dependent complexity of this setting.
+
+\subsection{Proof Sketch of Theorem \ref{thm:upper_bound1}}
+We outline a proof sketch of Theorem \ref{thm:upper_bound1}.
+\paragraph{First step.} The statistical analysis of Theorem \ref{thm:upper_bound1} relies primarily on the following lemma.\begin{lemma}[Sub-Gaussian error of least-squares estimator]
+    \label{lem:sub-Gaussian2}
+    Let $\htheta_T$ be the estimator computed in Step 9 of Algorithm~\ref{algo:adjacent-bai}. For any $z \in \R^d$, we have that $z^\top(\htheta_T -\otheta_T)$ is $3\cdot\|z\|_{\left(\sum_{t=1}^Tx_tx_t^\top\right)^{-1}}$-sub-Gaussian.
+\end{lemma}
+
+To obtain Lemma \ref{lem:sub-Gaussian2}, because the arm choices $x_{\pi(t)}$ are dependent, the analysis requires particular care. Denote $A := \sum_{t=1}^Tx_tx_t^\top$. We begin by expanding the quantity of interest:
+\begin{equation}
+    z^\top(\htheta_T -\otheta_T) =\underbrace{z^\top\sum_{t=1}^TA^{-1}x_tx_t^\top(\theta_{\pi^{-1}(t)} - \otheta_{T})}_{:=S} + \underbrace{z^\top\sum_{t=1}^TA^{-1}x_{t}\epsilon_{\pi^{-1}(t)}}_{:=\eta},
+\end{equation}
+where we note that $\pi^{-1} \sim \mathrm{Unif}(\Pi(T))$. Since each $\epsilon_{\pi^{-1}(t)}$ is conditionally independent and 1-sub-Gaussian given $\pi^{-1}$, it is straightforward to show that $\eta$ is conditionally $\|z\|_{A^{-1}}$-sub-Gaussian given $\pi^{-1}$. Analyzing $S$ requires closer attention, since each $\theta_{\pi^{-1}(t)}$ is dependent, so we proceed with a martingale analysis. We construct the Doob martingale of $S$, $\{Z_t\}_{t=0}^{T}$, with $Z_t = \E[S \mid \mc{F}_t]$, where $\mc{F}_{t} = \sigma(\pi^{-1}(1), \dots, \pi^{-1}(t))$. The key observation is that, intuitively, each martingale difference $|Z_t - Z_{t-1}|$ behaves roughly on the order of $\left|z^\top A^{-1}x_tx_t^\top\theta_{\pi^{-1}(t)}\right|$. Given this, an Azuma inequality-style argument shows that \begin{equation}\E\left[\exp\left(\lambda S\right)\right] \leq \exp\left(\frac{\lambda^2}{2} \cdot  \sum_{t=1}^T8  \left\|z^\top A^{-1}x_tx_t^\top\right\|_2^2\right).
+\end{equation}
+Observing that 
+\begin{equation}
+\sum_{t=1}^{T}\left\|z^\top A^{-1}x_tx_t^\top\right\|_2^2 \leq  \|z\|_{A^{-1}}^2,
+\end{equation}
+we obtain that $S$ is $\sqrt{8}\|z\|_{A^{-1}}$-sub-Gaussian, completing the proof of Lemma \ref{lem:sub-Gaussian2}.
+\paragraph{Second step.}
+Finally, we combine Lemmas \ref{lem:adjacency_optimal} and \ref{lem:sub-Gaussian2} to obtain the final bound in Theorem \ref{thm:upper_bound1}. We aim to bound the error probability \begin{equation}
+    \P\Sp{\widehat{x}\neq x_*}=\P\Sp{\exists x 
+        \in \X  \text{ s.t. }x^\top\htheta_T> x_*^\top\htheta_T}.
+\end{equation}
+However, critically, by Lemma \ref{lem:adjacency_optimal}, we have \begin{equation}
+    \P\Sp{\exists x 
+        \in \X  \text{ s.t. }x^\top\htheta_T> x_*^\top\htheta_T} = \P\Sp{\exists x\in \I^{x_*}\text{ s.t. }x^\top\htheta_T>x_*^\top\htheta_T}.
+\end{equation}
+Applying the union bound, we have 
+\begin{equation}
+    \P\Sp{\exists x\in \I^{x_*}\text{ s.t. }x^\top\htheta_T >x_*^\top\htheta_T}\leq \sum_{x \in \I^{x_*}}\P\Sp{(x-x_*)^\top\left(\htheta_T -\otheta_T\right)>\Delta_{(1)}}
+\end{equation}
+Fix some $x \in \I^{x_*}$. Combining Lemma \ref{lem:sub-Gaussian2} and Hoeffding's inequality we have
+\begin{equation}
+   \P\Sp{(x-x_*)^\top\left(\htheta_T -\otheta_T\right)>\Delta_{(1)}} \leq \exp\left(- \frac{\Delta_{(1)}^2}{2\cdot3^2\cdot\| x-x_*\|_{\left(\sum_{t=1}^Tx_tx_t^\top\right)^{-1}}^2}\right).\end{equation}
+Using that $(x,x_*) \in \I$, and incorporating the rounding error from Eq. \eqref{eq:roundingerror}, we have \begin{equation}
+    \|x-x_*\|_{\left(\sum_{t=1}^Tx_tx_t^\top\right)^{-1}}^2 \leq \frac{2 \cdot\max_{(x, x') \in \mc{I}}\|x - x'\|_{A(\lambda^{*})^{-1}}^2}{T}.
+\end{equation}
+Observing that, by definition of $\lambda^*$
+\begin{equation}
+    \max_{(x, x') \in \mc{I}}\|x - x'\|_{A(\lambda^{*})^{-1}}^2 = \min_{\lambda \in \triangle_{\X}}\max_{(x, x') \in \mc{I}}\|x - x'\|_{A(\lambda)^{-1}}^2,
+\end{equation}
+completes the proof of Theorem \ref{thm:upper_bound1}.
+
+
+
+
+
+
