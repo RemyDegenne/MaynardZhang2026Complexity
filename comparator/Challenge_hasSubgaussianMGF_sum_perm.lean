@@ -12,7 +12,6 @@ public import Mathlib.Analysis.Convex.Caratheodory
 public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Topology.Algebra.Ring.Real
-public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.Analysis.Matrix.MeasurableSpace
@@ -20,9 +19,16 @@ public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 public import Mathlib.MeasureTheory.Group.Arithmetic
+public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Probability.Moments.SubGaussian
+public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.Probability.ProbabilityMassFunction.Integrals
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Probability.Distributions.Uniform
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.Probability.Independence.InfinitePi
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 public import Mathlib.CategoryTheory.Countable
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
@@ -44,7 +50,6 @@ public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Probability.Kernel.Composition.MapComap
 public import Mathlib.Probability.Martingale.BorelCantelli
-public import Mathlib.Probability.Distributions.Uniform
 public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
@@ -113,13 +118,6 @@ variable [DecidableEq ι]
 end Learning
 end
 
--- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice ═══
-@[expose] public section
-open Finset
-variable {α δ : Type*} [MeasurableSpace δ] [SemilatticeInf α] {m : MeasurableSpace α} [MeasurableInf₂ α]
-attribute [to_dual existing] MeasurableInf₂
-end
-
 -- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis ═══
 @[expose] public section
 open Matrix
@@ -131,6 +129,13 @@ def mahalanobisSq (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) : ℝ :=
   WithLp.ofLp x ⬝ᵥ A *ᵥ WithLp.ofLp x
 
 end Matrix
+end
+
+-- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice ═══
+@[expose] public section
+open Finset
+variable {α δ : Type*} [MeasurableSpace δ] [SemilatticeInf α] {m : MeasurableSpace α} [MeasurableInf₂ α]
+attribute [to_dual existing] MeasurableInf₂
 end
 
 -- ═══ MaynardZhang2026Complexity.Mathlib.MeasureTheory.MeasurableSpace.Instances ═══
@@ -150,10 +155,14 @@ open scoped RealInnerProductSpace
 namespace MaynardZhang2026Complexity
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
+set_option linter.unusedVariables false in
 /-- **Lemma 9** (Maynard-Zhang, Xiong, Jamieson, Fazel 2026). Let `x_1, …, x_T` span `ℝ^d` with
 `‖x_t‖ ≤ B`, `θ_1, …, θ_T` with `‖θ_t‖ ≤ M`, `θ̄_T = (1/T) ∑_t θ_t`, `A = ∑_t x_t x_tᵀ` and
 `π` a uniformly random permutation of `[T]`. For every `z ∈ ℝ^d`,
-`zᵀ ∑_t A⁻¹ x_t x_tᵀ (θ_{π(t)} - θ̄_T)` is `√8 M B ‖z‖_{A⁻¹}`-sub-Gaussian. -/
+`zᵀ ∑_t A⁻¹ x_t x_tᵀ (θ_{π(t)} - θ̄_T)` is `√8 M B ‖z‖_{A⁻¹}`-sub-Gaussian.
+
+The spanning assumption `hspan` is not used by the proof. -/
+@[nolint unusedArguments]
 theorem hasSubgaussianMGF_sum_perm {T : ℕ} (x θ : Fin T → EuclideanSpace ℝ ι)
     (hspan : Submodule.span ℝ (Set.range x) = ⊤) {B M : ℝ} (hB : ∀ t, ‖x t‖ ≤ B)
     (hM : ∀ t, ‖θ t‖ ≤ M) (z : EuclideanSpace ℝ ι) :

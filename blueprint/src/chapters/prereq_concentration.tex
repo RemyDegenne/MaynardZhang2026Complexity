@@ -16,53 +16,97 @@
 
 \begin{lemma}[Sampling without replacement]
   \label{lem:sampling_without_replacement}
-  \uses{lem:hoeffding_lemma}
-  Let $a_0, \dots, a_{n-1}$ and $g_0, \dots, g_{n-1}$ be vectors with $\norm{g_k} \le M$,
-  $\bar g = \frac1n \sum_k g_k$, and $\pi$ a uniform permutation of $\{0, \dots, n - 1\}$. Then
-  $\sum_s a_s^\top (g_{\pi(s)} - \bar g)$ is sub-Gaussian with variance proxy
-  $4M^2 \sum_{s < n - 1} \norm{d_s}^2$, where $d_s = a_s - \frac{1}{n - 1 - s} \sum_{s' > s} a_{s'}$.
+  \lean{ProbabilityTheory.hasSubgaussianMGF_sum_inner_perm}
+  \leanok
+  \uses{lem:hoeffding_lemma, lem:column_bessel, lem:subgaussian_add_prod}
+  Let $a_0, \dots, a_{n-1}$ and $g_0, \dots, g_{n-1}$ be vectors of a real inner product space with
+  $\norm{g_k} \le M$, $\bar a = \frac1n \sum_s a_s$, $\bar g = \frac1n \sum_k g_k$, and $\pi$ a
+  uniform permutation of $\{0, \dots, n - 1\}$. Then $\sum_s a_s^\top (g_{\pi(s)} - \bar g)$ is
+  sub-Gaussian with variance proxy $8M^2 \sum_s \norm{a_s - \bar a}^2$.
 \end{lemma}
 
 \begin{proof}
-  \uses{lem:hoeffding_lemma}
-  By induction on $n$; for $n \le 1$ the variable is $0$. Let $n \ge 2$. A uniform permutation of
-  $\{0, \dots, n - 1\}$ is the pair of a uniform first value $\pi(0)$ and an independent uniform
-  bijection from the remaining positions to the remaining values (\texttt{Equiv.Perm.decomposeFin}).
-  The average of the $g_k$, $k \ne \pi(0)$, is $\bar g' = (n \bar g - g_{\pi(0)}) / (n - 1)$, whence
+  \leanok
+  \uses{lem:hoeffding_lemma, lem:column_bessel, lem:subgaussian_add_prod}
+  By induction on $n$; for at most one position the variable is $0$. Consider $n + 1$ positions,
+  $n \ge 1$. A uniform permutation of $\{0, \dots, n\}$ is the pair of a uniform first value
+  $\pi(0)$ and an independent uniform bijection from the remaining positions to the remaining
+  values (\texttt{Equiv.Perm.decomposeFin}): the law of the pair is the product of the uniform
+  laws. With $\bar a' = \frac1n \sum_{s \ge 1} a_s$, the average of the $g_k$, $k \ne \pi(0)$, is
+  $\bar g' = ((n + 1) \bar g - g_{\pi(0)}) / n$, whence
   \[
-    \sum_s a_s^\top (g_{\pi(s)} - \bar g) = d_0^\top (g_{\pi(0)} - \bar g)
+    \sum_s a_s^\top (g_{\pi(s)} - \bar g) = (a_0 - \bar a')^\top (g_{\pi(0)} - \bar g)
       + \sum_{s \ge 1} a_s^\top (g_{\pi(s)} - \bar g').
   \]
-  The first term is centered and lies in $[-2M \norm{d_0}, 2M \norm{d_0}]$ (Hoeffding's lemma,
-  proxy $4M^2 \norm{d_0}^2$); conditionally on $\pi(0)$, the second is the statistic of the
-  remaining positions and values, sub-Gaussian with proxy $4M^2 \sum_{s \ge 1} \norm{d_s}^2$ by the
-  induction hypothesis. Multiply the moment generating functions (tower property).
+  The first term is centered and lies in $[-2M \norm{a_0 - \bar a'}, 2M \norm{a_0 - \bar a'}]$
+  (Hoeffding's lemma, proxy $4M^2 \norm{a_0 - \bar a'}^2$); for every value of $\pi(0)$, the second
+  is the statistic of the remaining positions and values, sub-Gaussian with proxy
+  $8M^2 \sum_{s \ge 1} \norm{a_s - \bar a'}^2$ by the induction hypothesis. By
+  Lemma~\ref{lem:subgaussian_add_prod}, the sum is sub-Gaussian with the sum of the two proxies,
+  at most $8M^2 \sum_s \norm{a_s - \bar a}^2$ by Lemma~\ref{lem:column_bessel} since
+  $\frac{n}{n + 1} \ge \frac12$.
 \end{proof}
 
-\begin{lemma}[Orthogonal columns]
+\begin{lemma}[Helmert identity]
   \label{lem:column_bessel}
-  For vectors $a_0, \dots, a_{n-1}$ and $d_s = a_s - \frac{1}{n - 1 - s} \sum_{s' > s} a_{s'}$,
-  $\sum_{s < n - 1} \norm{d_s}^2 \le 2 \sum_s \norm{a_s}^2$.
+  \lean{ProbabilityTheory.sum_norm_sub_mean_sq, ProbabilityTheory.sum_norm_sub_mean_sq_succ}
+  \leanok
+  For vectors $a_0, \dots, a_{n-1}$ and $\bar a = \frac1n \sum_s a_s$,
+  $\sum_s \norm{a_s - \bar a}^2 = \sum_s \norm{a_s}^2 - \frac1n \norm{\sum_s a_s}^2
+  \le \sum_s \norm{a_s}^2$. For vectors $a_0, \dots, a_n$ with $n \ge 1$,
+  $\bar a = \frac{1}{n+1} \sum_{s \le n} a_s$ and $\bar a' = \frac1n \sum_{1 \le s \le n} a_s$,
+  \[
+    \sum_{s \le n} \norm{a_s - \bar a}^2 = \sum_{1 \le s \le n} \norm{a_s - \bar a'}^2
+      + \frac{n}{n + 1} \norm{a_0 - \bar a'}^2.
+  \]
 \end{lemma}
 
 \begin{proof}
-  $d_s = \sum_i D_{i s} a_i$ for the $n \times (n - 1)$ matrix with $D_{ss} = 1$,
-  $D_{is} = -1/(n - 1 - s)$ for $i > s$ and $0$ otherwise. Its columns are orthogonal, of squared
-  norms $1 + 1/(n - 1 - s) \le 2$. Coordinatewise, for a vector $r \in \R^n$,
-  $\sum_s (D_s^\top r)^2 \le 2 \sum_s (\hat D_s^\top r)^2 \le 2 \norm{r}^2$ by Bessel's inequality for
-  the orthonormal family of the normalized columns $\hat D_s$; sum over the coordinates.
+  \leanok
+  Expand the squares. With $S' = \sum_{s \ge 1} a_s$, the difference of the two centered sums of
+  squares is $\norm{a_0}^2 + \frac1n \norm{S'}^2 - \frac{1}{n + 1} \norm{a_0 + S'}^2
+  = \frac{n}{n + 1} \norm{a_0 - S'/n}^2$.
+\end{proof}
+
+\begin{remark}
+  The first version of this blueprint bounded the proxy by $4M^2 \sum_{s < n - 1} \norm{d_s}^2$,
+  $d_s = a_s - \frac{1}{n - 1 - s} \sum_{s' > s} a_{s'}$, and then
+  $\sum_s \norm{d_s}^2 \le 2 \sum_s \norm{a_s}^2$ by Bessel's inequality for the orthogonal columns
+  of the matrix of the $d_s$. Since $\norm{d_0}^2 = \frac{n + 1}{n} (\sum_s \norm{a_s - \bar a}^2 -
+  \sum_{s \ge 1} \norm{a_s - \bar a'}^2)$ (Helmert identity), the induction can carry the centered
+  sum of squares directly, which avoids the matrix of the $d_s$.
+\end{remark}
+
+\begin{lemma}[Sub-Gaussian given the first coordinate]
+  \label{lem:subgaussian_add_prod}
+  \lean{ProbabilityTheory.HasSubgaussianMGF.add_prod, ProbabilityTheory.HasSubgaussianMGF.mono}
+  \leanok
+  Let $\mu$, $\nu$ be s-finite measures, $X$ sub-Gaussian under $\mu$ with variance proxy $c_X$,
+  and $Y$ jointly measurable with $Y(a, \cdot)$ sub-Gaussian under $\nu$ with variance proxy $c_Y$
+  for every $a$. Then $(a, b) \mapsto X(a) + Y(a, b)$ is sub-Gaussian under $\mu \otimes \nu$ with
+  variance proxy $c_X + c_Y$.
+\end{lemma}
+
+\begin{proof}
+  \leanok
+  By Fubini, $\int e^{\lambda (X(a) + Y(a, b))} \,d(\mu \otimes \nu)
+  = \int e^{\lambda X(a)} \int e^{\lambda Y(a, b)} \,d\nu(b) \,d\mu(a)
+  \le e^{\lambda^2 c_Y / 2} \int e^{\lambda X} \,d\mu \le e^{\lambda^2 (c_X + c_Y) / 2}$, and the
+  same bound gives the integrability of $e^{\lambda (X + Y)}$.
 \end{proof}
 
 \begin{lemma}[Weighted sums of independent sub-Gaussian noises]
   \label{lem:weighted_noise_subgaussian}
-  Let $\eps_0, \dots, \eps_{T-1}$ be independent centered $1$-sub-Gaussian variables, independent of
-  a random variable $\pi$, and $c_t(\pi)$ real weights. Conditionally on $\pi$,
-  $\sum_t c_t(\pi) \eps_t$ is sub-Gaussian with variance proxy $\sum_t c_t(\pi)^2$; in particular
-  $\E[e^{\mu S(\pi)} e^{\mu \sum_t c_t(\pi) \eps_t}] \le \E[e^{\mu S(\pi)}]\, e^{\mu^2 C / 2}$
-  for any function $S$ when $\sum_t c_t(\pi)^2 \le C$.
+  \lean{ProbabilityTheory.hasSubgaussianMGF_sum_mul_infinitePi}
+  \leanok
+  Let $\eps_0, \eps_1, \dots$ be independent with laws $\xi_t$ that are sub-Gaussian with variance
+  proxies $\sigma_t$ (the coordinates under the product law $\bigotimes_t \xi_t$), and let
+  $c_0, \dots, c_{T-1}$ be real weights. Then $\sum_{t < T} c_t \eps_t$ is sub-Gaussian with
+  variance proxy $\sum_t c_t^2 \sigma_t$.
 \end{lemma}
 
 \begin{proof}
-  By independence, integrate first over the noises (Fubini on the product law): for fixed $\pi$ the
-  moment generating function of the weighted sum is the product of those of the $c_t \eps_t$.
+  \leanok
+  The variables $c_t \eps_t$ are independent and sub-Gaussian with variance proxies
+  $c_t^2 \sigma_t$, and the moment generating function of their sum is the product of theirs.
 \end{proof}

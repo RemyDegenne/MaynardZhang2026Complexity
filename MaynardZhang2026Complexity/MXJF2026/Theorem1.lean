@@ -6,12 +6,16 @@ Authors: Rémy Degenne
 module
 
 public import MaynardZhang2026Complexity.MXJF2026.Setting
+public import MaynardZhang2026Complexity.MXJF2026.Lemma3
 
 /-!
 # Theorem 1: the arm-set-dependent lower bound
 
 For every fixed-budget algorithm there are two parameter sequences with min-gap at least `Δ` under
 one of which the error probability is at least `(1/4) exp(-4T / H_Adjacent(𝒳, Δ))`.
+
+The proof is Lemma 3 (`exists_minGapGE_le_max_error_optValue`) and the bound
+`f(𝒳, Δ) ≤ 4 / H_Adjacent(𝒳, Δ)` (`optValue_le`).
 -/
 
 @[expose] public section
@@ -50,6 +54,15 @@ theorem exists_minGapGE_le_max_error (𝒳 : Finset (EuclideanSpace ℝ ι))
         1 / 4 * exp (-(4 * T / hAdjacent (𝒳 : Set (EuclideanSpace ℝ ι)) Δ)) ≤
           max (P.real {ω | ¬ IsBestArm 𝒳 θ T (out ω)})
             (P'.real {ω | ¬ IsBestArm 𝒳 θ' T (out' ω)}) := by
-  sorry
+  obtain ⟨θ, θ', hθ, hθ', h⟩ := exists_minGapGE_le_max_error_optValue 𝒳 h𝒳 hΔ hT A hA
+  refine ⟨θ, θ', hθ, hθ', ?_⟩
+  intro Ω _ P _ X Y out Ω' _ P' _ X' Y' out' hrun hrun'
+  refine le_trans ?_ (h P X Y out P' X' Y' out' hrun hrun')
+  gcongr
+  calc (T : ℝ) * optValue (𝒳 : Set (EuclideanSpace ℝ ι)) Δ
+      ≤ T * (4 / hAdjacent (𝒳 : Set (EuclideanSpace ℝ ι)) Δ) := by
+        gcongr
+        exact optValue_le 𝒳 h𝒳 hspan hΔ
+    _ = 4 * T / hAdjacent (𝒳 : Set (EuclideanSpace ℝ ι)) Δ := by ring
 
 end MaynardZhang2026Complexity

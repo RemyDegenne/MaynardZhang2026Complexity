@@ -85,6 +85,7 @@ $d = \abs{\iota}$) and $T \in \N$ is the budget. Rounds are numbered $0, \dots, 
 \end{lemma}
 
 \begin{proof}
+  \leanok
   \uses{lem:vertices_subset, lem:local_global}
   Backward: adjacent vertices are points of $\X$ (Lemma~\ref{lem:vertices_subset}). Forward:
   Lemma~\ref{lem:local_global}.
@@ -100,17 +101,21 @@ $d = \abs{\iota}$) and $T \in \N$ is the budget. Rounds are numbered $0, \dots, 
 
 \begin{lemma}[The arm of the min-gap is the best arm]
   \label{lem:min_gap_best_arm}
-  \uses{def:min_gap, lem:strict_expose}
+  \lean{Set.Finite.mem_vertices_of_forall_vertices}
+  \leanok
+  \uses{def:min_gap, lem:strict_expose, lem:max_face}
   Let $\Delta > 0$ and let $x \in \X$ beat every other vertex by $\Delta$ for $\thetabar_T$. Then $x$
   is a vertex, $x^\top \thetabar_T > y^\top \thetabar_T$ for all $y \in \X \setminus \{x\}$, and $x$
   is the unique best arm.
 \end{lemma}
 
 \begin{proof}
-  \uses{lem:strict_expose}
-  Every point $y$ of $\X$ is a convex combination of vertices; if $y \ne x$, either $y$ is a vertex
-  other than $x$, or the combination puts weight less than $1$ on $x$ (otherwise $y = x$), and in
-  both cases $y^\top \thetabar_T < x^\top \thetabar_T$ (if $x$ were not a vertex, the same
-  argument applied to $x$ itself would give $x^\top \thetabar_T < x^\top \thetabar_T$). A strict
-  maximizer is a vertex (Lemma~\ref{lem:strict_expose}).
+  \leanok
+  \uses{lem:strict_expose, lem:max_face}
+  Every vertex $v$ has $v^\top \thetabar_T \le x^\top \thetabar_T$, with equality only for $v = x$.
+  Let $y \in \X$ with $y^\top \thetabar_T \ge x^\top \thetabar_T$. As $y \in \conv \X = \conv \V$
+  (Lemma~\ref{lem:strict_expose}), $y$ is a convex combination of the vertices $v$ with
+  $v^\top \thetabar_T = x^\top \thetabar_T$ (Lemma~\ref{lem:max_face}), of which there is at most
+  one, $x$: so this set is $\{x\}$, $x$ is a vertex and $y = x$. Applied to $y = x$ this shows
+  that $x$ is a vertex, and applied to $y \ne x$ that $y^\top \thetabar_T < x^\top \thetabar_T$.
 \end{proof}

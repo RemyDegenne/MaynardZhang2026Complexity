@@ -5,13 +5,14 @@ Authors: Rémy Degenne
 -/
 module
 
-public import MaynardZhang2026Complexity.MXJF2026.Setting
+public import MaynardZhang2026Complexity.MXJF2026.Lemma7
+public import MaynardZhang2026Complexity.MXJF2026.Lemma8
 
 /-!
 # Lemma 4: closed form of the inner optimization problem for adjacent pairs
 
 For a design with positive definite design matrix and an adjacent pair `(x, x')`, the inner
-optimization problem has value `4 Δ² / ‖x - x'‖²_{A(λ)⁻¹}`.
+optimization problem has value `4 Δ² / ‖x - x'‖²_{A(λ)⁻¹}`: Lemmas 7 and 8.
 -/
 
 @[expose] public section
@@ -32,7 +33,8 @@ positive definite `A`. -/
 theorem pairValue_eq (𝒳 : Finset (EuclideanSpace ℝ ι)) {Δ : ℝ} (hΔ : 0 < Δ)
     {A : Matrix ι ι ℝ} (hA : A.PosDef)
     {x x' : EuclideanSpace ℝ ι} (hadj : IsAdjacent (𝒳 : Set (EuclideanSpace ℝ ι)) x x') :
-    pairValue 𝒳 Δ A x x' = 4 * Δ ^ 2 / mahalanobisSq A⁻¹ (x - x') := by
-  sorry
+    pairValue 𝒳 Δ A x x' = 4 * Δ ^ 2 / mahalanobisSq A⁻¹ (x - x') :=
+  le_antisymm (pairValue_le 𝒳 Δ hA hadj)
+    (le_pairValue 𝒳 hΔ hA (adjacentPairs_subset_vertexPairs (mem_adjacentPairs_iff.2 hadj)))
 
 end MaynardZhang2026Complexity

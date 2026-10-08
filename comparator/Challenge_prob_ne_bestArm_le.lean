@@ -13,6 +13,13 @@ public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.Analysis.Matrix.MeasurableSpace
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.MeasureTheory.Measure.Map
 public import Mathlib.Probability.Kernel.Composition.MapComap
@@ -56,15 +63,19 @@ public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.Topology.Order.Compact
 public import Mathlib.Probability.Distributions.Uniform
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
-public import Mathlib.Analysis.Matrix.MeasurableSpace
-public import Mathlib.Analysis.RCLike.Lemmas
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
-public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+public import Mathlib.Analysis.Convex.Join
+public import Mathlib.Analysis.Convex.KreinMilman
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Probability.Independence.InfinitePi
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.Probability.ProbabilityMassFunction.Integrals
+public import Mathlib.MeasureTheory.Integral.Prod
 
 /-! # Standalone extraction for `MaynardZhang2026Complexity.prob_ne_bestArm_le`
 Definitions are copied verbatim; theorem proofs are replaced by `sorry`.
@@ -83,6 +94,8 @@ namespace Learning
 end Learning
 namespace Set
 end Set
+namespace MeasurableSpace
+end MeasurableSpace
 namespace MeasureTheory
 end MeasureTheory
 namespace ProbabilityTheory.Kernel
@@ -142,6 +155,19 @@ structure IsDesign (𝒳 : Set (EuclideanSpace ℝ ι)) (w : EuclideanSpace ℝ 
 variable [Fintype ι]
 variable [DecidableEq ι]
 end Learning
+end
+
+-- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis ═══
+@[expose] public section
+open Matrix
+namespace Matrix
+variable {ι : Type*} [Fintype ι]
+
+/-- The squared Mahalanobis norm `‖x‖_A² = xᵀ A x`. -/
+def mahalanobisSq (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) : ℝ :=
+  WithLp.ofLp x ⬝ᵥ A *ᵥ WithLp.ofLp x
+
+end Matrix
 end
 
 -- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.MeasurableSpace.Sigma ═══
@@ -546,19 +572,6 @@ noncomputable def Algorithm.randomOrder {T : ℕ} (x : Fin T → 𝓐) : Algorit
     (fun p ↦ fun i ↦ (p.1 i).action) (by fun_prop)
 
 end Learning
-end
-
--- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis ═══
-@[expose] public section
-open Matrix
-namespace Matrix
-variable {ι : Type*} [Fintype ι]
-
-/-- The squared Mahalanobis norm `‖x‖_A² = xᵀ A x`. -/
-def mahalanobisSq (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) : ℝ :=
-  WithLp.ofLp x ⬝ᵥ A *ᵥ WithLp.ofLp x
-
-end Matrix
 end
 
 -- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.Convex.Adjacent ═══

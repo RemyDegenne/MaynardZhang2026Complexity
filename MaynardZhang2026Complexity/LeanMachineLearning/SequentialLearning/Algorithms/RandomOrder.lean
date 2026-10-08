@@ -26,12 +26,12 @@ a uniform arm.
 * `Algorithm.randomOrder x`: the algorithm playing the allocation `x` in uniformly random order;
   it reads only the past actions (`factorsThrough_randomOrder`).
 
-## Future work
+## See also
 
-The run lemma (the actions of the first `T` rounds are `x ∘ π` for a uniformly random
-permutation `π`) is not proved. A memory form announcing the permutation drawn at round `0`
-(`Algorithm.ofMemory`, `SequentialLearning/Memory.lean`) would make the permutation a random
-variable of the run.
+The law of the actions of a run: `SequentialLearning/Algorithms/RandomOrderLaw.lean` (the arm of
+round `t` is `x (π t)` for a uniformly random permutation `π`, `hasCondDistrib_permArm`) and
+`Online/Bandit/Linear/ActionModel.lean` (an explicit model of a run against a non-stationary
+linear bandit, with a uniform permutation independent of the noises).
 -/
 
 @[expose] public section

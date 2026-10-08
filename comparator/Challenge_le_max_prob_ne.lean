@@ -29,6 +29,12 @@ public import Mathlib.Probability.Kernel.Composition.CompProd
 public import Mathlib.Probability.Kernel.Composition.MapComap
 public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
+public import Mathlib.Probability.Martingale.Convergence
+public import Mathlib.InformationTheory.KullbackLeibler.DataProcessing
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.RadonNikodym
+public import Mathlib.InformationTheory.KullbackLeibler.ChainRule
+public import Mathlib.Probability.Kernel.Composition.RadonNikodym
+public import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 public import Mathlib.CategoryTheory.Countable
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
@@ -88,6 +94,8 @@ namespace Learning
 end Learning
 namespace Learning.IdentAlg
 end Learning.IdentAlg
+namespace InformationTheory
+end InformationTheory
 namespace MaynardZhang2026Complexity
 end MaynardZhang2026Complexity
 

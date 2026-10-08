@@ -24,12 +24,13 @@ only involves the \emph{adjacent} pairs of vertices of $\conv \X$: a lower bound
 \textbf{Formalization.} The protocol is that of the \emph{Lean Machine Learning} library (LML):
 algorithms are LML identification algorithms with a fixed budget, the environment is the
 non-stationary linear bandit, and the statements quantify over all runs of the algorithms. The
-statements were checked against the paper; four of them are corrected
-(Remarks~\ref{rem:lower_bound_degenerate} and~\ref{rem:ls_bounds}), and several hypotheses that the
-proofs do not use are dropped. The proof of the lower bound uses a construction with a factor $2$
+statements were checked against the paper; three of them are corrected
+(Remarks~\ref{rem:lower_bound_degenerate} and~\ref{rem:ls_bounds}), the statement of Lemma 6 was
+corrected after an indexing error of the translation (Remark~\ref{rem:change_of_measure_index}),
+and several hypotheses that the proofs do not use are dropped. The proof of the lower bound uses a construction with a factor $2$
 of slack in place of the paper's half-horizon split (Remark~\ref{rem:opt_lower_route}), and the
-adjacency lemma is proved from scratch by induction on the number of points, in place of the
-appeal to the theory of polytopes (Chapter~\ref{chap:prereq_polytope}).
+adjacency lemma is proved from scratch by a direct argument, in place of the appeal to the theory
+of polytopes (Chapter~\ref{chap:prereq_polytope}).
 
 \input{chapters/setting.tex}
 \input{chapters/lower_bound.tex}

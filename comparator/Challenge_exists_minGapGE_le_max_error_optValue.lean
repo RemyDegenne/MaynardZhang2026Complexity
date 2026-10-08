@@ -13,6 +13,13 @@ public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.Analysis.Matrix.MeasurableSpace
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.Probability.Kernel.Basic
 public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 public import Mathlib.Probability.Process.FiniteDimensionalLaws
@@ -55,16 +62,20 @@ public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.Topology.Order.Compact
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
-public import Mathlib.Analysis.Matrix.MeasurableSpace
-public import Mathlib.Analysis.RCLike.Lemmas
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
-public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 public import Mathlib.Probability.Distributions.Uniform
+public import Mathlib.InformationTheory.KullbackLeibler.Basic
+public import Mathlib.Analysis.Convex.Join
+public import Mathlib.Analysis.Convex.KreinMilman
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Probability.Martingale.Convergence
+public import Mathlib.InformationTheory.KullbackLeibler.DataProcessing
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.RadonNikodym
+public import Mathlib.InformationTheory.KullbackLeibler.ChainRule
+public import Mathlib.Probability.Kernel.Composition.RadonNikodym
+public import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
 
 /-! # Standalone extraction for `MaynardZhang2026Complexity.exists_minGapGE_le_max_error_optValue`
 Definitions are copied verbatim; theorem proofs are replaced by `sorry`.
@@ -95,6 +106,8 @@ namespace Bandits.Linear
 end Bandits.Linear
 namespace MaynardZhang2026Complexity
 end MaynardZhang2026Complexity
+namespace InformationTheory
+end InformationTheory
 
 -- ═══ MaynardZhang2026Complexity.LeanMachineLearning.DesignMatrix ═══
 @[expose] public section
@@ -136,6 +149,19 @@ structure IsDesign (𝒳 : Set (EuclideanSpace ℝ ι)) (w : EuclideanSpace ℝ 
 variable [Fintype ι]
 variable [DecidableEq ι]
 end Learning
+end
+
+-- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis ═══
+@[expose] public section
+open Matrix
+namespace Matrix
+variable {ι : Type*} [Fintype ι]
+
+/-- The squared Mahalanobis norm `‖x‖_A² = xᵀ A x`. -/
+def mahalanobisSq (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) : ℝ :=
+  WithLp.ofLp x ⬝ᵥ A *ᵥ WithLp.ofLp x
+
+end Matrix
 end
 
 -- ═══ LeanMachineLearning.SequentialLearning.Algorithm ═══
@@ -395,19 +421,6 @@ end Environment
 end Bandits.Linear
 end
 
--- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis ═══
-@[expose] public section
-open Matrix
-namespace Matrix
-variable {ι : Type*} [Fintype ι]
-
-/-- The squared Mahalanobis norm `‖x‖_A² = xᵀ A x`. -/
-def mahalanobisSq (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) : ℝ :=
-  WithLp.ofLp x ⬝ᵥ A *ᵥ WithLp.ofLp x
-
-end Matrix
-end
-
 -- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.Convex.Adjacent ═══
 @[expose] public section
 namespace Set
@@ -468,7 +481,7 @@ end
 
 -- ═══ MaynardZhang2026Complexity.MXJF2026.Lemma3 ═══
 @[expose] public section
-open MeasureTheory ProbabilityTheory Learning Bandits.Linear Real Set
+open MeasureTheory ProbabilityTheory InformationTheory Learning Bandits.Linear Real Set Matrix
 open scoped RealInnerProductSpace
 universe u
 namespace MaynardZhang2026Complexity

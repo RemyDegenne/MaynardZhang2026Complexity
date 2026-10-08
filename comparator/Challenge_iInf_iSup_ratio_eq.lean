@@ -13,7 +13,6 @@ public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.Analysis.Matrix.MeasurableSpace
@@ -21,6 +20,7 @@ public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 public import Mathlib.MeasureTheory.Group.Arithmetic
+public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
@@ -65,6 +65,10 @@ public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.Topology.Order.Compact
+public import Mathlib.Analysis.Convex.Join
+public import Mathlib.Analysis.Convex.KreinMilman
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.LocallyConvex.Separation
 
 /-! # Standalone extraction for `MaynardZhang2026Complexity.iInf_iSup_ratio_eq`
 Definitions are copied verbatim; theorem proofs are replaced by `sorry`.
@@ -136,13 +140,6 @@ variable [DecidableEq ι]
 end Learning
 end
 
--- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice ═══
-@[expose] public section
-open Finset
-variable {α δ : Type*} [MeasurableSpace δ] [SemilatticeInf α] {m : MeasurableSpace α} [MeasurableInf₂ α]
-attribute [to_dual existing] MeasurableInf₂
-end
-
 -- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis ═══
 @[expose] public section
 open Matrix
@@ -154,6 +151,13 @@ def mahalanobisSq (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) : ℝ :=
   WithLp.ofLp x ⬝ᵥ A *ᵥ WithLp.ofLp x
 
 end Matrix
+end
+
+-- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice ═══
+@[expose] public section
+open Finset
+variable {α δ : Type*} [MeasurableSpace δ] [SemilatticeInf α] {m : MeasurableSpace α} [MeasurableInf₂ α]
+attribute [to_dual existing] MeasurableInf₂
 end
 
 -- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.Convex.Adjacent ═══

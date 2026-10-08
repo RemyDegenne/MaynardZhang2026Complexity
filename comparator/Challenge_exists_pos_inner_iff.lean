@@ -3,6 +3,11 @@ module
 public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Convex.Join
+public import Mathlib.Analysis.Convex.KreinMilman
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 public import Mathlib.CategoryTheory.Countable
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
@@ -25,7 +30,6 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Probability.Kernel.Composition.MapComap
 public import Mathlib.Probability.Martingale.BorelCantelli
 public import Mathlib.Probability.Distributions.Uniform
-public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.Analysis.Convex.Basic

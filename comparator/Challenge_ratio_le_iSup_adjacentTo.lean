@@ -1,6 +1,5 @@
 module
 
-public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.LinearAlgebra.Matrix.PosDef
@@ -14,8 +13,13 @@ public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 public import Mathlib.MeasureTheory.Group.Arithmetic
+public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Convex.Join
+public import Mathlib.Analysis.Convex.KreinMilman
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 public import Mathlib.CategoryTheory.Countable
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
@@ -77,23 +81,16 @@ set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
 -- Namespace stubs (so later `open`s resolve).
-namespace Finset
-end Finset
 namespace Matrix
 end Matrix
+namespace Finset
+end Finset
 namespace Set
 end Set
 namespace Learning
 end Learning
 namespace MaynardZhang2026Complexity
 end MaynardZhang2026Complexity
-
--- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice ═══
-@[expose] public section
-open Finset
-variable {α δ : Type*} [MeasurableSpace δ] [SemilatticeInf α] {m : MeasurableSpace α} [MeasurableInf₂ α]
-attribute [to_dual existing] MeasurableInf₂
-end
 
 -- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis ═══
 @[expose] public section
@@ -106,6 +103,13 @@ def mahalanobisSq (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) : ℝ :=
   WithLp.ofLp x ⬝ᵥ A *ᵥ WithLp.ofLp x
 
 end Matrix
+end
+
+-- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice ═══
+@[expose] public section
+open Finset
+variable {α δ : Type*} [MeasurableSpace δ] [SemilatticeInf α] {m : MeasurableSpace α} [MeasurableInf₂ α]
+attribute [to_dual existing] MeasurableInf₂
 end
 
 -- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.Convex.Adjacent ═══
@@ -130,7 +134,7 @@ end
 -- ═══ MaynardZhang2026Complexity.MXJF2026.Lemma10 ═══
 @[expose] public section
 open Learning Matrix Set
-open scoped RealInnerProductSpace
+open scoped MatrixOrder RealInnerProductSpace
 namespace MaynardZhang2026Complexity
 variable {ι : Type*} [Fintype ι]
 

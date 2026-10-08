@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import MaynardZhang2026Complexity.MXJF2026.Setting
+public import MaynardZhang2026Complexity.Mathlib.Analysis.Convex.Vertices
 
 /-!
 # Lemma 1: the adjacency lemma
@@ -30,6 +31,10 @@ theorem exists_pos_inner_iff (𝒳 : Finset (EuclideanSpace ℝ ι)) (θ : Eucli
     {x : EuclideanSpace ℝ ι} (hx : x ∈ vertices (𝒳 : Set (EuclideanSpace ℝ ι))) :
     (∃ y ∈ 𝒳, 0 < ⟪y - x, θ⟫) ↔
       ∃ z ∈ adjacentTo (𝒳 : Set (EuclideanSpace ℝ ι)) x, 0 < ⟪z - x, θ⟫ := by
-  sorry
+  constructor
+  · rintro ⟨y, hy, hθ⟩
+    exact 𝒳.finite_toSet.exists_mem_adjacentTo_inner_pos hx (Finset.mem_coe.2 hy) hθ
+  · rintro ⟨z, hz, hθ⟩
+    exact ⟨z, Finset.mem_coe.1 (vertices_subset hz.2.1), hθ⟩
 
 end MaynardZhang2026Complexity
