@@ -19,8 +19,8 @@ For fixed arms `x_t` and parameters `θ_t` and a uniformly random permutation `�
 
 The statistic is `∑_t ⟪a_t, θ_{π(t)} - θ̄_T⟫` with `a_t = ⟪z, A⁻¹ x_t⟫ x_t`, to which sampling
 without replacement (`ProbabilityTheory.hasSubgaussianMGF_sum_inner_perm`) applies; then
-`∑_t ‖a_t - ā‖² ≤ ∑_t ‖a_t‖² ≤ B² ∑_t ⟪z, A⁻¹ x_t⟫² = B² ‖z‖²_{A⁻¹}`. The spanning assumption is
-not needed (if `A` is singular, `A⁻¹ = 0` and both sides vanish).
+`∑_t ‖a_t - ā‖² ≤ ∑_t ‖a_t‖² ≤ B² ∑_t ⟪z, A⁻¹ x_t⟫² = B² ‖z‖²_{A⁻¹}`. The paper's assumption
+that the `x_t` span `ℝ^d` is not needed (if `A` is singular, `A⁻¹ = 0` and both sides vanish).
 -/
 
 @[expose] public section
@@ -32,17 +32,14 @@ namespace MaynardZhang2026Complexity
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
-set_option linter.unusedVariables false in
-/-- **Lemma 9** (Maynard-Zhang, Xiong, Jamieson, Fazel 2026). Let `x_1, …, x_T` span `ℝ^d` with
+/-- **Lemma 9** (Maynard-Zhang, Xiong, Jamieson, Fazel 2026). Let `x_1, …, x_T` in `ℝ^d` with
 `‖x_t‖ ≤ B`, `θ_1, …, θ_T` with `‖θ_t‖ ≤ M`, `θ̄_T = (1/T) ∑_t θ_t`, `A = ∑_t x_t x_tᵀ` and
 `π` a uniformly random permutation of `[T]`. For every `z ∈ ℝ^d`,
 `zᵀ ∑_t A⁻¹ x_t x_tᵀ (θ_{π(t)} - θ̄_T)` is `√8 M B ‖z‖_{A⁻¹}`-sub-Gaussian.
 
-The spanning assumption `hspan` is not used by the proof. -/
-@[nolint unusedArguments]
-theorem hasSubgaussianMGF_sum_perm {T : ℕ} (x θ : Fin T → EuclideanSpace ℝ ι)
-    (hspan : Submodule.span ℝ (Set.range x) = ⊤) {B M : ℝ} (hB : ∀ t, ‖x t‖ ≤ B)
-    (hM : ∀ t, ‖θ t‖ ≤ M) (z : EuclideanSpace ℝ ι) :
+The paper assumes that the `x_t` span `ℝ^d`; this is not needed. -/
+theorem hasSubgaussianMGF_sum_perm {T : ℕ} (x θ : Fin T → EuclideanSpace ℝ ι) {B M : ℝ}
+    (hB : ∀ t, ‖x t‖ ≤ B) (hM : ∀ t, ‖θ t‖ ≤ M) (z : EuclideanSpace ℝ ι) :
     HasSubgaussianMGF (fun π : Equiv.Perm (Fin T) ↦
         ∑ t, ⟪z, Matrix.toEuclideanCLM (𝕜 := ℝ) (∑ s, outerSelf (x s))⁻¹ (x t)⟫ *
           ⟪x t, θ (π t) - (T : ℝ)⁻¹ • ∑ s, θ s⟫)

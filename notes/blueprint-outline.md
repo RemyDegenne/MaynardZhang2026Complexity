@@ -190,7 +190,8 @@ corrected ones (frozen by the comparator challenges).
   *As formalized:* the induction carries the proxy `8M² ∑_s ‖a_s - ā‖²` through the Helmert
   identity (`sum_norm_sub_mean_sq_succ`) instead of `4M² ∑ ‖d_s‖²` and the orthogonal-column bound;
   `∑ ‖a_s - ā‖² ≤ ∑ ‖a_s‖²` gives the same constant. The spanning hypothesis is not used (for a
-  singular matrix, `A⁻¹ = 0` in Lean and both sides vanish).
+  singular matrix, `A⁻¹ = 0` in Lean and both sides vanish); it was dropped from the statement in
+  the linter cleanup of 2026-10-09.
 * **Lemma 5**: under a run of `adjacentBAI`, the actions are `X_t = x_{π t}` for a uniform
   permutation `π` independent of the noise `ε_t = Y_t - ⟪X_t, θ_t⟫`, the `ε_t` independent with
   laws `ξ t` (explicit model + uniqueness of the law of a run, `isAlgEnvSeq_unique`). Then

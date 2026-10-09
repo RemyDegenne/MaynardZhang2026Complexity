@@ -7,8 +7,9 @@ without having to read or trust the Lean development in `MaynardZhang2026Complex
 **Status.** Phase 2 complete (2026-10-08): the project proves the 13 headline theorems with no
 `sorry` and the standard axioms only; the challenges, regenerated after phase 2, compile
 (`lake build Comparator`). The statement of Lemma 6 was corrected in phase 2 (an indexing error
-of phase 1, see `notes/blueprint-outline.md`, section 3). The full comparator run
-(`scripts/comparator-verify.sh`) remains to be done.
+of phase 1, see `notes/blueprint-outline.md`, section 3). In the linter cleanup (2026-10-09)
+Lemma 9 was strengthened by dropping its unused spanning hypothesis, and its challenge was
+regenerated. The full comparator run (`scripts/comparator-verify.sh`) remains to be done.
 
 Each challenge is one self-contained file whose transitive imports resolve to Mathlib and Lean
 core only, the shape the [Palomar registry](https://palomar-registry.org/) enforces: no LML, no

@@ -141,8 +141,13 @@ status:
     through the chain rule for the histories; Lemma 9 by induction on the horizon with the
     proxy `8M² ∑ ‖a_s - ā‖²` (Helmert identity) instead of the paper's Doob martingale and
     orthogonal-column bound; Lemma 5 on an explicit model of the run (uniform permutation
-    independent of the noises) instead of conditional sub-Gaussianity. Lemma 9 does not use its
-    spanning hypothesis (for a singular matrix `A⁻¹ = 0` in Lean and both sides vanish); it is
-    kept in the frozen statement. Library material to upstream: `notes/upstreaming-candidates.md`.
+    independent of the noises) instead of conditional sub-Gaussianity. Library material to
+    upstream: `notes/upstreaming-candidates.md`.
+
+    Linter cleanup, 2026-10-09: the library has no `set_option` and no `@[nolint]`. Lemma 9
+    no longer assumes that the `x_t` span `ℝ^d`, which its proof does not use (for a singular
+    matrix `A⁻¹ = 0` in Lean and both sides vanish); the statement is strictly stronger and its
+    challenge is regenerated. The `CFC.sqrt` lemmas of `Matrix/Order.lean` are elaborated with
+    the classical `DecidableEq` instance instead of silencing `unusedDecidableInType`.
   sorry_count: 0
   sorry_in_definitions: 0

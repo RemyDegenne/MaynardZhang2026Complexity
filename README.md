@@ -51,7 +51,7 @@ are listed in [`formalization.yaml`](formalization.yaml) and are standalone chal
 | Lemma 6 (change of measure) | `trajMeasure_eq_lintegral_exp_neg_llrProcess` | countably many arms; `L_{σ+1}` (rounds from `0`) |
 | Lemma 7 (lower bound, inner problem) | `le_pairValue` | |
 | Lemma 8 (upper bound, inner problem) | `pairValue_le` | every `Δ` |
-| Lemma 9 (random permutation sums) | `hasSubgaussianMGF_sum_perm` | induction on the horizon; spanning not used |
+| Lemma 9 (random permutation sums) | `hasSubgaussianMGF_sum_perm` | induction on the horizon; the paper's spanning assumption is dropped |
 | Lemma 10 (ratio at adjacent arms) | `ratio_le_iSup_adjacentTo` | |
 | Appendix C (computing the adjacent pairs) | — | an algorithm, not formalized |
 

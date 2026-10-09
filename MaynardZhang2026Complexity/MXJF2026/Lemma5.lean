@@ -102,7 +102,7 @@ theorem hasSubgaussianMGF_lsEstimator (𝒳 : Finset (EuclideanSpace ℝ ι))
   have hS : HasSubgaussianMGF S (8 * 1 ^ 2 * 1 ^ 2 * m).toNNReal
       (PMF.uniformOfFintype (Equiv.Perm (Fin T))).toMeasure := by
     have h9 := hasSubgaussianMGF_sum_perm (fun t ↦ (x t : EuclideanSpace ℝ ι))
-      (fun t : Fin T ↦ θ t) (span_range_eq_top_of_posDef _ hx) hx₁ (fun t ↦ hθ t t.2) z
+      (fun t : Fin T ↦ θ t) hx₁ (fun t ↦ hθ t t.2) z
     rw [← PMF.map_toMeasure_uniformOfFintype_equiv (Equiv.inv (Equiv.Perm (Fin T)))
       (measurable_of_countable _)] at h9
     refine (h9.of_map (measurable_of_countable _).aemeasurable).congr (ae_of_all _ fun π ↦ ?_)

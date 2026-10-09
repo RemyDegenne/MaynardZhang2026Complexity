@@ -25,11 +25,12 @@
   \lean{MaynardZhang2026Complexity.hasSubgaussianMGF_sum_perm}
   \leanok
   \uses{lem:sampling_without_replacement, lem:column_bessel}
-  Let $x_0, \dots, x_{T-1}$ span $\R^d$ with $\norm{x_t} \le B$, $\theta_0, \dots, \theta_{T-1}$ with
+  Let $x_0, \dots, x_{T-1} \in \R^d$ with $\norm{x_t} \le B$, $\theta_0, \dots, \theta_{T-1}$ with
   $\norm{\theta_t} \le M$, $\bar\theta = \frac1T \sum_t \theta_t$, $A = \sum_t x_t x_t^\top$ and $\pi$
   a uniform permutation of $\{0, \dots, T - 1\}$. For every $z$,
   $S = \sum_t (z^\top A^{-1} x_t) \, x_t^\top (\theta_{\pi(t)} - \bar\theta)$ is sub-Gaussian with
-  variance proxy $8 M^2 B^2 \norm{z}^2_{A^{-1}}$.
+  variance proxy $8 M^2 B^2 \norm{z}^2_{A^{-1}}$. (The paper assumes that the $x_t$ span $\R^d$;
+  this is not needed, since $A^{-1} = 0$ in Lean when $A$ is singular.)
 \end{lemma}
 
 \begin{proof}
