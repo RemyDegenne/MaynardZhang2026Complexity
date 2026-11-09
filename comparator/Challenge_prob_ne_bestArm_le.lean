@@ -1,5 +1,7 @@
 module
 
+public import Mathlib.Analysis.Convex.Exposed
+public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.LinearAlgebra.Matrix.PosDef
@@ -20,57 +22,42 @@ public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-public import Mathlib.MeasureTheory.Measure.Map
-public import Mathlib.Probability.Kernel.Composition.MapComap
-public import Mathlib.Probability.Kernel.Basic
-public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
-public import Mathlib.Probability.Process.FiniteDimensionalLaws
+public import LeanMachineLearning.ForMathlib.Probability.Kernel.Sigma
+public import LeanMachineLearning.SequentialLearning.IdentificationAlg
+public import LeanMachineLearning.SequentialLearning.Algorithm
 public import Mathlib.Probability.HasCondDistrib
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.Probability.Independence.Basic
-public import Mathlib.Probability.Independence.Conditional
-public import Mathlib.MeasureTheory.Measure.SubFinite
-public import Mathlib.Probability.Kernel.RadonNikodym
-public import Mathlib.Order.Restriction
-public import Mathlib.Probability.Kernel.IonescuTulcea.Maps
-public import Mathlib.Analysis.Normed.Ring.Basic
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.Probability.Process.HittingTime
-public import Mathlib.MeasureTheory.Constructions.Cylinders
-public import Mathlib.MeasureTheory.Integral.Indicator
-public import Mathlib.Probability.ConditionalProbability
-public import Mathlib.Probability.HasLaw
-public import Mathlib.Probability.IdentDistrib
 public import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 public import Mathlib.Probability.Kernel.Composition.Lemmas
+public import LeanMachineLearning.ForMathlib.Probability.HasCondDistrib
+public import LeanMachineLearning.ForMathlib.Probability.Kernel.Composition.MapComap
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.Composition.Prod
 public import Mathlib.Probability.Kernel.Composition.CompProd
-public import Mathlib.MeasureTheory.Order.Lattice
-public import Mathlib.CategoryTheory.Countable
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.Order.CompletePartialOrder
+public import LeanMachineLearning.Online.Bandit.Regret
+public import LeanMachineLearning.SequentialLearning.Comap
+public import LeanMachineLearning.SequentialLearning.StationaryEnv
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.Moments.SubGaussian
-public import Mathlib.Probability.Martingale.BorelCantelli
 public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
-public import Mathlib.Analysis.InnerProductSpace.Basic
+public import LeanMachineLearning.ForMathlib.MeasureTheory.Order.MeasurableArg
 public import Mathlib.Analysis.InnerProductSpace.Continuous
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.Topology.Order.Compact
+public import Mathlib.Probability.Kernel.Basic
+public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Distributions.Uniform
-public import Mathlib.Analysis.Convex.Exposed
+public import LeanMachineLearning.SequentialLearning.Deterministic
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 public import Mathlib.Analysis.Convex.Join
 public import Mathlib.Analysis.Convex.KreinMilman
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.LocallyConvex.Separation
+public import LeanMachineLearning.ForMathlib.Probability.Independence.Basic
+public import LeanMachineLearning.ForMathlib.Probability.Independence.InfinitePi
 public import Mathlib.Probability.Independence.InfinitePi
-public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.GroupTheory.Perm.Fin
@@ -88,34 +75,50 @@ set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
 -- Namespace stubs (so later `open`s resolve).
+namespace Set
+end Set
 namespace Matrix
 end Matrix
 namespace Learning
 end Learning
-namespace Set
-end Set
-namespace MeasurableSpace
-end MeasurableSpace
 namespace MeasureTheory
 end MeasureTheory
-namespace ProbabilityTheory.Kernel
-end ProbabilityTheory.Kernel
 namespace ProbabilityTheory
 end ProbabilityTheory
-namespace Finset
-end Finset
-namespace Learning.Round
-end Learning.Round
 namespace Learning.IdentAlg
 end Learning.IdentAlg
-namespace Function
-end Function
 namespace Bandits.Linear
 end Bandits.Linear
+namespace ProbabilityTheory.Kernel
+end ProbabilityTheory.Kernel
+namespace MeasureTheory.Measure
+end MeasureTheory.Measure
 namespace MaynardZhang2026Complexity
 end MaynardZhang2026Complexity
 
--- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Analysis.Convex.Adjacent ═══
+@[expose] public section
+namespace Set
+variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] {𝒳 : Set E} {x x' : E}
+
+/-- The vertices of the convex hull of `𝒳`: its exposed points. -/
+def vertices (𝒳 : Set E) : Set E := (convexHull ℝ 𝒳).exposedPoints ℝ
+
+/-- Two distinct vertices `x`, `x'` of the convex hull of `𝒳` are *adjacent* if the segment
+`[x, x']` is an exposed subset of the hull (an edge of the polytope). -/
+def IsAdjacent (𝒳 : Set E) (x x' : E) : Prop :=
+  x ∈ vertices 𝒳 ∧ x' ∈ vertices 𝒳 ∧ x ≠ x' ∧ IsExposed ℝ (convexHull ℝ 𝒳) (segment ℝ x x')
+
+/-- The pairs of adjacent vertices of the convex hull of `𝒳`. -/
+def adjacentPairs (𝒳 : Set E) : Set (E × E) := {p | IsAdjacent 𝒳 p.1 p.2}
+
+/-- The vertices adjacent to `x`. -/
+def adjacentTo (𝒳 : Set E) (x : E) : Set E := {x' | IsAdjacent 𝒳 x x'}
+
+end Set
+end
+
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Analysis.InnerProductSpace.Mahalanobis ═══
 @[expose] public section
 open Matrix
 namespace Matrix
@@ -128,7 +131,7 @@ def mahalanobisSq (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) : ℝ :=
 end Matrix
 end
 
--- ═══ MaynardZhang2026Complexity.LeanMachineLearning.DesignMatrix ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Analysis.InnerProductSpace.DesignMatrix ═══
 @[expose] public section
 open Matrix Real
 open scoped RealInnerProductSpace
@@ -147,7 +150,7 @@ variable [DecidableEq ι]
 end Learning
 end
 
--- ═══ MaynardZhang2026Complexity.LeanMachineLearning.Design ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Analysis.InnerProductSpace.Design ═══
 @[expose] public section
 open Real Filter Set
 open scoped RealInnerProductSpace MatrixOrder Matrix Topology
@@ -170,202 +173,7 @@ variable [DecidableEq ι]
 end Learning
 end
 
--- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.MeasurableSpace.Sigma ═══
-@[expose] public section
-open MeasurableSpace MeasureTheory
-variable {α γ : Type*} {β : α → Type*} [∀ a, MeasurableSpace (β a)] [MeasurableSpace γ]
-
-/-- A function on a sigma type is measurable if all its restrictions to the fibers are. -/
-lemma measurable_sigma_of_measurable_comp_mk {f : (Σ a, β a) → γ}
-    (h : ∀ a, Measurable (f ∘ Sigma.mk a)) : Measurable f := sorry
-
-/-- A set in a sigma type is measurable iff its trace on every fiber is. -/
-lemma measurableSet_sigma_iff {s : Set (Σ a, β a)} :
-    MeasurableSet s ↔ ∀ a, MeasurableSet (Sigma.mk a ⁻¹' s) := sorry
-
-end
-
--- ═══ LeanMachineLearning.ForMathlib.Probability.Kernel.Sigma ═══
-@[expose] public section
-open MeasureTheory
-namespace ProbabilityTheory.Kernel
-variable {α γ : Type*} {β : α → Type*} [∀ a, MeasurableSpace (β a)] {mγ : MeasurableSpace γ}
-
-/-- The kernel on `Σ a, β a` which is `κ a` on the fiber `β a`. -/
-def sigma (κ : (a : α) → Kernel (β a) γ) : Kernel (Σ a, β a) γ where
-  toFun x := κ x.1 x.2
-  measurable' := measurable_sigma_of_measurable_comp_mk fun a ↦ (κ a).measurable
-
-instance instIsMarkovKernelSigmaSigma (κ : (a : α) → Kernel (β a) γ) [∀ a, IsMarkovKernel (κ a)] : IsMarkovKernel (sigma κ) :=
-  ⟨fun x ↦ (IsMarkovKernel.isProbabilityMeasure (κ := κ x.1) x.2)⟩
-
-end ProbabilityTheory.Kernel
-end
-
--- ═══ LeanMachineLearning.SequentialLearning.Algorithm ═══
-@[expose] public section
-open MeasureTheory ProbabilityTheory Filter Real Finset
-open scoped ENNReal NNReal
-namespace Learning
-variable {𝓞 𝓐 𝓨 Ω : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨} {mΩ : MeasurableSpace Ω}
-
-/-- One round of interaction: an observation, then an action, then a feedback. -/
-abbrev Round (𝓞 𝓐 𝓨 : Type*) := 𝓞 × 𝓐 × 𝓨
-
-/-- The action of a round. -/
-def Round.action (r : Round 𝓞 𝓐 𝓨) : 𝓐 := r.2.1
-
-/-- The feedback of a round. -/
-def Round.feedback (r : Round 𝓞 𝓐 𝓨) : 𝓨 := r.2.2
-
-namespace Round
-
-@[fun_prop]
-lemma measurable_action : Measurable (Round.action (𝓞 := 𝓞) (𝓐 := 𝓐) (𝓨 := 𝓨)) := sorry
-
-end Round
-
-/-- History of `n` complete rounds; `n = 0` is the empty history. -/
-abbrev Hist (𝓞 𝓐 𝓨 : Type*) (n : ℕ) := Fin n → Round 𝓞 𝓐 𝓨
-
-/-- A stochastic, sequential algorithm.
-At each round, it sees an observation in `𝓞`, then takes an action in `𝓐`, and finally receives
-feedback in `𝓨`. The action is a random function of the past rounds and the current observation. -/
-@[ext]
-structure Algorithm (𝓞 𝓐 𝓨 : Type*) [MeasurableSpace 𝓞] [MeasurableSpace 𝓐] [MeasurableSpace 𝓨]
-    where
-  /-- Law of the action of round `n` given the past rounds and the current observation. -/
-  policy : (n : ℕ) → Kernel (Hist 𝓞 𝓐 𝓨 n × 𝓞) 𝓐
-  /-- The policy is a Markov kernel. -/
-  [isMarkovKernel_policy : ∀ n, IsMarkovKernel (policy n)]
-
-/-- A stochastic environment.
-At each round, an observation is drawn prior to the algorithm taking an action. Then the environment
-provides feedback based on the observation and the action. -/
-@[ext]
-structure Environment (𝓞 𝓐 𝓨 : Type*) [MeasurableSpace 𝓞] [MeasurableSpace 𝓐] [MeasurableSpace 𝓨]
-    where
-  /-- Law of the observation of round `n` given the past rounds. -/
-  obs : (n : ℕ) → Kernel (Hist 𝓞 𝓐 𝓨 n) 𝓞
-  /-- Law of the feedback of round `n` given the past rounds, the observation and the action. -/
-  feedback : (n : ℕ) → Kernel ((Hist 𝓞 𝓐 𝓨 n × 𝓞) × 𝓐) 𝓨
-  /-- The observation kernel is a Markov kernel. -/
-  [isMarkovKernel_obs : ∀ n, IsMarkovKernel (obs n)]
-  /-- The feedback kernel is a Markov kernel. -/
-  [isMarkovKernel_feedback : ∀ n, IsMarkovKernel (feedback n)]
-
-section IsAlgEnvSeq
-variable {O : ℕ → Ω → 𝓞} {A : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨} {alg : Algorithm 𝓞 𝓐 𝓨} {env : Environment 𝓞 𝓐 𝓨} {P : Measure Ω} [IsFiniteMeasure P] {N : ℕ}
-
-/-- History of the algorithm-environment sequence before time `n`: the rounds at
-times `0, ..., n - 1`. -/
-def history (O : ℕ → Ω → 𝓞) (A : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨) (n : ℕ) (ω : Ω) : Hist 𝓞 𝓐 𝓨 n :=
-  fun i ↦ (O i ω, A i ω, Y i ω)
-
-/-- An algorithm-environment sequence: a sequence of observations, actions and feedbacks generated
-by an algorithm interacting with an environment. -/
-structure IsAlgEnvSeq
-    (O : ℕ → Ω → 𝓞) (A : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨)
-    (alg : Algorithm 𝓞 𝓐 𝓨) (env : Environment 𝓞 𝓐 𝓨)
-    (P : Measure Ω) [IsFiniteMeasure P] : Prop where
-  /-- The observation sequence is measurable. -/
-  measurable_obs n : Measurable (O n) := by fun_prop
-  /-- The action sequence is measurable. -/
-  measurable_action n : Measurable (A n) := by fun_prop
-  /-- The feedback sequence is measurable. -/
-  measurable_feedback n : Measurable (Y n) := by fun_prop
-  /-- The observation at time `n` has the correct conditional distribution given the history. -/
-  hasCondDistrib_obs n :
-    HasCondDistrib (O n) (history O A Y n) (env.obs n) P
-  /-- The action at time `n` has the correct conditional distribution given the history and the
-  observation at time `n`. -/
-  hasCondDistrib_action n :
-    HasCondDistrib (A n) (fun ω ↦ (history O A Y n ω, O n ω)) (alg.policy n) P
-  /-- The feedback at time `n` has the correct conditional distribution given the history, the
-  observation and the action at time `n`. -/
-  hasCondDistrib_feedback n :
-    HasCondDistrib (Y n) (fun ω ↦ ((history O A Y n ω, O n ω), A n ω)) (env.feedback n) P
-
-end IsAlgEnvSeq
-end Learning
-end
-
--- ═══ LeanMachineLearning.SequentialLearning.StoppedHistory ═══
-@[expose] public section
-open MeasureTheory ProbabilityTheory
-namespace Learning
-variable {𝓞 𝓐 𝓨 Ω : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨} {mΩ : MeasurableSpace Ω} {alg : Algorithm 𝓞 𝓐 𝓨} {env : Environment 𝓞 𝓐 𝓨} {O : ℕ → Ω → 𝓞} {X : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨} {S : Set (Σ n : ℕ, Hist 𝓞 𝓐 𝓨 n)} {τ : Ω → WithTop ℕ} {ω : Ω} {n M : ℕ}
-
-/-- The history of the first `n` rounds, as a history of variable length in the sigma type
-`Σ n : ℕ, Hist 𝓞 𝓐 𝓨 n`. -/
-def sigmaHistory (O : ℕ → Ω → 𝓞) (X : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨) (n : ℕ) (ω : Ω) :
-    Σ n : ℕ, Hist 𝓞 𝓐 𝓨 n :=
-  ⟨n, history O X Y n ω⟩
-
-end Learning
-end
-
--- ═══ LeanMachineLearning.SequentialLearning.IdentificationAlg ═══
-@[expose] public section
-open MeasureTheory ProbabilityTheory
-open scoped ENat
-namespace Learning
-variable {𝓞 𝓐 𝓨 𝓓 Ω : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨} {m𝓓 : MeasurableSpace 𝓓} {mΩ : MeasurableSpace Ω} {O : ℕ → Ω → 𝓞} {X : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨}
-
-/-- An identification algorithm with outputs in `𝓓`: a sampling rule `alg`, a stopping rule
-`stopSet` (the algorithm stops after `n` rounds if the history of these rounds belongs to
-`stopSet`) and an output rule `output`, a Markov kernel giving the distribution of the output
-given the history of the rounds played. -/
-structure IdentAlg (𝓞 𝓐 𝓨 𝓓 : Type*) [MeasurableSpace 𝓞] [MeasurableSpace 𝓐]
-    [MeasurableSpace 𝓨] [MeasurableSpace 𝓓] where
-  /-- The sampling rule. -/
-  alg : Algorithm 𝓞 𝓐 𝓨
-  /-- The stopping rule: the algorithm stops after `n` rounds if the history of these rounds
-  belongs to `stopSet`. -/
-  stopSet : Set (Σ n : ℕ, Hist 𝓞 𝓐 𝓨 n)
-  /-- The stopping rule is measurable. -/
-  measurableSet_stopSet : MeasurableSet stopSet
-  /-- The output rule: distribution of the output given the history of the rounds played. -/
-  output : Kernel (Σ n : ℕ, Hist 𝓞 𝓐 𝓨 n) 𝓓
-  /-- The output rule is a Markov kernel. -/
-  [isMarkovKernel_output : IsMarkovKernel output]
-
-namespace IdentAlg
-variable {A : IdentAlg 𝓞 𝓐 𝓨 𝓓} {env : Environment 𝓞 𝓐 𝓨} {out : Ω → 𝓓} {P : Measure Ω}
-
-/-- The stopping time of `A` on the observation, action and feedback processes `O`, `X`, `Y`: the
-number of rounds played, that is the first `n` such that the history of the first `n` rounds
-belongs to the stopping rule `A.stopSet` (`⊤` if there is none). -/
-noncomputable def stoppingTime (A : IdentAlg 𝓞 𝓐 𝓨 𝓓)
-    (O : ℕ → Ω → 𝓞) (X : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨) :
-    Ω → ℕ∞ :=
-  hittingAfter (sigmaHistory O X Y) A.stopSet 0
-
-/-- The history of the rounds played by an identification algorithm `A`, as a history of variable
-length: the history stopped at `A.stoppingTime O X Y`
-(the history of an arbitrary number of rounds if `A` never stops). -/
-noncomputable def stoppedHist (A : IdentAlg 𝓞 𝓐 𝓨 𝓓)
-    (O : ℕ → Ω → 𝓞) (X : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨) :
-    Ω → Σ n : ℕ, Hist 𝓞 𝓐 𝓨 n :=
-  stoppedValue (sigmaHistory O X Y) (A.stoppingTime O X Y)
-
-/-- `(O, X, Y, out)` is a *run* of the identification algorithm `A` in the environment `env` on
-the probability space `(Ω, P)`: the observation, action and feedback processes `O`, `X`, `Y` form
-an algorithm-environment sequence for the sampling rule `A.alg` and `env`, and the output `out` has
-conditional law `A.output` given the history at the stopping time. -/
-structure IsRun (A : IdentAlg 𝓞 𝓐 𝓨 𝓓) (env : Environment 𝓞 𝓐 𝓨)
-    (O : ℕ → Ω → 𝓞) (X : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨) (out : Ω → 𝓓)
-    (P : Measure Ω := by volume_tac) [IsFiniteMeasure P] : Prop where
-  /-- The actions and feedbacks are generated by the sampling rule in the environment. -/
-  isAlgEnvSeq : IsAlgEnvSeq O X Y A.alg env P
-  /-- The output is drawn from the output rule applied to the history at the stopping time. -/
-  hasCondDistrib_output : HasCondDistrib out (A.stoppedHist O X Y) A.output P
-
-end IdentAlg
-end Learning
-end
-
--- ═══ MaynardZhang2026Complexity.LeanMachineLearning.Identification.Basic ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Identification.Basic ═══
 @[expose] public section
 open MeasureTheory ProbabilityTheory
 open scoped ENat
@@ -387,111 +195,7 @@ end OfStop
 end Learning.IdentAlg
 end
 
--- ═══ MaynardZhang2026Complexity.LeanMachineLearning.Identification.FixedBudget ═══
-@[expose] public section
-open MeasureTheory ProbabilityTheory
-namespace Learning
-variable {𝓞 𝓐 𝓨 𝓓 Ω : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨} {m𝓓 : MeasurableSpace 𝓓} {mΩ : MeasurableSpace Ω} {O : ℕ → Ω → 𝓞} {X : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨} {P : Measure Ω}
-namespace IdentAlg
-
-/-- The output rule of `fixedBudget alg T ρ` after `n` rounds: `ρ` if `n = T`, and an arbitrary
-constant otherwise (never used). -/
-noncomputable def fixedBudgetOutput [Nonempty 𝓓] (T : ℕ) (ρ : Kernel (Hist 𝓞 𝓐 𝓨 T) 𝓓)
-    (n : ℕ) : Kernel (Hist 𝓞 𝓐 𝓨 n) 𝓓 :=
-  if h : n = T then ρ.comap (fun x i ↦ x (Fin.cast h.symm i)) (by fun_prop)
-  else Kernel.const _ (Measure.dirac (Classical.arbitrary 𝓓))
-
-instance instIsMarkovKernelHistFixedBudgetOutput [Nonempty 𝓓] (T : ℕ) (ρ : Kernel (Hist 𝓞 𝓐 𝓨 T) 𝓓) [IsMarkovKernel ρ] (n : ℕ) :
-    IsMarkovKernel (fixedBudgetOutput T ρ n) := by
-  unfold fixedBudgetOutput
-  split <;> infer_instance
-
-/-- The fixed-budget identification algorithm with sampling rule `alg`, budget `T` and output
-kernel `ρ` on the histories of `T` rounds. -/
-noncomputable def fixedBudget [Nonempty 𝓓] (alg : Algorithm 𝓞 𝓐 𝓨) (T : ℕ)
-    (ρ : Kernel (Hist 𝓞 𝓐 𝓨 T) 𝓓) [IsMarkovKernel ρ] : IdentAlg 𝓞 𝓐 𝓨 𝓓 :=
-  ofStop alg (fun n _ ↦ n = T) (fun n ↦ by by_cases h : n = T <;> simp [h])
-    (fixedBudgetOutput T ρ)
-
-end IdentAlg
-end Learning
-end
-
--- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice ═══
-@[expose] public section
-open Finset
-variable {α δ : Type*} [MeasurableSpace δ] [SemilatticeInf α] {m : MeasurableSpace α} [MeasurableInf₂ α]
-attribute [to_dual existing] MeasurableInf₂
-end
-
--- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.MeasurableArg ═══
-@[expose] public section
-open Finset
-variable {ι α : Type*} [LinearOrder α] [Fintype ι] [Nonempty ι] (f : ι → α)
-namespace Function
-
-/-- The maximum value of a tuple. -/
-@[to_dual /-- The minimum value of a tuple. -/]
-abbrev max : α := univ.sup' univ_nonempty f
-
-end Function
-section Argmax
-
-@[to_dual]
-lemma exists_argmax : ∃ i, f i = f.max := sorry
-
-/-- The index of the maximum value of a tuple. -/
-@[to_dual /-- The index of the minimum value of a tuple. -/]
-noncomputable def argmax := (exists_argmax f).choose
-
-variable [MeasurableSpace α]
-end Argmax
-end
-
--- ═══ LeanMachineLearning.SequentialLearning.StationaryEnv ═══
-@[expose] public section
-open MeasureTheory ProbabilityTheory Filter Real Finset
-open scoped ENNReal NNReal
-namespace Learning
-variable {𝓞 𝓐 𝓨 : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨}
-
-/-- An environment is oblivious if the distributions of the next observation and feedback
-don't depend on the past history: the observation at time `n` has a fixed law, and the feedback
-at time `n` depends only on the observation and the action at time `n`. -/
-class Environment.IsOblivious (env : Environment 𝓞 𝓐 𝓨) : Prop where
-  exists_obs_eq_const : ∃ μ : ℕ → Measure 𝓞, (∀ n, IsProbabilityMeasure (μ n)) ∧
-    ∀ n, env.obs n = Kernel.const _ (μ n)
-  exists_feedback_eq_comap : ∃ ν : ℕ → Kernel (𝓞 × 𝓐) 𝓨, (∀ n, IsMarkovKernel (ν n)) ∧
-    ∀ n, env.feedback n = (ν n).comap (fun p ↦ (p.1.2, p.2)) (by fun_prop)
-
-section Oblivious
-variable {μ : ℕ → Measure 𝓞} [∀ n, IsProbabilityMeasure (μ n)] {ν : ℕ → Kernel (𝓞 × 𝓐) 𝓨} [∀ n, IsMarkovKernel (ν n)]
-
-/-- The oblivious environment in which the observation at time `n` has law `μ n` and the feedback
-at time `n` is drawn from `ν n` applied to the observation and the action at time `n`, whatever the
-past history. -/
-noncomputable
-def Environment.oblivious (μ : ℕ → Measure 𝓞) [∀ n, IsProbabilityMeasure (μ n)]
-    (ν : ℕ → Kernel (𝓞 × 𝓐) 𝓨) [∀ n, IsMarkovKernel (ν n)] : Environment 𝓞 𝓐 𝓨 where
-  obs n := Kernel.const _ (μ n)
-  feedback n := (ν n).comap (fun p ↦ (p.1.2, p.2)) (by fun_prop)
-
-end Oblivious
-section BanditSeq
-variable {ν : ℕ → Kernel 𝓐 𝓨} [∀ n, IsMarkovKernel (ν n)]
-
-/-- The oblivious environment without observations in which the feedback at time `n` is drawn from
-`ν n` applied to the action at time `n`, whatever the past history. -/
-noncomputable
-def Environment.banditSeq (ν : ℕ → Kernel 𝓐 𝓨) [∀ n, IsMarkovKernel (ν n)] :
-    Environment Unit 𝓐 𝓨 :=
-  Environment.oblivious (fun _ ↦ Measure.dirac ()) (fun n ↦ (ν n).prodMkLeft Unit)
-
-end BanditSeq
-end Learning
-end
-
--- ═══ MaynardZhang2026Complexity.LeanMachineLearning.Online.Bandit.Linear.Basic ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Bandits.LinearBandit.Basic ═══
 @[expose] public section
 open MeasureTheory ProbabilityTheory Finset Learning
 open scoped RealInnerProductSpace NNReal
@@ -533,7 +237,7 @@ end Environment
 end Bandits.Linear
 end
 
--- ═══ MaynardZhang2026Complexity.Mathlib.Probability.Kernel.Basic ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Probability.Kernel.Basic ═══
 @[expose] public section
 open MeasureTheory
 namespace ProbabilityTheory.Kernel
@@ -546,7 +250,30 @@ instance isMarkovKernel_ofFunOfCountable {α β : Type*} [MeasurableSpace α]
 end ProbabilityTheory.Kernel
 end
 
--- ═══ MaynardZhang2026Complexity.LeanMachineLearning.SequentialLearning.Algorithms.RandomOrder ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Probability.Distributions.Uniform ═══
+@[expose] public section
+open Finset
+open scoped ENNReal
+namespace MeasureTheory.Measure
+variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSingletonClass α] [MeasurableSingletonClass β]
+
+/-- The uniform law on a nonempty finset is a probability measure. -/
+lemma isProbabilityMeasure_uniformOfFinset {s : Finset α} (hs : s.Nonempty) :
+    IsProbabilityMeasure (uniformOfFinset s) := sorry
+
+instance instIsProbabilityMeasureUniformOfFinsetUnivOfNonempty_maynardZhang2026Complexity [Fintype α] [Nonempty α] : IsProbabilityMeasure (uniformOfFinset (univ : Finset α)) :=
+  isProbabilityMeasure_uniformOfFinset univ_nonempty
+
+omit [MeasurableSingletonClass α] in
+/-- The uniform law on a nonempty multiset is a probability measure. -/
+lemma isProbabilityMeasure_ofMultiset {s : Multiset α} (hs : s ≠ 0) :
+    IsProbabilityMeasure (ofMultiset s) := sorry
+
+variable [Fintype α] [Fintype β]
+end MeasureTheory.Measure
+end
+
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.SequentialLearning.Algorithms.RandomOrder ═══
 @[expose] public section
 open MeasureTheory ProbabilityTheory Finset
 namespace Learning
@@ -554,11 +281,13 @@ variable {𝓞 𝓐 𝓨 : Type*} [MeasurableSpace 𝓞] [MeasurableSpace 𝓐] 
 
 /-- The uniform law on a multiset (the uniform law on `𝓐` if the multiset is empty). -/
 noncomputable def multisetUniform (s : Multiset 𝓐) : Measure 𝓐 :=
-  if hs : s = 0 then (PMF.uniformOfFintype 𝓐).toMeasure else (PMF.ofMultiset s hs).toMeasure
+  if s = 0 then Measure.uniformOfFinset univ else Measure.ofMultiset s
 
 instance instIsProbabilityMeasureMultisetUniform (s : Multiset 𝓐) : IsProbabilityMeasure (multisetUniform s) := by
   unfold multisetUniform
-  split_ifs <;> infer_instance
+  split_ifs with hs
+  · infer_instance
+  · exact Measure.isProbabilityMeasure_ofMultiset hs
 
 omit [Nonempty 𝓐] [MeasurableSingletonClass 𝓐] in
 /-- The multiset of arms of the allocation `x` not yet played after the arms `h`. -/
@@ -574,26 +303,34 @@ noncomputable def Algorithm.randomOrder {T : ℕ} (x : Fin T → 𝓐) : Algorit
 end Learning
 end
 
--- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.Convex.Adjacent ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Identification.FixedBudget ═══
 @[expose] public section
-namespace Set
-variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] {𝒳 : Set E} {x x' : E}
+open MeasureTheory ProbabilityTheory
+namespace Learning
+variable {𝓞 𝓐 𝓨 𝓓 Ω : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨} {m𝓓 : MeasurableSpace 𝓓} {mΩ : MeasurableSpace Ω} {O : ℕ → Ω → 𝓞} {X : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨} {P : Measure Ω}
+namespace IdentAlg
 
-/-- The vertices of the convex hull of `𝒳`: its exposed points. -/
-def vertices (𝒳 : Set E) : Set E := (convexHull ℝ 𝒳).exposedPoints ℝ
+/-- The output rule of `fixedBudget alg T ρ` after `n` rounds: `ρ` if `n = T`, and an arbitrary
+constant otherwise (never used). -/
+noncomputable def fixedBudgetOutput [Nonempty 𝓓] (T : ℕ) (ρ : Kernel (Hist 𝓞 𝓐 𝓨 T) 𝓓)
+    (n : ℕ) : Kernel (Hist 𝓞 𝓐 𝓨 n) 𝓓 :=
+  if h : n = T then ρ.comap (fun x i ↦ x (Fin.cast h.symm i)) (by fun_prop)
+  else Kernel.const _ (Measure.dirac (Classical.arbitrary 𝓓))
 
-/-- Two distinct vertices `x`, `x'` of the convex hull of `𝒳` are *adjacent* if the segment
-`[x, x']` is an exposed subset of the hull (an edge of the polytope). -/
-def IsAdjacent (𝒳 : Set E) (x x' : E) : Prop :=
-  x ∈ vertices 𝒳 ∧ x' ∈ vertices 𝒳 ∧ x ≠ x' ∧ IsExposed ℝ (convexHull ℝ 𝒳) (segment ℝ x x')
+instance instIsMarkovKernelHistFixedBudgetOutput [Nonempty 𝓓] (T : ℕ) (ρ : Kernel (Hist 𝓞 𝓐 𝓨 T) 𝓓) [IsMarkovKernel ρ] (n : ℕ) :
+    IsMarkovKernel (fixedBudgetOutput T ρ n) := by
+  unfold fixedBudgetOutput
+  split <;> infer_instance
 
-/-- The pairs of adjacent vertices of the convex hull of `𝒳`. -/
-def adjacentPairs (𝒳 : Set E) : Set (E × E) := {p | IsAdjacent 𝒳 p.1 p.2}
+/-- The fixed-budget identification algorithm with sampling rule `alg`, budget `T` and output
+kernel `ρ` on the histories of `T` rounds. -/
+noncomputable def fixedBudget [Nonempty 𝓓] (alg : Algorithm 𝓞 𝓐 𝓨) (T : ℕ)
+    (ρ : Kernel (Hist 𝓞 𝓐 𝓨 T) 𝓓) [IsMarkovKernel ρ] : IdentAlg 𝓞 𝓐 𝓨 𝓓 :=
+  ofStop alg (fun n _ ↦ n = T) (fun n ↦ by by_cases h : n = T <;> simp [h])
+    (fixedBudgetOutput T ρ)
 
-/-- The vertices adjacent to `x`. -/
-def adjacentTo (𝒳 : Set E) (x : E) : Set E := {x' | IsAdjacent 𝒳 x x'}
-
-end Set
+end IdentAlg
+end Learning
 end
 
 -- ═══ MaynardZhang2026Complexity.MXJF2026.Setting ═══

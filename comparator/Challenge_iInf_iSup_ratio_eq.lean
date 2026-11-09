@@ -1,5 +1,7 @@
 module
 
+public import Mathlib.Analysis.Convex.Exposed
+public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.LinearAlgebra.Matrix.PosDef
@@ -20,44 +22,28 @@ public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.MeasureTheory.Order.Lattice
-public import Mathlib.Analysis.Convex.Exposed
-public import Mathlib.Analysis.InnerProductSpace.Basic
+public import LeanMachineLearning.ForMathlib.MeasureTheory.Order.MeasurableArg
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.CategoryTheory.Countable
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.Order.CompletePartialOrder
+public import LeanMachineLearning.SequentialLearning.StationaryEnv
 public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
-public import Mathlib.Probability.Kernel.Basic
-public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
-public import Mathlib.Probability.Process.FiniteDimensionalLaws
-public import Mathlib.Probability.HasCondDistrib
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.Probability.Independence.Basic
-public import Mathlib.Probability.Independence.Conditional
-public import Mathlib.MeasureTheory.Measure.SubFinite
-public import Mathlib.Probability.Kernel.RadonNikodym
-public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-public import Mathlib.Order.Restriction
-public import Mathlib.Probability.Kernel.IonescuTulcea.Maps
-public import Mathlib.Analysis.Normed.Ring.Basic
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.Probability.Kernel.Composition.MapComap
-public import Mathlib.Probability.Martingale.BorelCantelli
+public import LeanMachineLearning.Online.Bandit.Regret
+public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Distributions.Uniform
+public import LeanMachineLearning.SequentialLearning.Comap
+public import LeanMachineLearning.SequentialLearning.Deterministic
+public import Mathlib.Probability.Kernel.Basic
+public import LeanMachineLearning.SequentialLearning.IdentificationAlg
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.Moments.SubGaussian
-public import Mathlib.Probability.Process.HittingTime
-public import Mathlib.MeasureTheory.Constructions.Cylinders
-public import Mathlib.MeasureTheory.Integral.Indicator
-public import Mathlib.Probability.ConditionalProbability
-public import Mathlib.Probability.HasLaw
-public import Mathlib.Probability.IdentDistrib
-public import Mathlib.MeasureTheory.Measure.Map
 public import Mathlib.Probability.Kernel.Composition.Prod
+public import LeanMachineLearning.ForMathlib.Probability.Kernel.Sigma
+public import LeanMachineLearning.SequentialLearning.Algorithm
+public import Mathlib.Probability.HasCondDistrib
 public import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 public import Mathlib.Probability.Kernel.Composition.Lemmas
+public import LeanMachineLearning.ForMathlib.Probability.HasCondDistrib
+public import LeanMachineLearning.ForMathlib.Probability.Kernel.Composition.MapComap
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.Composition.CompProd
 public import Mathlib.Analysis.InnerProductSpace.Continuous
@@ -81,14 +67,12 @@ set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
 -- Namespace stubs (so later `open`s resolve).
+namespace Set
+end Set
 namespace Matrix
 end Matrix
 namespace Learning
 end Learning
-namespace Set
-end Set
-namespace Finset
-end Finset
 namespace MeasureTheory
 end MeasureTheory
 namespace ProbabilityTheory
@@ -98,7 +82,26 @@ end Bandits.Linear
 namespace MaynardZhang2026Complexity
 end MaynardZhang2026Complexity
 
--- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Analysis.Convex.Adjacent ═══
+@[expose] public section
+namespace Set
+variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] {𝒳 : Set E} {x x' : E}
+
+/-- The vertices of the convex hull of `𝒳`: its exposed points. -/
+def vertices (𝒳 : Set E) : Set E := (convexHull ℝ 𝒳).exposedPoints ℝ
+
+/-- Two distinct vertices `x`, `x'` of the convex hull of `𝒳` are *adjacent* if the segment
+`[x, x']` is an exposed subset of the hull (an edge of the polytope). -/
+def IsAdjacent (𝒳 : Set E) (x x' : E) : Prop :=
+  x ∈ vertices 𝒳 ∧ x' ∈ vertices 𝒳 ∧ x ≠ x' ∧ IsExposed ℝ (convexHull ℝ 𝒳) (segment ℝ x x')
+
+/-- The vertices adjacent to `x`. -/
+def adjacentTo (𝒳 : Set E) (x : E) : Set E := {x' | IsAdjacent 𝒳 x x'}
+
+end Set
+end
+
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Analysis.InnerProductSpace.Mahalanobis ═══
 @[expose] public section
 open Matrix
 namespace Matrix
@@ -111,7 +114,7 @@ def mahalanobisSq (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) : ℝ :=
 end Matrix
 end
 
--- ═══ MaynardZhang2026Complexity.LeanMachineLearning.DesignMatrix ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Analysis.InnerProductSpace.DesignMatrix ═══
 @[expose] public section
 open Matrix Real
 open scoped RealInnerProductSpace
@@ -130,7 +133,7 @@ variable [DecidableEq ι]
 end Learning
 end
 
--- ═══ MaynardZhang2026Complexity.LeanMachineLearning.Design ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Analysis.InnerProductSpace.Design ═══
 @[expose] public section
 open Real Filter Set
 open scoped RealInnerProductSpace MatrixOrder Matrix Topology
@@ -151,32 +154,6 @@ structure IsDesign (𝒳 : Set (EuclideanSpace ℝ ι)) (w : EuclideanSpace ℝ 
 variable [Fintype ι]
 variable [DecidableEq ι]
 end Learning
-end
-
--- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice ═══
-@[expose] public section
-open Finset
-variable {α δ : Type*} [MeasurableSpace δ] [SemilatticeInf α] {m : MeasurableSpace α} [MeasurableInf₂ α]
-attribute [to_dual existing] MeasurableInf₂
-end
-
--- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.Convex.Adjacent ═══
-@[expose] public section
-namespace Set
-variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] {𝒳 : Set E} {x x' : E}
-
-/-- The vertices of the convex hull of `𝒳`: its exposed points. -/
-def vertices (𝒳 : Set E) : Set E := (convexHull ℝ 𝒳).exposedPoints ℝ
-
-/-- Two distinct vertices `x`, `x'` of the convex hull of `𝒳` are *adjacent* if the segment
-`[x, x']` is an exposed subset of the hull (an edge of the polytope). -/
-def IsAdjacent (𝒳 : Set E) (x x' : E) : Prop :=
-  x ∈ vertices 𝒳 ∧ x' ∈ vertices 𝒳 ∧ x ≠ x' ∧ IsExposed ℝ (convexHull ℝ 𝒳) (segment ℝ x x')
-
-/-- The vertices adjacent to `x`. -/
-def adjacentTo (𝒳 : Set E) (x : E) : Set E := {x' | IsAdjacent 𝒳 x x'}
-
-end Set
 end
 
 -- ═══ MaynardZhang2026Complexity.MXJF2026.Setting ═══

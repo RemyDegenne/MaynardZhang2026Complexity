@@ -19,7 +19,6 @@ public import Mathlib.Analysis.Convex.Caratheodory
 public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Topology.Algebra.Ring.Real
-public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Probability.Moments.SubGaussian
@@ -29,42 +28,28 @@ public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Distributions.Uniform
 public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.Probability.Independence.InfinitePi
+public import LeanMachineLearning.ForMathlib.MeasureTheory.Order.MeasurableArg
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.CategoryTheory.Countable
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.Order.CompletePartialOrder
+public import LeanMachineLearning.SequentialLearning.StationaryEnv
 public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
+public import LeanMachineLearning.Online.Bandit.Regret
+public import LeanMachineLearning.SequentialLearning.Comap
+public import LeanMachineLearning.SequentialLearning.Deterministic
 public import Mathlib.Probability.Kernel.Basic
-public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
-public import Mathlib.Probability.Process.FiniteDimensionalLaws
-public import Mathlib.Probability.HasCondDistrib
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.Probability.Independence.Basic
-public import Mathlib.Probability.Independence.Conditional
-public import Mathlib.MeasureTheory.Measure.SubFinite
-public import Mathlib.Probability.Kernel.RadonNikodym
-public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-public import Mathlib.Order.Restriction
-public import Mathlib.Probability.Kernel.IonescuTulcea.Maps
-public import Mathlib.Analysis.Normed.Ring.Basic
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.Probability.Kernel.Composition.MapComap
-public import Mathlib.Probability.Martingale.BorelCantelli
 public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import LeanMachineLearning.SequentialLearning.IdentificationAlg
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 public import Mathlib.Probability.Distributions.Gaussian.Real
-public import Mathlib.Probability.Process.HittingTime
-public import Mathlib.MeasureTheory.Constructions.Cylinders
-public import Mathlib.MeasureTheory.Integral.Indicator
-public import Mathlib.Probability.ConditionalProbability
-public import Mathlib.Probability.HasLaw
-public import Mathlib.Probability.IdentDistrib
-public import Mathlib.MeasureTheory.Measure.Map
 public import Mathlib.Probability.Kernel.Composition.Prod
+public import LeanMachineLearning.ForMathlib.Probability.Kernel.Sigma
+public import LeanMachineLearning.SequentialLearning.Algorithm
+public import Mathlib.Probability.HasCondDistrib
 public import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 public import Mathlib.Probability.Kernel.Composition.Lemmas
+public import LeanMachineLearning.ForMathlib.Probability.HasCondDistrib
+public import LeanMachineLearning.ForMathlib.Probability.Kernel.Composition.MapComap
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.Composition.CompProd
 public import Mathlib.Analysis.InnerProductSpace.Continuous
@@ -88,8 +73,6 @@ namespace Matrix
 end Matrix
 namespace Learning
 end Learning
-namespace Finset
-end Finset
 namespace Equiv.Perm
 end Equiv.Perm
 namespace MeasureTheory
@@ -99,7 +82,7 @@ end ProbabilityTheory
 namespace MaynardZhang2026Complexity
 end MaynardZhang2026Complexity
 
--- ═══ MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Analysis.InnerProductSpace.Mahalanobis ═══
 @[expose] public section
 open Matrix
 namespace Matrix
@@ -112,7 +95,7 @@ def mahalanobisSq (A : Matrix ι ι ℝ) (x : EuclideanSpace ℝ ι) : ℝ :=
 end Matrix
 end
 
--- ═══ MaynardZhang2026Complexity.LeanMachineLearning.DesignMatrix ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Analysis.InnerProductSpace.DesignMatrix ═══
 @[expose] public section
 open Matrix Real
 open scoped RealInnerProductSpace
@@ -131,14 +114,7 @@ variable [DecidableEq ι]
 end Learning
 end
 
--- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice ═══
-@[expose] public section
-open Finset
-variable {α δ : Type*} [MeasurableSpace δ] [SemilatticeInf α] {m : MeasurableSpace α} [MeasurableInf₂ α]
-attribute [to_dual existing] MeasurableInf₂
-end
-
--- ═══ MaynardZhang2026Complexity.Mathlib.MeasureTheory.MeasurableSpace.Instances ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.MeasureTheory.MeasurableSpace.Instances ═══
 @[expose] public section
 namespace Equiv.Perm
 variable {α : Type*}
@@ -167,7 +143,7 @@ theorem hasSubgaussianMGF_sum_perm {T : ℕ} (x θ : Fin T → EuclideanSpace �
         ∑ t, ⟪z, Matrix.toEuclideanCLM (𝕜 := ℝ) (∑ s, outerSelf (x s))⁻¹ (x t)⟫ *
           ⟪x t, θ (π t) - (T : ℝ)⁻¹ • ∑ s, θ s⟫)
       (8 * M ^ 2 * B ^ 2 * mahalanobisSq (∑ s, outerSelf (x s))⁻¹ z).toNNReal
-      (PMF.uniformOfFintype (Equiv.Perm (Fin T))).toMeasure := sorry
+      (Measure.uniformOfFinset (Finset.univ : Finset (Equiv.Perm (Fin T)))) := sorry
 
 end MaynardZhang2026Complexity
 end
