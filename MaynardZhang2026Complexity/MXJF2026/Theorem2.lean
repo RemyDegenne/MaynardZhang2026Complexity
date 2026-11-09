@@ -38,11 +38,11 @@ namespace MaynardZhang2026Complexity
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
-/-- **Theorem 2** (error probability of Adjacent-BAI, Maynard-Zhang, Xiong, Jamieson, Fazel
-2026). Let `𝒳 ⊆ ℝ^d` finite with `‖x‖ ≤ 1` for all arms, and `θ_1, …, θ_T` with
-`‖θ_t‖ ≤ 1` and min-gap at least `Δ > 0`, with best arm `x⋆`. For an allocation `x_1, …, x_T`
-satisfying the rounding guarantee, every run of Adjacent-BAI with centered `1`-sub-Gaussian noise
-outputs `x̂ ≠ x⋆` with probability at most `|ℐ^{x⋆}| exp(-T / (36 H_Adjacent(𝒳, Δ)))`.
+/-- **Theorem 2** (error probability of Adjacent-BAI) [MXJF26, Theorem 2]. Let `𝒳 ⊆ ℝ^d` finite
+with `‖x‖ ≤ 1` for all arms, and `θ_1, …, θ_T` with `‖θ_t‖ ≤ 1` and min-gap at least `Δ > 0`,
+with best arm `x⋆`. For an allocation `x_1, …, x_T` satisfying the rounding guarantee, every run
+of Adjacent-BAI with centered `1`-sub-Gaussian noise outputs `x̂ ≠ x⋆` with probability at most
+`|ℐ^{x⋆}| exp(-T / (36 H_Adjacent(𝒳, Δ)))`.
 
 The paper's assumption `T ≥ d²` is the condition under which the rounding procedure yields an
 allocation with the rounding guarantee (`IsAdjacentRounding`); with the guarantee as hypothesis it

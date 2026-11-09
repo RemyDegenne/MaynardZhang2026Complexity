@@ -24,7 +24,7 @@ namespace MaynardZhang2026Complexity
 
 variable {ι : Type*} [Fintype ι]
 
-/-- **Lemma 10** (Maynard-Zhang, Xiong, Jamieson, Fazel 2026). Let `θ ∈ ℝ^d`, `M ≻ 0` and
+/-- **Lemma 10** [MXJF26, Lemma 10]. Let `θ ∈ ℝ^d`, `M ≻ 0` and
 `x⋆ = argmax_{x ∈ 𝒳} ⟪x, θ⟫` (unique). For every `x ∈ 𝒳 ∖ {x⋆}`,
 `‖x⋆ - x‖²_M / ⟪x⋆ - x, θ⟫² ≤ max_{x' ∈ ℐ^{x⋆}} ‖x⋆ - x'‖²_M / ⟪x⋆ - x', θ⟫²`. -/
 theorem ratio_le_iSup_adjacentTo (𝒳 : Finset (EuclideanSpace ℝ ι)) (θ : EuclideanSpace ℝ ι)

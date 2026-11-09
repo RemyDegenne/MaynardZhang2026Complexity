@@ -88,7 +88,7 @@ lemma avgParam_add_const {T : ℕ} (hT : T ≠ 0) (θ : ℕ → EuclideanSpace �
   rw [avgParam, avgParam, Finset.sum_add_distrib, Finset.sum_const, Finset.card_range, smul_add,
     ← Nat.cast_smul_eq_nsmul ℝ, smul_smul, inv_mul_cancel₀ hT', one_smul]
 
-/-- **Lemma 3** (optimization-based lower bound, Maynard-Zhang, Xiong, Jamieson, Fazel 2026).
+/-- **Lemma 3** (optimization-based lower bound) [MXJF26, Lemma 3].
 Fix a finite arm set `𝒳 ⊆ ℝ^d` and `Δ > 0`. For every identification algorithm with
 budget `T` there are parameter sequences `θ`, `θ'`, both with min-gap at least `Δ`, such that
 `max(P_θ(x̂ ≠ x⋆), P_θ'(x̂ ≠ x⋆')) ≥ (1/4) exp(-T f(𝒳, Δ))`.

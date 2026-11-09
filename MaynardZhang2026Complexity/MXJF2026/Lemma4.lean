@@ -24,7 +24,7 @@ namespace MaynardZhang2026Complexity
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
-/-- **Lemma 4** (Maynard-Zhang, Xiong, Jamieson, Fazel 2026). For a positive definite matrix `A`
+/-- **Lemma 4** [MXJF26, Lemma 4]. For a positive definite matrix `A`
 and an adjacent pair `(x, x')`,
 `min {vᵀ A v | (θ, v) feasible for (x, x')} = 4 Δ² / ‖x - x'‖²_{A⁻¹}`.
 

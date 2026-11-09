@@ -42,7 +42,7 @@ lemma PairFeasible.div_mahalanobisSq_inv_le {𝒳 : Set (EuclideanSpace ℝ ι)}
     _ ≤ mahalanobisSq A⁻¹ (x - x') * mahalanobisSq A v :=
       hA.inner_sq_le_mahalanobisSq_inv_mul _ _
 
-/-- **Lemma 7** (Maynard-Zhang, Xiong, Jamieson, Fazel 2026). For a positive definite matrix
+/-- **Lemma 7** [MXJF26, Lemma 7]. For a positive definite matrix
 `A` and a pair of distinct vertices `(x, x')`,
 `min {vᵀ A v | (θ, v) feasible for (x, x')} ≥ 4 Δ² / ‖x - x'‖²_{A⁻¹}`. -/
 theorem le_pairValue (𝒳 : Finset (EuclideanSpace ℝ ι)) {Δ : ℝ} (hΔ : 0 < Δ)

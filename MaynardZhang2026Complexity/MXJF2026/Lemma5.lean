@@ -37,10 +37,10 @@ namespace MaynardZhang2026Complexity
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
-/-- **Lemma 5** (sub-Gaussian error of the least-squares estimator, Maynard-Zhang, Xiong,
-Jamieson, Fazel 2026). In a run of Adjacent-BAI with allocation `x_1, …, x_T` (with invertible
-`∑_t x_t x_tᵀ`) and centered `1`-sub-Gaussian noise, for every `z ∈ ℝ^d` the error
-`zᵀ(θ̂_T - θ̄_T)` of the least-squares estimator is `3 ‖z‖_{(∑_t x_t x_tᵀ)⁻¹}`-sub-Gaussian.
+/-- **Lemma 5** (sub-Gaussian error of the least-squares estimator) [MXJF26, Lemma 5]. In a run
+of Adjacent-BAI with allocation `x_1, …, x_T` (with invertible `∑_t x_t x_tᵀ`) and centered
+`1`-sub-Gaussian noise, for every `z ∈ ℝ^d` the error `zᵀ(θ̂_T - θ̄_T)` of the least-squares
+estimator is `3 ‖z‖_{(∑_t x_t x_tᵀ)⁻¹}`-sub-Gaussian.
 
 The bounds `‖x_t‖ ≤ 1` and `‖θ_t‖ ≤ 1` are those of Theorem 2, which the paper's proof uses
 (through Lemma 9 with `B = M = 1`) but its statement omits; without them the statement is false

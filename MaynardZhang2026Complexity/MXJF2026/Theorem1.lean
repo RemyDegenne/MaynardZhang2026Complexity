@@ -29,7 +29,7 @@ namespace MaynardZhang2026Complexity
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
-/-- **Theorem 1** (arm-set-dependent lower bound, Maynard-Zhang, Xiong, Jamieson, Fazel 2026).
+/-- **Theorem 1** (arm-set-dependent lower bound) [MXJF26, Theorem 1].
 Fix a finite spanning arm set `𝒳 ⊆ ℝ^d` and `Δ > 0`. For every identification algorithm with
 budget `T` there are parameter sequences `θ`, `θ'`, both with min-gap at least `Δ`, such that
 `max(P_θ(x̂ ≠ x⋆), P_θ'(x̂ ≠ x⋆')) ≥ (1/4) exp(-4T / H_Adjacent(𝒳, Δ))` (with standard Gaussian
