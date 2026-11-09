@@ -1,47 +1,29 @@
 module
 
-public import Mathlib.Probability.Kernel.Basic
-public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
-public import Mathlib.Probability.Process.FiniteDimensionalLaws
+public import LeanMachineLearning.SequentialLearning.Algorithm
+public import LeanMachineLearning.SequentialLearning.Deterministic
+public import LeanMachineLearning.ForMathlib.Probability.Kernel.Sigma
+public import LeanMachineLearning.SequentialLearning.IdentificationAlg
 public import Mathlib.Probability.HasCondDistrib
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.Probability.Independence.Basic
-public import Mathlib.Probability.Independence.Conditional
-public import Mathlib.MeasureTheory.Measure.SubFinite
-public import Mathlib.Probability.Kernel.RadonNikodym
-public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-public import Mathlib.Order.Restriction
-public import Mathlib.Probability.Kernel.IonescuTulcea.Maps
-public import Mathlib.Analysis.Normed.Ring.Basic
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.Probability.Process.HittingTime
-public import Mathlib.MeasureTheory.Constructions.Cylinders
-public import Mathlib.MeasureTheory.Integral.Indicator
-public import Mathlib.Probability.ConditionalProbability
-public import Mathlib.Probability.HasLaw
-public import Mathlib.Probability.IdentDistrib
-public import Mathlib.MeasureTheory.Measure.Map
 public import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 public import Mathlib.Probability.Kernel.Composition.Lemmas
+public import LeanMachineLearning.ForMathlib.Probability.HasCondDistrib
+public import LeanMachineLearning.ForMathlib.Probability.Kernel.Composition.MapComap
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.Composition.Prod
 public import Mathlib.Probability.Kernel.Composition.CompProd
-public import Mathlib.Probability.Kernel.Composition.MapComap
-public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
-public import Mathlib.Probability.Martingale.Convergence
+public import LeanMachineLearning.SequentialLearning.DivergenceDecomposition
 public import Mathlib.InformationTheory.KullbackLeibler.DataProcessing
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.RadonNikodym
-public import Mathlib.InformationTheory.KullbackLeibler.ChainRule
-public import Mathlib.Probability.Kernel.Composition.RadonNikodym
-public import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
+public import LeanMachineLearning.ForMathlib.MeasureTheory.Order.MeasurableArg
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.CategoryTheory.Countable
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.Order.CompletePartialOrder
+public import LeanMachineLearning.SequentialLearning.StationaryEnv
 public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
-public import Mathlib.Probability.Martingale.BorelCantelli
+public import LeanMachineLearning.Online.Bandit.Regret
+public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Distributions.Uniform
+public import LeanMachineLearning.SequentialLearning.Comap
+public import Mathlib.Probability.Kernel.Basic
 public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
@@ -88,8 +70,6 @@ namespace MeasureTheory
 end MeasureTheory
 namespace ProbabilityTheory
 end ProbabilityTheory
-namespace Finset
-end Finset
 namespace Learning
 end Learning
 namespace Learning.IdentAlg
@@ -99,157 +79,7 @@ end InformationTheory
 namespace MaynardZhang2026Complexity
 end MaynardZhang2026Complexity
 
--- ═══ LeanMachineLearning.SequentialLearning.Algorithm ═══
-@[expose] public section
-open MeasureTheory ProbabilityTheory Filter Real Finset
-open scoped ENNReal NNReal
-namespace Learning
-variable {𝓞 𝓐 𝓨 Ω : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨} {mΩ : MeasurableSpace Ω}
-
-/-- One round of interaction: an observation, then an action, then a feedback. -/
-abbrev Round (𝓞 𝓐 𝓨 : Type*) := 𝓞 × 𝓐 × 𝓨
-
-/-- History of `n` complete rounds; `n = 0` is the empty history. -/
-abbrev Hist (𝓞 𝓐 𝓨 : Type*) (n : ℕ) := Fin n → Round 𝓞 𝓐 𝓨
-
-/-- A stochastic, sequential algorithm.
-At each round, it sees an observation in `𝓞`, then takes an action in `𝓐`, and finally receives
-feedback in `𝓨`. The action is a random function of the past rounds and the current observation. -/
-@[ext]
-structure Algorithm (𝓞 𝓐 𝓨 : Type*) [MeasurableSpace 𝓞] [MeasurableSpace 𝓐] [MeasurableSpace 𝓨]
-    where
-  /-- Law of the action of round `n` given the past rounds and the current observation. -/
-  policy : (n : ℕ) → Kernel (Hist 𝓞 𝓐 𝓨 n × 𝓞) 𝓐
-  /-- The policy is a Markov kernel. -/
-  [isMarkovKernel_policy : ∀ n, IsMarkovKernel (policy n)]
-
-/-- A stochastic environment.
-At each round, an observation is drawn prior to the algorithm taking an action. Then the environment
-provides feedback based on the observation and the action. -/
-@[ext]
-structure Environment (𝓞 𝓐 𝓨 : Type*) [MeasurableSpace 𝓞] [MeasurableSpace 𝓐] [MeasurableSpace 𝓨]
-    where
-  /-- Law of the observation of round `n` given the past rounds. -/
-  obs : (n : ℕ) → Kernel (Hist 𝓞 𝓐 𝓨 n) 𝓞
-  /-- Law of the feedback of round `n` given the past rounds, the observation and the action. -/
-  feedback : (n : ℕ) → Kernel ((Hist 𝓞 𝓐 𝓨 n × 𝓞) × 𝓐) 𝓨
-  /-- The observation kernel is a Markov kernel. -/
-  [isMarkovKernel_obs : ∀ n, IsMarkovKernel (obs n)]
-  /-- The feedback kernel is a Markov kernel. -/
-  [isMarkovKernel_feedback : ∀ n, IsMarkovKernel (feedback n)]
-
-section IsAlgEnvSeq
-variable {O : ℕ → Ω → 𝓞} {A : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨} {alg : Algorithm 𝓞 𝓐 𝓨} {env : Environment 𝓞 𝓐 𝓨} {P : Measure Ω} [IsFiniteMeasure P] {N : ℕ}
-
-/-- History of the algorithm-environment sequence before time `n`: the rounds at
-times `0, ..., n - 1`. -/
-def history (O : ℕ → Ω → 𝓞) (A : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨) (n : ℕ) (ω : Ω) : Hist 𝓞 𝓐 𝓨 n :=
-  fun i ↦ (O i ω, A i ω, Y i ω)
-
-/-- An algorithm-environment sequence: a sequence of observations, actions and feedbacks generated
-by an algorithm interacting with an environment. -/
-structure IsAlgEnvSeq
-    (O : ℕ → Ω → 𝓞) (A : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨)
-    (alg : Algorithm 𝓞 𝓐 𝓨) (env : Environment 𝓞 𝓐 𝓨)
-    (P : Measure Ω) [IsFiniteMeasure P] : Prop where
-  /-- The observation sequence is measurable. -/
-  measurable_obs n : Measurable (O n) := by fun_prop
-  /-- The action sequence is measurable. -/
-  measurable_action n : Measurable (A n) := by fun_prop
-  /-- The feedback sequence is measurable. -/
-  measurable_feedback n : Measurable (Y n) := by fun_prop
-  /-- The observation at time `n` has the correct conditional distribution given the history. -/
-  hasCondDistrib_obs n :
-    HasCondDistrib (O n) (history O A Y n) (env.obs n) P
-  /-- The action at time `n` has the correct conditional distribution given the history and the
-  observation at time `n`. -/
-  hasCondDistrib_action n :
-    HasCondDistrib (A n) (fun ω ↦ (history O A Y n ω, O n ω)) (alg.policy n) P
-  /-- The feedback at time `n` has the correct conditional distribution given the history, the
-  observation and the action at time `n`. -/
-  hasCondDistrib_feedback n :
-    HasCondDistrib (Y n) (fun ω ↦ ((history O A Y n ω, O n ω), A n ω)) (env.feedback n) P
-
-end IsAlgEnvSeq
-end Learning
-end
-
--- ═══ LeanMachineLearning.SequentialLearning.StoppedHistory ═══
-@[expose] public section
-open MeasureTheory ProbabilityTheory
-namespace Learning
-variable {𝓞 𝓐 𝓨 Ω : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨} {mΩ : MeasurableSpace Ω} {alg : Algorithm 𝓞 𝓐 𝓨} {env : Environment 𝓞 𝓐 𝓨} {O : ℕ → Ω → 𝓞} {X : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨} {S : Set (Σ n : ℕ, Hist 𝓞 𝓐 𝓨 n)} {τ : Ω → WithTop ℕ} {ω : Ω} {n M : ℕ}
-
-/-- The history of the first `n` rounds, as a history of variable length in the sigma type
-`Σ n : ℕ, Hist 𝓞 𝓐 𝓨 n`. -/
-def sigmaHistory (O : ℕ → Ω → 𝓞) (X : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨) (n : ℕ) (ω : Ω) :
-    Σ n : ℕ, Hist 𝓞 𝓐 𝓨 n :=
-  ⟨n, history O X Y n ω⟩
-
-end Learning
-end
-
--- ═══ LeanMachineLearning.SequentialLearning.IdentificationAlg ═══
-@[expose] public section
-open MeasureTheory ProbabilityTheory
-open scoped ENat
-namespace Learning
-variable {𝓞 𝓐 𝓨 𝓓 Ω : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨} {m𝓓 : MeasurableSpace 𝓓} {mΩ : MeasurableSpace Ω} {O : ℕ → Ω → 𝓞} {X : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨}
-
-/-- An identification algorithm with outputs in `𝓓`: a sampling rule `alg`, a stopping rule
-`stopSet` (the algorithm stops after `n` rounds if the history of these rounds belongs to
-`stopSet`) and an output rule `output`, a Markov kernel giving the distribution of the output
-given the history of the rounds played. -/
-structure IdentAlg (𝓞 𝓐 𝓨 𝓓 : Type*) [MeasurableSpace 𝓞] [MeasurableSpace 𝓐]
-    [MeasurableSpace 𝓨] [MeasurableSpace 𝓓] where
-  /-- The sampling rule. -/
-  alg : Algorithm 𝓞 𝓐 𝓨
-  /-- The stopping rule: the algorithm stops after `n` rounds if the history of these rounds
-  belongs to `stopSet`. -/
-  stopSet : Set (Σ n : ℕ, Hist 𝓞 𝓐 𝓨 n)
-  /-- The stopping rule is measurable. -/
-  measurableSet_stopSet : MeasurableSet stopSet
-  /-- The output rule: distribution of the output given the history of the rounds played. -/
-  output : Kernel (Σ n : ℕ, Hist 𝓞 𝓐 𝓨 n) 𝓓
-  /-- The output rule is a Markov kernel. -/
-  [isMarkovKernel_output : IsMarkovKernel output]
-
-namespace IdentAlg
-variable {A : IdentAlg 𝓞 𝓐 𝓨 𝓓} {env : Environment 𝓞 𝓐 𝓨} {out : Ω → 𝓓} {P : Measure Ω}
-
-/-- The stopping time of `A` on the observation, action and feedback processes `O`, `X`, `Y`: the
-number of rounds played, that is the first `n` such that the history of the first `n` rounds
-belongs to the stopping rule `A.stopSet` (`⊤` if there is none). -/
-noncomputable def stoppingTime (A : IdentAlg 𝓞 𝓐 𝓨 𝓓)
-    (O : ℕ → Ω → 𝓞) (X : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨) :
-    Ω → ℕ∞ :=
-  hittingAfter (sigmaHistory O X Y) A.stopSet 0
-
-/-- The history of the rounds played by an identification algorithm `A`, as a history of variable
-length: the history stopped at `A.stoppingTime O X Y`
-(the history of an arbitrary number of rounds if `A` never stops). -/
-noncomputable def stoppedHist (A : IdentAlg 𝓞 𝓐 𝓨 𝓓)
-    (O : ℕ → Ω → 𝓞) (X : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨) :
-    Ω → Σ n : ℕ, Hist 𝓞 𝓐 𝓨 n :=
-  stoppedValue (sigmaHistory O X Y) (A.stoppingTime O X Y)
-
-/-- `(O, X, Y, out)` is a *run* of the identification algorithm `A` in the environment `env` on
-the probability space `(Ω, P)`: the observation, action and feedback processes `O`, `X`, `Y` form
-an algorithm-environment sequence for the sampling rule `A.alg` and `env`, and the output `out` has
-conditional law `A.output` given the history at the stopping time. -/
-structure IsRun (A : IdentAlg 𝓞 𝓐 𝓨 𝓓) (env : Environment 𝓞 𝓐 𝓨)
-    (O : ℕ → Ω → 𝓞) (X : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨) (out : Ω → 𝓓)
-    (P : Measure Ω := by volume_tac) [IsFiniteMeasure P] : Prop where
-  /-- The actions and feedbacks are generated by the sampling rule in the environment. -/
-  isAlgEnvSeq : IsAlgEnvSeq O X Y A.alg env P
-  /-- The output is drawn from the output rule applied to the history at the stopping time. -/
-  hasCondDistrib_output : HasCondDistrib out (A.stoppedHist O X Y) A.output P
-
-end IdentAlg
-end Learning
-end
-
--- ═══ MaynardZhang2026Complexity.LeanMachineLearning.Identification.FixedBudget ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Identification.FixedBudget ═══
 @[expose] public section
 open MeasureTheory ProbabilityTheory
 namespace Learning
@@ -261,56 +91,6 @@ namespace IdentAlg
 def IsFixedBudget (A : IdentAlg 𝓞 𝓐 𝓨 𝓓) (T : ℕ) : Prop := A.stopSet = {h | h.1 = T}
 
 end IdentAlg
-end Learning
-end
-
--- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice ═══
-@[expose] public section
-open Finset
-variable {α δ : Type*} [MeasurableSpace δ] [SemilatticeInf α] {m : MeasurableSpace α} [MeasurableInf₂ α]
-attribute [to_dual existing] MeasurableInf₂
-end
-
--- ═══ LeanMachineLearning.SequentialLearning.StationaryEnv ═══
-@[expose] public section
-open MeasureTheory ProbabilityTheory Filter Real Finset
-open scoped ENNReal NNReal
-namespace Learning
-variable {𝓞 𝓐 𝓨 : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨}
-
-/-- An environment is oblivious if the distributions of the next observation and feedback
-don't depend on the past history: the observation at time `n` has a fixed law, and the feedback
-at time `n` depends only on the observation and the action at time `n`. -/
-class Environment.IsOblivious (env : Environment 𝓞 𝓐 𝓨) : Prop where
-  exists_obs_eq_const : ∃ μ : ℕ → Measure 𝓞, (∀ n, IsProbabilityMeasure (μ n)) ∧
-    ∀ n, env.obs n = Kernel.const _ (μ n)
-  exists_feedback_eq_comap : ∃ ν : ℕ → Kernel (𝓞 × 𝓐) 𝓨, (∀ n, IsMarkovKernel (ν n)) ∧
-    ∀ n, env.feedback n = (ν n).comap (fun p ↦ (p.1.2, p.2)) (by fun_prop)
-
-section Oblivious
-variable {μ : ℕ → Measure 𝓞} [∀ n, IsProbabilityMeasure (μ n)] {ν : ℕ → Kernel (𝓞 × 𝓐) 𝓨} [∀ n, IsMarkovKernel (ν n)]
-
-/-- The oblivious environment in which the observation at time `n` has law `μ n` and the feedback
-at time `n` is drawn from `ν n` applied to the observation and the action at time `n`, whatever the
-past history. -/
-noncomputable
-def Environment.oblivious (μ : ℕ → Measure 𝓞) [∀ n, IsProbabilityMeasure (μ n)]
-    (ν : ℕ → Kernel (𝓞 × 𝓐) 𝓨) [∀ n, IsMarkovKernel (ν n)] : Environment 𝓞 𝓐 𝓨 where
-  obs n := Kernel.const _ (μ n)
-  feedback n := (ν n).comap (fun p ↦ (p.1.2, p.2)) (by fun_prop)
-
-end Oblivious
-section BanditSeq
-variable {ν : ℕ → Kernel 𝓐 𝓨} [∀ n, IsMarkovKernel (ν n)]
-
-/-- The oblivious environment without observations in which the feedback at time `n` is drawn from
-`ν n` applied to the action at time `n`, whatever the past history. -/
-noncomputable
-def Environment.banditSeq (ν : ℕ → Kernel 𝓐 𝓨) [∀ n, IsMarkovKernel (ν n)] :
-    Environment Unit 𝓐 𝓨 :=
-  Environment.oblivious (fun _ ↦ Measure.dirac ()) (fun n ↦ (ν n).prodMkLeft Unit)
-
-end BanditSeq
 end Learning
 end
 

@@ -1,36 +1,27 @@
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-public import Mathlib.Order.Restriction
-public import Mathlib.Probability.Kernel.IonescuTulcea.Maps
-public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
-public import Mathlib.Probability.Process.FiniteDimensionalLaws
-public import Mathlib.Probability.HasCondDistrib
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.Probability.Independence.Basic
-public import Mathlib.Probability.Independence.Conditional
-public import Mathlib.MeasureTheory.Measure.SubFinite
-public import Mathlib.Probability.Kernel.RadonNikodym
-public import Mathlib.Probability.Kernel.Basic
-public import Mathlib.Analysis.Normed.Ring.Basic
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.MeasureTheory.Order.Lattice
-public import Mathlib.Probability.Kernel.Composition.MapComap
+public import LeanMachineLearning.SequentialLearning.StationaryEnv
 public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
-public import Mathlib.Order.CompletePartialOrder
-public import Mathlib.Probability.Martingale.BorelCantelli
-public import Mathlib.CategoryTheory.Countable
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import LeanMachineLearning.ForMathlib.MeasureTheory.Order.MeasurableArg
+public import LeanMachineLearning.Online.Bandit.Regret
+public import LeanMachineLearning.SequentialLearning.IonescuTulceaSpace
+public import LeanMachineLearning.ForMathlib.MeasureTheory.Measure.WithDensity
+public import LeanMachineLearning.ForMathlib.Probability.Kernel.Composition.WithDensity
+public import LeanMachineLearning.SequentialLearning.Algorithm
+public import Mathlib.Probability.HasCondDistrib
 public import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 public import Mathlib.Probability.Kernel.Composition.Lemmas
+public import LeanMachineLearning.ForMathlib.Probability.HasCondDistrib
+public import LeanMachineLearning.ForMathlib.Probability.Kernel.Composition.MapComap
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.Composition.Prod
 public import Mathlib.Probability.Kernel.Composition.CompProd
-public import Mathlib.Probability.Kernel.CompProdEqIff
-public import Mathlib.Probability.Kernel.Composition.MeasureComp
-public import Mathlib.Probability.Kernel.Composition.WithDensity
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Distributions.Uniform
+public import LeanMachineLearning.SequentialLearning.Comap
+public import LeanMachineLearning.SequentialLearning.Deterministic
+public import Mathlib.Probability.Kernel.Basic
 public import Mathlib.Analysis.Convex.Exposed
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
@@ -53,16 +44,11 @@ public import Mathlib.Analysis.Convex.Caratheodory
 public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Topology.Algebra.Ring.Real
+public import LeanMachineLearning.SequentialLearning.IdentificationAlg
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.Moments.SubGaussian
-public import Mathlib.Probability.Process.HittingTime
-public import Mathlib.MeasureTheory.Constructions.Cylinders
-public import Mathlib.MeasureTheory.Integral.Indicator
-public import Mathlib.Probability.ConditionalProbability
-public import Mathlib.Probability.HasLaw
-public import Mathlib.Probability.IdentDistrib
-public import Mathlib.MeasureTheory.Measure.Map
+public import LeanMachineLearning.ForMathlib.Probability.Kernel.Sigma
 public import Mathlib.Analysis.InnerProductSpace.Continuous
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.Normed.Group.Pointwise
@@ -80,233 +66,18 @@ set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
 -- Namespace stubs (so later `open`s resolve).
-namespace Finset
-end Finset
-namespace MeasurableEquiv
-end MeasurableEquiv
-namespace Function
-end Function
-namespace MeasurableSpace
-end MeasurableSpace
 namespace MeasureTheory
 end MeasureTheory
 namespace ProbabilityTheory
 end ProbabilityTheory
-namespace ProbabilityTheory.Kernel
-end ProbabilityTheory.Kernel
-namespace Learning
-end Learning
-namespace Learning.IT
-end Learning.IT
 namespace Bandits
 end Bandits
+namespace Learning
+end Learning
 namespace MaynardZhang2026Complexity
 end MaynardZhang2026Complexity
 
--- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.MeasurableSpace.Embedding ═══
-@[expose] public section
-open Finset Preorder
-namespace MeasurableEquiv
-section Fin
-variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
-
-/-- Measurable equivalence between `Π i : Fin (n + 1), X i` and `Π i : Iic n, X i`. -/
-def finSuccPiIic (X : ℕ → Type*) [∀ n, MeasurableSpace (X n)] (n : ℕ) :
-    (Π i : Fin (n + 1), X i) ≃ᵐ (Π i : Iic n, X i) where
-  toFun h i := h ⟨i.1, Nat.lt_succ_of_le (mem_Iic.mp i.2)⟩
-  invFun h i := h ⟨i.1, mem_Iic.mpr (Nat.le_of_lt_succ i.2)⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
-  measurable_toFun := .of_eval fun _ ↦ measurable_pi_apply _
-  measurable_invFun := .of_eval fun _ ↦ measurable_pi_apply _
-
-end Fin
-end MeasurableEquiv
-end
-
--- ═══ LeanMachineLearning.ForMathlib.Probability.Kernel.IonescuTulcea.Traj ═══
-@[expose] public section
-open Filter Finset Function MeasurableEquiv MeasurableSpace MeasureTheory Preorder ProbabilityTheory
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)] {κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1))} [∀ n, IsMarkovKernel (κ n)] {μ₀ : Measure (X 0)} [IsProbabilityMeasure μ₀]
-namespace ProbabilityTheory.Kernel
-section FinTraj
-variable {κ' : (n : ℕ) → Kernel (Π i : Fin n, X i) (X n)} [∀ n, IsMarkovKernel (κ' n)]
-
-/-- Kernels indexed by `Iic n` (as needed for `Kernel.traj`), obtained from kernels indexed by
-`Fin n`: the kernel `κ' (n + 1)` on `Π i : Fin (n + 1), X i` is seen as a kernel on
-`Π i : Iic n, X i`. -/
-noncomputable
-def iicOfFin (κ' : (n : ℕ) → Kernel (Π i : Fin n, X i) (X n)) (n : ℕ) :
-    Kernel (Π i : Iic n, X i) (X (n + 1)) :=
-  (κ' (n + 1)).comap (MeasurableEquiv.finSuccPiIic X n).symm (by fun_prop)
-
-instance instIsMarkovKernelForallValNatMemFinsetIicHAddOfNatIicOfFin (n : ℕ) : IsMarkovKernel (iicOfFin κ' n) := by unfold iicOfFin; infer_instance
-
-/-- Measure on trajectories `Π n, X n` built from kernels `κ' n : Kernel (Π i : Fin n, X i) (X n)`
-describing the law of the coordinate `n` given the `n` previous coordinates.
-The initial measure is `κ' 0 default`. -/
-noncomputable
-def trajMeasureFin (κ' : (n : ℕ) → Kernel (Π i : Fin n, X i) (X n)) [∀ n, IsMarkovKernel (κ' n)] :
-    Measure (Π n, X n) :=
-  trajMeasure (κ' 0 default) (iicOfFin κ')
-deriving IsProbabilityMeasure
-
-end FinTraj
-end ProbabilityTheory.Kernel
-end
-
--- ═══ LeanMachineLearning.SequentialLearning.Algorithm ═══
-@[expose] public section
-open MeasureTheory ProbabilityTheory Filter Real Finset
-open scoped ENNReal NNReal
-namespace Learning
-variable {𝓞 𝓐 𝓨 Ω : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨} {mΩ : MeasurableSpace Ω}
-
-/-- One round of interaction: an observation, then an action, then a feedback. -/
-abbrev Round (𝓞 𝓐 𝓨 : Type*) := 𝓞 × 𝓐 × 𝓨
-
-/-- The action of a round. -/
-def Round.action (r : Round 𝓞 𝓐 𝓨) : 𝓐 := r.2.1
-
-/-- The feedback of a round. -/
-def Round.feedback (r : Round 𝓞 𝓐 𝓨) : 𝓨 := r.2.2
-
-/-- History of `n` complete rounds; `n = 0` is the empty history. -/
-abbrev Hist (𝓞 𝓐 𝓨 : Type*) (n : ℕ) := Fin n → Round 𝓞 𝓐 𝓨
-
-/-- A stochastic, sequential algorithm.
-At each round, it sees an observation in `𝓞`, then takes an action in `𝓐`, and finally receives
-feedback in `𝓨`. The action is a random function of the past rounds and the current observation. -/
-@[ext]
-structure Algorithm (𝓞 𝓐 𝓨 : Type*) [MeasurableSpace 𝓞] [MeasurableSpace 𝓐] [MeasurableSpace 𝓨]
-    where
-  /-- Law of the action of round `n` given the past rounds and the current observation. -/
-  policy : (n : ℕ) → Kernel (Hist 𝓞 𝓐 𝓨 n × 𝓞) 𝓐
-  /-- The policy is a Markov kernel. -/
-  [isMarkovKernel_policy : ∀ n, IsMarkovKernel (policy n)]
-
-instance instIsMarkovKernelProdHistPolicy (alg : Algorithm 𝓞 𝓐 𝓨) (n : ℕ) : IsMarkovKernel (alg.policy n) :=
-  alg.isMarkovKernel_policy n
-
-/-- A stochastic environment.
-At each round, an observation is drawn prior to the algorithm taking an action. Then the environment
-provides feedback based on the observation and the action. -/
-@[ext]
-structure Environment (𝓞 𝓐 𝓨 : Type*) [MeasurableSpace 𝓞] [MeasurableSpace 𝓐] [MeasurableSpace 𝓨]
-    where
-  /-- Law of the observation of round `n` given the past rounds. -/
-  obs : (n : ℕ) → Kernel (Hist 𝓞 𝓐 𝓨 n) 𝓞
-  /-- Law of the feedback of round `n` given the past rounds, the observation and the action. -/
-  feedback : (n : ℕ) → Kernel ((Hist 𝓞 𝓐 𝓨 n × 𝓞) × 𝓐) 𝓨
-  /-- The observation kernel is a Markov kernel. -/
-  [isMarkovKernel_obs : ∀ n, IsMarkovKernel (obs n)]
-  /-- The feedback kernel is a Markov kernel. -/
-  [isMarkovKernel_feedback : ∀ n, IsMarkovKernel (feedback n)]
-
-instance instIsMarkovKernelHistObs (env : Environment 𝓞 𝓐 𝓨) (n : ℕ) : IsMarkovKernel (env.obs n) := env.isMarkovKernel_obs n
-
-instance instIsMarkovKernelProdHistFeedback (env : Environment 𝓞 𝓐 𝓨) (n : ℕ) : IsMarkovKernel (env.feedback n) :=
-  env.isMarkovKernel_feedback n
-
-/-- Kernel describing the distribution of the round at time `n` given the history before `n`. -/
-noncomputable
-def stepKernel (alg : Algorithm 𝓞 𝓐 𝓨) (env : Environment 𝓞 𝓐 𝓨) (n : ℕ) :
-    Kernel (Hist 𝓞 𝓐 𝓨 n) (Round 𝓞 𝓐 𝓨) :=
-  env.obs n ⊗ₖ (alg.policy n ⊗ₖ env.feedback n)
-deriving IsMarkovKernel
-
-end Learning
-end
-
--- ═══ LeanMachineLearning.SequentialLearning.IonescuTulceaSpace ═══
-@[expose] public section
-open MeasureTheory ProbabilityTheory Filter Real Finset
-open scoped ENNReal NNReal
-namespace Learning
-variable {𝓞 𝓐 𝓨 Ω : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨} {mΩ : MeasurableSpace Ω}
-
-/-- Measure on the sequence of rounds generated by the algorithm/environment. -/
-noncomputable
-def trajMeasure (alg : Algorithm 𝓞 𝓐 𝓨) (env : Environment 𝓞 𝓐 𝓨) :
-    Measure (ℕ → Round 𝓞 𝓐 𝓨) :=
-  Kernel.trajMeasureFin (stepKernel alg env)
-deriving IsProbabilityMeasure
-
-namespace IT
-
-/-- `action n` is the action pulled at time `n`. This is a random variable on the measurable space
-`ℕ → Round 𝓞 𝓐 𝓨`. -/
-def action (n : ℕ) (h : ℕ → Round 𝓞 𝓐 𝓨) : 𝓐 := (h n).action
-
-/-- `feedback n` is the feedback at time `n`. This is a random variable on the measurable space
-`ℕ → Round 𝓞 𝓐 𝓨`. -/
-def feedback (n : ℕ) (h : ℕ → Round 𝓞 𝓐 𝓨) : 𝓨 := (h n).feedback
-
-end IT
-namespace IT
-
-/-- Filtration of the algorithm Seq: `IT.filtration 𝓞 𝓐 𝓨 n` is the σ-algebra generated by the
-rounds at times `0, ..., n`, that is by `hist (n + 1)`. -/
-protected def filtration (𝓞 𝓐 𝓨 : Type*) [MeasurableSpace 𝓞] [MeasurableSpace 𝓐]
-    [MeasurableSpace 𝓨] :
-    Filtration ℕ (inferInstance : MeasurableSpace (ℕ → Round 𝓞 𝓐 𝓨)) :=
-  MeasureTheory.Filtration.piLE (X := fun _ ↦ Round 𝓞 𝓐 𝓨)
-
-end IT
-end Learning
-end
-
--- ═══ LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice ═══
-@[expose] public section
-open Finset
-variable {α δ : Type*} [MeasurableSpace δ] [SemilatticeInf α] {m : MeasurableSpace α} [MeasurableInf₂ α]
-attribute [to_dual existing] MeasurableInf₂
-end
-
--- ═══ LeanMachineLearning.SequentialLearning.StationaryEnv ═══
-@[expose] public section
-open MeasureTheory ProbabilityTheory Filter Real Finset
-open scoped ENNReal NNReal
-namespace Learning
-variable {𝓞 𝓐 𝓨 : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 : MeasurableSpace 𝓐} {m𝓨 : MeasurableSpace 𝓨}
-
-/-- An environment is oblivious if the distributions of the next observation and feedback
-don't depend on the past history: the observation at time `n` has a fixed law, and the feedback
-at time `n` depends only on the observation and the action at time `n`. -/
-class Environment.IsOblivious (env : Environment 𝓞 𝓐 𝓨) : Prop where
-  exists_obs_eq_const : ∃ μ : ℕ → Measure 𝓞, (∀ n, IsProbabilityMeasure (μ n)) ∧
-    ∀ n, env.obs n = Kernel.const _ (μ n)
-  exists_feedback_eq_comap : ∃ ν : ℕ → Kernel (𝓞 × 𝓐) 𝓨, (∀ n, IsMarkovKernel (ν n)) ∧
-    ∀ n, env.feedback n = (ν n).comap (fun p ↦ (p.1.2, p.2)) (by fun_prop)
-
-section Oblivious
-variable {μ : ℕ → Measure 𝓞} [∀ n, IsProbabilityMeasure (μ n)] {ν : ℕ → Kernel (𝓞 × 𝓐) 𝓨} [∀ n, IsMarkovKernel (ν n)]
-
-/-- The oblivious environment in which the observation at time `n` has law `μ n` and the feedback
-at time `n` is drawn from `ν n` applied to the observation and the action at time `n`, whatever the
-past history. -/
-noncomputable
-def Environment.oblivious (μ : ℕ → Measure 𝓞) [∀ n, IsProbabilityMeasure (μ n)]
-    (ν : ℕ → Kernel (𝓞 × 𝓐) 𝓨) [∀ n, IsMarkovKernel (ν n)] : Environment 𝓞 𝓐 𝓨 where
-  obs n := Kernel.const _ (μ n)
-  feedback n := (ν n).comap (fun p ↦ (p.1.2, p.2)) (by fun_prop)
-
-end Oblivious
-section BanditSeq
-variable {ν : ℕ → Kernel 𝓐 𝓨} [∀ n, IsMarkovKernel (ν n)]
-
-/-- The oblivious environment without observations in which the feedback at time `n` is drawn from
-`ν n` applied to the action at time `n`, whatever the past history. -/
-noncomputable
-def Environment.banditSeq (ν : ℕ → Kernel 𝓐 𝓨) [∀ n, IsMarkovKernel (ν n)] :
-    Environment Unit 𝓐 𝓨 :=
-  Environment.oblivious (fun _ ↦ Measure.dirac ()) (fun n ↦ (ν n).prodMkLeft Unit)
-
-end BanditSeq
-end Learning
-end
-
--- ═══ MaynardZhang2026Complexity.LeanMachineLearning.Online.Bandit.Nonstationary ═══
+-- ═══ MaynardZhang2026Complexity.ForLMLExplore.Bandits.Nonstationary ═══
 @[expose] public section
 open MeasureTheory ProbabilityTheory Finset
 open scoped ProbabilityTheory

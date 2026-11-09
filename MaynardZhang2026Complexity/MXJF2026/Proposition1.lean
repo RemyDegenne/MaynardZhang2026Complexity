@@ -24,7 +24,7 @@ namespace MaynardZhang2026Complexity
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
-/-- **Proposition 1** (Maynard-Zhang, Xiong, Jamieson, Fazel 2026). For a finite
+/-- **Proposition 1** [MXJF26, Proposition 1]. For a finite
 `𝒳 ⊆ ℝ^d`, `θ ∈ ℝ^d` with unique best arm `x⋆`,
 `min_λ max_{x ∈ 𝒳 ∖ {x⋆}} ‖x⋆ - x‖²_{A(λ)⁻¹} / ⟪x⋆ - x, θ⟫²
   = min_λ max_{x ∈ ℐ^{x⋆}} ‖x⋆ - x‖²_{A(λ)⁻¹} / ⟪x⋆ - x, θ⟫²`,

@@ -5,13 +5,13 @@ Authors: Rémy Degenne
 -/
 module
 
-public import MaynardZhang2026Complexity.LeanMachineLearning.Identification.FixedBudget
-public import MaynardZhang2026Complexity.LeanMachineLearning.Online.Bandit.Linear.Basic
-public import MaynardZhang2026Complexity.LeanMachineLearning.Design
-public import MaynardZhang2026Complexity.Mathlib.Analysis.InnerProductSpace.Mahalanobis
-public import MaynardZhang2026Complexity.Mathlib.Analysis.Convex.Adjacent
-public import MaynardZhang2026Complexity.LeanMachineLearning.SequentialLearning.Algorithms.RandomOrder
-public import MaynardZhang2026Complexity.LeanMachineLearning.Online.Bandit.Nonstationary
+public import MaynardZhang2026Complexity.ForLMLExplore.Identification.FixedBudget
+public import MaynardZhang2026Complexity.ForLMLExplore.Bandits.LinearBandit.Basic
+public import MaynardZhang2026Complexity.ForLMLExplore.Analysis.InnerProductSpace.Design
+public import MaynardZhang2026Complexity.ForLMLExplore.Analysis.InnerProductSpace.Mahalanobis
+public import MaynardZhang2026Complexity.ForLMLExplore.Analysis.Convex.Adjacent
+public import MaynardZhang2026Complexity.ForLMLExplore.SequentialLearning.Algorithms.RandomOrder
+public import MaynardZhang2026Complexity.ForLMLExplore.Bandits.Nonstationary
 public import LeanMachineLearning.ForMathlib.MeasureTheory.Order.MeasurableArg
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 

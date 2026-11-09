@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import MaynardZhang2026Complexity.MXJF2026.Setting
-public import MaynardZhang2026Complexity.Mathlib.Analysis.Convex.Vertices
+public import MaynardZhang2026Complexity.ForLMLExplore.Analysis.Convex.Vertices
 
 /-!
 # Lemma 1: the adjacency lemma
@@ -24,7 +24,7 @@ namespace MaynardZhang2026Complexity
 
 variable {ι : Type*} [Fintype ι]
 
-/-- **Lemma 1** (adjacency lemma, Maynard-Zhang, Xiong, Jamieson, Fazel 2026). Let `𝒳 ⊆ ℝ^d` be
+/-- **Lemma 1** (adjacency lemma) [MXJF26, Lemma 1]. Let `𝒳 ⊆ ℝ^d` be
 finite and `θ ∈ ℝ^d`. For any vertex `x` of `conv 𝒳`, there is `y ∈ 𝒳` with `⟪y - x, θ⟫ > 0` if
 and only if there is `z` adjacent to `x` with `⟪z - x, θ⟫ > 0`. -/
 theorem exists_pos_inner_iff (𝒳 : Finset (EuclideanSpace ℝ ι)) (θ : EuclideanSpace ℝ ι)

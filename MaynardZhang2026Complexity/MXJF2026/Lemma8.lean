@@ -73,7 +73,7 @@ lemma exists_pairFeasible_mahalanobisSq_eq {𝒳 : Set (EuclideanSpace ℝ ι)} 
     field_simp
     ring
 
-/-- **Lemma 8** (Maynard-Zhang, Xiong, Jamieson, Fazel 2026). For a positive definite matrix
+/-- **Lemma 8** [MXJF26, Lemma 8]. For a positive definite matrix
 `A` and an adjacent pair `(x, x')`,
 `min {vᵀ A v | (θ, v) feasible for (x, x')} ≤ 4 Δ² / ‖x - x'‖²_{A⁻¹}`.
 

@@ -8,9 +8,9 @@ module
 public import MaynardZhang2026Complexity.MXJF2026.Setting
 public import MaynardZhang2026Complexity.MXJF2026.Lemma2
 public import MaynardZhang2026Complexity.MXJF2026.Optimization
-public import MaynardZhang2026Complexity.LeanMachineLearning.Design
-public import MaynardZhang2026Complexity.LeanMachineLearning.SequentialLearning.AgreeingEnvironments
-public import MaynardZhang2026Complexity.Mathlib.InformationTheory.KullbackLeibler.Gaussian
+public import MaynardZhang2026Complexity.ForLMLExplore.Analysis.InnerProductSpace.Design
+public import MaynardZhang2026Complexity.ForLMLExplore.SequentialLearning.AgreeingEnvironments
+public import MaynardZhang2026Complexity.ForLMLExplore.InformationTheory.KullbackLeibler.Gaussian
 
 /-!
 # Lemma 3: the optimization-based lower bound
@@ -88,7 +88,7 @@ lemma avgParam_add_const {T : ℕ} (hT : T ≠ 0) (θ : ℕ → EuclideanSpace �
   rw [avgParam, avgParam, Finset.sum_add_distrib, Finset.sum_const, Finset.card_range, smul_add,
     ← Nat.cast_smul_eq_nsmul ℝ, smul_smul, inv_mul_cancel₀ hT', one_smul]
 
-/-- **Lemma 3** (optimization-based lower bound, Maynard-Zhang, Xiong, Jamieson, Fazel 2026).
+/-- **Lemma 3** (optimization-based lower bound) [MXJF26, Lemma 3].
 Fix a finite arm set `𝒳 ⊆ ℝ^d` and `Δ > 0`. For every identification algorithm with
 budget `T` there are parameter sequences `θ`, `θ'`, both with min-gap at least `Δ`, such that
 `max(P_θ(x̂ ≠ x⋆), P_θ'(x̂ ≠ x⋆')) ≥ (1/4) exp(-T f(𝒳, Δ))`.
@@ -172,7 +172,9 @@ theorem exists_minGapGE_le_max_error_optValue (𝒳 : Finset (EuclideanSpace ℝ
       (θ t) (gaussianReal 0 1)) (fun _ _ ↦ ()) X Y out P := h
   have hrun' : A.IsRun (Environment.banditSeq fun t ↦ linearKernel (𝒳 : Set (EuclideanSpace ℝ ι))
       (θ' t) (gaussianReal 0 1)) (fun _ _ ↦ ()) X' Y' out' P' := h'
-  have h2 := le_max_prob_ne _ _ T (fun t a ↦ by rw [hkl]; exact ENNReal.ofReal_ne_top) hne A hA
+  have h2 := le_max_prob_ne (fun t ↦ linearKernel (𝒳 : Set (EuclideanSpace ℝ ι)) (θ t)
+      (gaussianReal 0 1)) (fun t ↦ linearKernel (𝒳 : Set (EuclideanSpace ℝ ι)) (θ' t)
+      (gaussianReal 0 1)) T (fun t a ↦ by rw [hkl]; exact ENNReal.ofReal_ne_top) hne A hA
     P X Y out P' X' Y' out' hrun hrun'
   rw [hE, hE']
   refine le_trans ?_ h2

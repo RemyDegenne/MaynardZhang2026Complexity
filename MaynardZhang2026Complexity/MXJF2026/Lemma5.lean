@@ -7,7 +7,7 @@ module
 
 public import MaynardZhang2026Complexity.MXJF2026.Setting
 public import MaynardZhang2026Complexity.MXJF2026.Lemma9
-public import MaynardZhang2026Complexity.LeanMachineLearning.Online.Bandit.Linear.ActionModel
+public import MaynardZhang2026Complexity.ForLMLExplore.Bandits.LinearBandit.ActionModel
 public import Mathlib.Probability.Moments.SubGaussian
 
 /-!
@@ -37,10 +37,10 @@ namespace MaynardZhang2026Complexity
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
-/-- **Lemma 5** (sub-Gaussian error of the least-squares estimator, Maynard-Zhang, Xiong,
-Jamieson, Fazel 2026). In a run of Adjacent-BAI with allocation `x_1, …, x_T` (with invertible
-`∑_t x_t x_tᵀ`) and centered `1`-sub-Gaussian noise, for every `z ∈ ℝ^d` the error
-`zᵀ(θ̂_T - θ̄_T)` of the least-squares estimator is `3 ‖z‖_{(∑_t x_t x_tᵀ)⁻¹}`-sub-Gaussian.
+/-- **Lemma 5** (sub-Gaussian error of the least-squares estimator) [MXJF26, Lemma 5]. In a run
+of Adjacent-BAI with allocation `x_1, …, x_T` (with invertible `∑_t x_t x_tᵀ`) and centered
+`1`-sub-Gaussian noise, for every `z ∈ ℝ^d` the error `zᵀ(θ̂_T - θ̄_T)` of the least-squares
+estimator is `3 ‖z‖_{(∑_t x_t x_tᵀ)⁻¹}`-sub-Gaussian.
 
 The bounds `‖x_t‖ ≤ 1` and `‖θ_t‖ ≤ 1` are those of Theorem 2, which the paper's proof uses
 (through Lemma 9 with `B = M = 1`) but its statement omits; without them the statement is false
@@ -100,10 +100,10 @@ theorem hasSubgaussianMGF_lsEstimator (𝒳 : Finset (EuclideanSpace ℝ ι))
   rw [h_eq]
   -- the bias term: Lemma 9 for the inverse permutation
   have hS : HasSubgaussianMGF S (8 * 1 ^ 2 * 1 ^ 2 * m).toNNReal
-      (PMF.uniformOfFintype (Equiv.Perm (Fin T))).toMeasure := by
+      (Measure.uniformOfFinset (Finset.univ : Finset (Equiv.Perm (Fin T)))) := by
     have h9 := hasSubgaussianMGF_sum_perm (fun t ↦ (x t : EuclideanSpace ℝ ι))
       (fun t : Fin T ↦ θ t) hx₁ (fun t ↦ hθ t t.2) z
-    rw [← PMF.map_toMeasure_uniformOfFintype_equiv (Equiv.inv (Equiv.Perm (Fin T)))
+    rw [← Measure.map_uniformOfFinset_univ_equiv (Equiv.inv (Equiv.Perm (Fin T)))
       (measurable_of_countable _)] at h9
     refine (h9.of_map (measurable_of_countable _).aemeasurable).congr (ae_of_all _ fun π ↦ ?_)
     have havg : (T : ℝ)⁻¹ • ∑ s : Fin T, θ s = avgParam θ T := by

@@ -7,9 +7,9 @@ module
 
 public import MaynardZhang2026Complexity.MXJF2026.Setting
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
-public import MaynardZhang2026Complexity.Mathlib.InformationTheory.KullbackLeibler.BretagnolleHuber
-public import MaynardZhang2026Complexity.LeanMachineLearning.Identification.ChangeOfMeasure
-public import MaynardZhang2026Complexity.LeanMachineLearning.SequentialLearning.DivergenceDecomposition
+public import MaynardZhang2026Complexity.ForLMLExplore.InformationTheory.KullbackLeibler.BretagnolleHuber
+public import MaynardZhang2026Complexity.ForLMLExplore.Identification.ChangeOfMeasure
+public import MaynardZhang2026Complexity.ForLMLExplore.SequentialLearning.DivergenceDecomposition
 
 /-!
 # Lemma 2: the change-of-measure lower bound for non-stationary bandits
@@ -37,7 +37,7 @@ namespace MaynardZhang2026Complexity
 
 variable {𝓐 : Type*} [Fintype 𝓐] [MeasurableSpace 𝓐] [DiscreteMeasurableSpace 𝓐]
 
-/-- **Lemma 2** (Maynard-Zhang, Xiong, Jamieson, Fazel 2026). Let `ν`, `ν'` be non-stationary
+/-- **Lemma 2** [MXJF26, Lemma 2]. Let `ν`, `ν'` be non-stationary
 bandit models (with finite Kullback–Leibler divergences), `k ≠ k'` two arms (in the paper, the
 best arms of `ν` and `ν'` over `T` rounds; the proof only uses `k ≠ k'`) and `A` an identification
 algorithm with budget `T`. For all runs of `A` under `ν` and under `ν'`,

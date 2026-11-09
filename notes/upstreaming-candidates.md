@@ -11,28 +11,28 @@ merged into the files of `LMLPapers` with the same topics; see the last section.
 
 | File | Content |
 |---|---|
-| `Mathlib/Analysis/Convex/Vertices.lean` | maximizers of a linear form over `conv s`; vertices as strictly exposed points; a point of maximal norm is a vertex; for finite sets: extreme points are exposed, `conv (vertices 𝒳) = conv 𝒳`, adjacency through a direction, the adjacency lemma (local optimality implies global optimality), existence of edges, the cone property, points beating all other vertices |
-| `Mathlib/Analysis/InnerProductSpace/Mahalanobis.lean` (additions) | additivity in the matrix, Loewner monotonicity, `‖x‖_A² = ⟪x, A x⟫`, Cauchy–Schwarz `⟪x, y⟫² ≤ ‖x‖²_{A⁻¹} ‖y‖²_A` |
-| `Mathlib/Probability/HasCondDistrib.lean` (addition) | conditional laws on countable spaces (`hasCondDistrib_of_countable`) |
-| `Mathlib/Probability/Moments/SubGaussian.lean` | `HasSubgaussianMGF.mono`, sums of sub-Gaussian variables on a product space (`add_prod`), weighted sums of the coordinates of `Measure.infinitePi` |
-| `Mathlib/Probability/Moments/SamplingWithoutReplacement.lean` | the centered sum of squares and the Helmert identity; sub-Gaussian concentration of `∑_s ⟪a_s, g_{π s} - ḡ⟫` for a uniform permutation, proxy `8M² ∑ ‖a_s - ā‖²` (Hoeffding 1963, Serfling), by induction with `Equiv.Perm.decomposeFin` |
-| `Mathlib/Probability/ProbabilityMassFunction/Uniform.lean` | uniform PMF: events, images by equivalences, products |
-| `Mathlib/Probability/Independence/InfinitePi.lean` | a coordinate of an infinite product is independent of the previous ones |
-| `Mathlib/InformationTheory/KullbackLeibler/BretagnolleHuber.lean`, `Gaussian.lean` | copied from LMLPapers |
+| `ForLMLExplore/Analysis/Convex/Vertices.lean` | maximizers of a linear form over `conv s`; vertices as strictly exposed points; a point of maximal norm is a vertex; for finite sets: extreme points are exposed, `conv (vertices 𝒳) = conv 𝒳`, adjacency through a direction, the adjacency lemma (local optimality implies global optimality), existence of edges, the cone property, points beating all other vertices |
+| `ForLMLExplore/Analysis/InnerProductSpace/Mahalanobis.lean` (additions) | additivity in the matrix, Loewner monotonicity, `‖x‖_A² = ⟪x, A x⟫`, Cauchy–Schwarz `⟪x, y⟫² ≤ ‖x‖²_{A⁻¹} ‖y‖²_A` |
+| `ForLMLExplore/Probability/HasCondDistrib.lean` (addition) | conditional laws on countable spaces (`hasCondDistrib_of_countable`) |
+| `ForLMLExplore/Probability/Moments/SubGaussian.lean` | `HasSubgaussianMGF.mono`, sums of sub-Gaussian variables on a product space (`add_prod`), weighted sums of the coordinates of `Measure.infinitePi` |
+| `ForLMLExplore/Probability/Moments/SamplingWithoutReplacement.lean` | the centered sum of squares and the Helmert identity; sub-Gaussian concentration of `∑_s ⟪a_s, g_{π s} - ḡ⟫` for a uniform permutation, proxy `8M² ∑ ‖a_s - ā‖²` (Hoeffding 1963, Serfling), by induction with `Equiv.Perm.decomposeFin` |
+| `ForLMLExplore/Probability/Distributions/Uniform.lean` | uniform laws: events, images by equivalences, products |
+| `ForLMLExplore/Probability/Independence/InfinitePi.lean` | a coordinate of an infinite product is independent of the previous ones |
+| `ForLMLExplore/InformationTheory/KullbackLeibler/BretagnolleHuber.lean`, `Gaussian.lean` | copied from LMLPapers |
 
 ## LML
 
 | File | Content |
 |---|---|
-| `LeanMachineLearning/Design.lean` (additions) | quadratic forms of design matrices, positive semidefiniteness, `designOfWeights` |
-| `LeanMachineLearning/DesignMatrix.lean` (additions) | least squares for the Gram matrix of finitely many points |
-| `LeanMachineLearning/SequentialLearning/DivergenceDecomposition.lean` | chain rule for the divergence of the histories against non-stationary bandits |
-| `LeanMachineLearning/SequentialLearning/AgreeingEnvironments.lean` | runs against environments agreeing before round `t` |
-| `LeanMachineLearning/SequentialLearning/EnvironmentDensity.lean` | change of environment with densities depending on the round (LMLPapers has the oblivious case, `EnvDensity.lean`, which is used there instead) |
-| `LeanMachineLearning/Online/Bandit/ChangeOfMeasure.lean` | change of measure for non-stationary bandits at a stopping time (`exp(-L_{σ+1})`) |
-| `LeanMachineLearning/Identification/ChangeOfMeasure.lean` | data processing for fixed-budget identification (copied from LMLPapers) |
-| `LeanMachineLearning/SequentialLearning/Algorithms/RandomOrderLaw.lean` | the actions of `Algorithm.randomOrder x` are `x ∘ π` for a uniform permutation |
-| `LeanMachineLearning/Online/Bandit/Linear/ActionModel.lean` | explicit model of a run of an action-only algorithm against a non-stationary linear bandit |
+| `ForLMLExplore/Analysis/InnerProductSpace/Design.lean` (additions) | quadratic forms of design matrices, positive semidefiniteness, `designOfWeights` |
+| `ForLMLExplore/Analysis/InnerProductSpace/DesignMatrix.lean` (additions) | least squares for the Gram matrix of finitely many points |
+| `ForLMLExplore/SequentialLearning/DivergenceDecomposition.lean` | chain rule for the divergence of the histories against non-stationary bandits |
+| `ForLMLExplore/SequentialLearning/AgreeingEnvironments.lean` | runs against environments agreeing before round `t` |
+| `ForLMLExplore/SequentialLearning/EnvironmentDensity.lean` | change of environment with densities depending on the round (LMLPapers has the oblivious case, `EnvDensity.lean`, which is used there instead) |
+| `ForLMLExplore/Bandits/ChangeOfMeasure.lean` | change of measure for non-stationary bandits at a stopping time (`exp(-L_{σ+1})`) |
+| `ForLMLExplore/Identification/ChangeOfMeasure.lean` | data processing for fixed-budget identification (copied from LMLPapers) |
+| `ForLMLExplore/SequentialLearning/Algorithms/RandomOrderLaw.lean` | the actions of `Algorithm.randomOrder x` are `x ∘ π` for a uniform permutation |
+| `ForLMLExplore/Bandits/LinearBandit/ActionModel.lean` | explicit model of a run of an action-only algorithm against a non-stationary linear bandit |
 
 ## In LMLPapers
 

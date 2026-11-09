@@ -7,7 +7,7 @@ module
 
 public import MaynardZhang2026Complexity.MXJF2026.Setting
 public import LeanMachineLearning.SequentialLearning.IonescuTulceaSpace
-public import MaynardZhang2026Complexity.LeanMachineLearning.Online.Bandit.ChangeOfMeasure
+public import MaynardZhang2026Complexity.ForLMLExplore.Bandits.ChangeOfMeasure
 
 /-!
 # Lemma 6: change of measure at a stopping time for non-stationary bandits
@@ -38,7 +38,7 @@ namespace MaynardZhang2026Complexity
 
 variable {𝓐 : Type*} [Countable 𝓐] [MeasurableSpace 𝓐] [DiscreteMeasurableSpace 𝓐]
 
-/-- **Lemma 6** (Maynard-Zhang, Xiong, Jamieson, Fazel 2026). Let `ν`, `ν'` be non-stationary
+/-- **Lemma 6** [MXJF26, Lemma 6]. Let `ν`, `ν'` be non-stationary
 bandit models with mutually absolutely continuous reward distributions and `alg` an algorithm;
 `P_ν`, `P_ν'` are the laws of the trajectory of `alg` under `ν` and `ν'`. For every stopping time
 `σ` of the history filtration (finite everywhere) and every event `E ∈ 𝓕_σ`,
