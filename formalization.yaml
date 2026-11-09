@@ -174,3 +174,112 @@ status:
     replacement) and 3 `paper`.
   sorry_count: 0
   sorry_in_definitions: 0
+
+alignment:
+  namespace: "MaynardZhang2026Complexity"
+  note: >-
+    The full source-to-Lean map is the blueprint: each environment of blueprint/src/chapters/*.tex
+    carries a \lean{} tag. Only the headline statements, the 13 comparator challenges, are repeated
+    here; they formalize every numbered result of the paper (Appendix C, the computation of the
+    adjacent pairs, states none). Each has its Literature Links relation, read "paper relation
+    Lean": exactMatch, closeMatch, broadMatch (the Lean statement is more general), narrowMatch
+    (the paper's is) or hasPart; and its entry in notes/paper-errata.md when the paper had to be
+    corrected.
+  statements:
+    - source: "lem:adjacency — Lemma 1, adjacency lemma"
+      lean: "MaynardZhang2026Complexity.exists_pos_inner_iff"
+      module: "MaynardZhang2026Complexity.MXJF2026.Lemma1"
+      status: "proved"
+      relation: "exactMatch"
+    - source: "thm:lower_bound — Theorem 1, arm-set-dependent lower bound"
+      lean: "MaynardZhang2026Complexity.exists_minGapGE_le_max_error"
+      module: "MaynardZhang2026Complexity.MXJF2026.Theorem1"
+      status: "proved"
+      relation: "narrowMatch"
+      erratum: "E2"
+      note: >-
+        For T ≥ 1 and at least two arms; the paper states it for every horizon and arm set, and it
+        is false for T = 0 or a single arm.
+    - source: "lem:gen_lower — Lemma 2, non-stationary Kaufmann-Cappé-Garivier bound"
+      lean: "MaynardZhang2026Complexity.le_max_prob_ne"
+      module: "MaynardZhang2026Complexity.MXJF2026.Lemma2"
+      status: "proved"
+      relation: "closeMatch"
+      note: >-
+        For any two distinct arms k ≠ k', not only the best arms of ν and ν' (the proof does not use
+        it), and for reward laws with finite Kullback-Leibler divergences instead of the paper's
+        mutually absolutely continuous ones.
+    - source: "lem:opt_lower — Lemma 3, optimization-based lower bound"
+      lean: "MaynardZhang2026Complexity.exists_minGapGE_le_max_error_optValue"
+      module: "MaynardZhang2026Complexity.MXJF2026.Lemma3"
+      status: "proved"
+      relation: "narrowMatch"
+      erratum: "E2"
+      note: >-
+        For T ≥ 1 and at least two arms (false otherwise); the arm set need not span ℝ^d. The proof
+        follows the corrected construction of E3, not the paper's half-horizon split.
+    - source: "lem:equality — Lemma 4, closed form of the inner problem for adjacent pairs"
+      lean: "MaynardZhang2026Complexity.pairValue_eq"
+      module: "MaynardZhang2026Complexity.MXJF2026.Lemma4"
+      status: "proved"
+      relation: "broadMatch"
+      note: "For every positive definite matrix A, not only the full-rank design matrices A(λ)."
+    - source: "thm:upper_bound — Theorem 2, error probability of Adjacent-BAI"
+      lean: "MaynardZhang2026Complexity.prob_ne_bestArm_le"
+      module: "MaynardZhang2026Complexity.MXJF2026.Theorem2"
+      status: "proved"
+      relation: "closeMatch"
+      note: >-
+        The rounding procedure is not formalized: Adjacent-BAI plays any allocation with the
+        rounding guarantee of Eq. (roundingerror), a hypothesis (IsAdjacentRounding), so the paper's
+        T ≥ d², which only serves to obtain that guarantee, is dropped.
+    - source: "lem:ls_subgaussian — Lemma 5, sub-Gaussian error of the least-squares estimator"
+      lean: "MaynardZhang2026Complexity.hasSubgaussianMGF_lsEstimator"
+      module: "MaynardZhang2026Complexity.MXJF2026.Lemma5"
+      status: "proved"
+      relation: "narrowMatch"
+      erratum: "E1"
+      note: >-
+        With ‖x_t‖ ≤ 1 and ‖θ_t‖ ≤ 1, the assumptions of Theorem 2, without which the statement is
+        false; for any allocation with invertible ∑_t x_t x_tᵀ.
+    - source: "prop:stat_equiv — Proposition 1, the stationary complexity only involves adjacent arms"
+      lean: "MaynardZhang2026Complexity.iInf_iSup_ratio_eq"
+      module: "MaynardZhang2026Complexity.MXJF2026.Proposition1"
+      status: "proved"
+      relation: "exactMatch"
+      note: >-
+        The minima are over designs with positive definite design matrix. The arm set need not span
+        ℝ^d: without it there is no such design and both sides are 0.
+    - source: "lem:change_of_measure — Lemma 6, change of measure at a stopping time"
+      lean: "MaynardZhang2026Complexity.trajMeasure_eq_lintegral_exp_neg_llrProcess"
+      module: "MaynardZhang2026Complexity.MXJF2026.Lemma6"
+      status: "proved"
+      relation: "closeMatch"
+      note: >-
+        Rounds are numbered from 0, so the identity reads P_ν'(E) = E_ν[1_E exp(-L_{σ+1})], the
+        paper's L_σ. For countably many arms (finitely many in the paper) and a stopping time finite
+        everywhere.
+    - source: "lem:pair_value_lower — Lemma 7, lower bound on the inner problem"
+      lean: "MaynardZhang2026Complexity.le_pairValue"
+      module: "MaynardZhang2026Complexity.MXJF2026.Lemma7"
+      status: "proved"
+      relation: "exactMatch"
+    - source: "lem:pair_value_upper — Lemma 8, upper bound on the inner problem for adjacent pairs"
+      lean: "MaynardZhang2026Complexity.pairValue_le"
+      module: "MaynardZhang2026Complexity.MXJF2026.Lemma8"
+      status: "proved"
+      relation: "broadMatch"
+      note: "For every Δ, not only Δ > 0 (for Δ ≤ 0 it is immediate: θ = v = 0 is feasible)."
+    - source: "lem:perm_subgaussian — Lemma 9, sums over a uniform random permutation"
+      lean: "MaynardZhang2026Complexity.hasSubgaussianMGF_sum_perm"
+      module: "MaynardZhang2026Complexity.MXJF2026.Lemma9"
+      status: "proved"
+      relation: "exactMatch"
+      note: >-
+        The x_t need not span ℝ^d: without it the matrix is singular, its inverse is 0 in Lean, and
+        both the sum and the variance proxy vanish.
+    - source: "lem:ratio_adjacent — Lemma 10, the ratio is largest at an arm adjacent to x⋆"
+      lean: "MaynardZhang2026Complexity.ratio_le_iSup_adjacentTo"
+      module: "MaynardZhang2026Complexity.MXJF2026.Lemma10"
+      status: "proved"
+      relation: "exactMatch"
