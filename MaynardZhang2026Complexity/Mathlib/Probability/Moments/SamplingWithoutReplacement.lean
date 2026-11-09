@@ -80,7 +80,7 @@ lemma hasSubgaussianMGF_sum_inner_perm {n : ℕ} (a g : Fin n → E) {M : ℝ}
     (hg : ∀ k, ‖g k‖ ≤ M) :
     HasSubgaussianMGF (fun π : Equiv.Perm (Fin n) ↦ ∑ s, ⟪a s, g (π s) - (n : ℝ)⁻¹ • ∑ k, g k⟫)
       (8 * M ^ 2 * ∑ s, ‖a s - (n : ℝ)⁻¹ • ∑ s', a s'‖ ^ 2).toNNReal
-      (PMF.uniformOfFintype (Equiv.Perm (Fin n))).toMeasure := by
+      (Measure.uniformOfFinset (Finset.univ : Finset (Equiv.Perm (Fin n)))) := by
   induction n with
   | zero =>
     simp only [univ_eq_empty, sum_empty]
@@ -138,7 +138,7 @@ lemma hasSubgaussianMGF_sum_inner_perm {n : ℕ} (a g : Fin n → E) {M : ℝ}
       ring
     -- Hoeffding's lemma for the first position
     have hU : HasSubgaussianMGF U ((‖2 * M * ‖d‖ - -(2 * M * ‖d‖)‖₊ / 2) ^ 2)
-        (PMF.uniformOfFintype (Fin (n + 1))).toMeasure := by
+        (Measure.uniformOfFinset (Finset.univ : Finset (Fin (n + 1)))) := by
       refine hasSubgaussianMGF_of_mem_Icc_of_integral_eq_zero
         (measurable_of_countable U).aemeasurable (ae_of_all _ fun p ↦ ?_) ?_
       · have h1 : |U p| ≤ 2 * M * ‖d‖ := by
@@ -150,8 +150,9 @@ lemma hasSubgaussianMGF_sum_inner_perm {n : ℕ} (a g : Fin n → E) {M : ℝ}
                 _ = 2 * M := by ring
             _ = 2 * M * ‖d‖ := by ring
         exact ⟨neg_le_of_abs_le h1, le_of_abs_le h1⟩
-      · rw [PMF.integral_eq_sum]
-        simp only [PMF.uniformOfFintype_apply]
+      · rw [integral_fintype .of_finite]
+        simp only [measureReal_def, Measure.uniformOfFinset_apply_singleton, mem_univ, ite_true,
+          card_univ, Fintype.card_fin]
         rw [← smul_sum]
         have : ∑ p, U p = 0 := by
           simp only [U, ← inner_sum, sum_sub_distrib, sum_const, card_univ, Fintype.card_fin]
@@ -161,15 +162,16 @@ lemma hasSubgaussianMGF_sum_inner_perm {n : ℕ} (a g : Fin n → E) {M : ℝ}
     -- the induction hypothesis for the remaining positions and values
     have hV (p : Fin (n + 1)) : HasSubgaussianMGF (V p)
         (8 * M ^ 2 * ∑ s : Fin n, ‖a s.succ - (n : ℝ)⁻¹ • ∑ s' : Fin n, a s'.succ‖ ^ 2).toNNReal
-        (PMF.uniformOfFintype (Equiv.Perm (Fin n))).toMeasure :=
+        (Measure.uniformOfFinset (Finset.univ : Finset (Equiv.Perm (Fin n)))) :=
       ih (fun k ↦ a k.succ) (fun k ↦ g (τ p k)) fun k ↦ hg _
     have hUV := hU.add_prod hV (measurable_of_countable _)
     -- transport along `Equiv.Perm.decomposeFin`
-    have h_map : ((PMF.uniformOfFintype (Fin (n + 1))).toMeasure.prod
-        (PMF.uniformOfFintype (Equiv.Perm (Fin n))).toMeasure).map Equiv.Perm.decomposeFin.symm
-        = (PMF.uniformOfFintype (Equiv.Perm (Fin (n + 1)))).toMeasure := by
-      rw [PMF.toMeasure_uniformOfFintype_prod]
-      exact PMF.map_toMeasure_uniformOfFintype_equiv _ (measurable_of_countable _)
+    have h_map : ((Measure.uniformOfFinset (Finset.univ : Finset (Fin (n + 1)))).prod
+        (Measure.uniformOfFinset (Finset.univ : Finset (Equiv.Perm (Fin n))))).map
+          Equiv.Perm.decomposeFin.symm
+        = Measure.uniformOfFinset (Finset.univ : Finset (Equiv.Perm (Fin (n + 1)))) := by
+      rw [Measure.uniformOfFinset_univ_prod]
+      exact Measure.map_uniformOfFinset_univ_equiv _ (measurable_of_countable _)
     rw [← h_map, ← HasSubgaussianMGF.id_map_iff (measurable_of_countable _).aemeasurable,
       Measure.map_map (measurable_of_countable _) (measurable_of_countable _),
       HasSubgaussianMGF.id_map_iff (measurable_of_countable _).aemeasurable]

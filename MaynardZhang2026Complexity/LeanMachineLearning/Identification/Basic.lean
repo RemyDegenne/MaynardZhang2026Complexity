@@ -96,10 +96,10 @@ end OfStop
 /-- The output rule of `A` on the histories of `n` rounds: the law of the output of `A` when it
 stops after `n` rounds, as a function of the history of these rounds. -/
 noncomputable def outputAt (A : IdentAlg 𝓞 𝓐 𝓨 𝓓) (n : ℕ) : Kernel (Hist 𝓞 𝓐 𝓨 n) 𝓓 :=
-  A.output.comap (Sigma.mk n) (measurable_sigma_mk n)
+  A.output.comap (Sigma.mk n) (measurable_sigmaMk n)
 
 lemma outputAt_def (A : IdentAlg 𝓞 𝓐 𝓨 𝓓) (n : ℕ) :
-    A.outputAt n = A.output.comap (Sigma.mk n) (measurable_sigma_mk n) := rfl
+    A.outputAt n = A.output.comap (Sigma.mk n) (measurable_sigmaMk n) := rfl
 
 @[simp]
 lemma outputAt_apply (A : IdentAlg 𝓞 𝓐 𝓨 𝓓) (h : Hist 𝓞 𝓐 𝓨 n) :
@@ -114,7 +114,7 @@ lemma outputAt_ofStop (alg : Algorithm 𝓞 𝓐 𝓨) (stop : (n : ℕ) → His
     (hstop : ∀ n, MeasurableSet {h | stop n h}) (output : (n : ℕ) → Kernel (Hist 𝓞 𝓐 𝓨 n) 𝓓)
     [∀ n, IsMarkovKernel (output n)] (n : ℕ) :
     (ofStop alg stop hstop output).outputAt n = output n :=
-  Kernel.comap_sigma_mk output n
+  Kernel.comap_sigmaMk output n
 
 /-! ### The stopping time and the stopped history -/
 
@@ -178,7 +178,7 @@ end Measurability
 /-- A run of an identification algorithm is transported along a measurable map `g` carrying `P`
 to `P'`. -/
 lemma IsRun.comp_hasLaw {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {P : Measure Ω}
-    {P' : Measure Ω'} [IsFiniteMeasure P] [IsFiniteMeasure P'] {g : Ω → Ω'}
+    {P' : Measure Ω'} {g : Ω → Ω'}
     {env : Environment 𝓞 𝓐 𝓨} {O : ℕ → Ω' → 𝓞} {X : ℕ → Ω' → 𝓐} {Y : ℕ → Ω' → 𝓨}
     {out : Ω' → 𝓓} (h : A.IsRun env O X Y out P') (hg : HasLaw g P' P) (hgm : Measurable g) :
     A.IsRun env (fun n ↦ O n ∘ g) (fun n ↦ X n ∘ g) (fun n ↦ Y n ∘ g) (out ∘ g) P where

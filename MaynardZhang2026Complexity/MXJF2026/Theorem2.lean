@@ -96,7 +96,7 @@ theorem prob_ne_bestArm_le (𝒳 : Finset (EuclideanSpace ℝ ι))
     have hmax : ⟪xstar, θhat⟫ ≤ ⟪((recommend x (history (fun _ _ ↦ ()) X Y T ω) : 𝒳) :
         EuclideanSpace ℝ ι), θhat⟫ :=
       isMaxOn_argmax (fun y : (𝒳 : Set (EuclideanSpace ℝ ι)) ↦
-        ⟪(y : EuclideanSpace ℝ ι), θhat⟫) ⟨xstar, hstar.1⟩
+        ⟪(y : EuclideanSpace ℝ ι), θhat⟫) (Set.mem_univ ⟨xstar, hstar.1⟩)
     obtain ⟨z, hz, hz0⟩ := h𝒳.exists_mem_adjacentTo_inner_nonneg hx₀v
       (recommend x (history (fun _ _ ↦ ()) X Y T ω)).2 hω (by rw [inner_sub_left]; linarith)
     have hgz := hgap₀ z hz.2.1 hz.2.2.1.symm

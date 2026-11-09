@@ -59,7 +59,7 @@ lemma map_history_succ_of_hasCondDistrib {Q : Measure Ω}
 
 /-- The law of the first `n + 1` rounds of an algorithm-environment sequence is the
 composition-product of the law of the first `n` rounds with the step kernel. -/
-lemma IsAlgEnvSeq.map_history_succ {P : Measure Ω} [IsFiniteMeasure P]
+lemma IsAlgEnvSeq.map_history_succ {P : Measure Ω}
     (h : IsAlgEnvSeq O X Y alg env P) (n : ℕ) :
     P.map (history O X Y (n + 1)) =
       (P.map (history O X Y n) ⊗ₘ stepKernel alg env n).map
@@ -68,7 +68,7 @@ lemma IsAlgEnvSeq.map_history_succ {P : Measure Ω} [IsFiniteMeasure P]
 
 /-- The law of the first `n + 1 ≤ N` rounds of an algorithm-environment sequence until time `N`
 is the composition-product of the law of the first `n` rounds with the step kernel. -/
-lemma IsAlgEnvSeqUntil.map_history_succ {P : Measure Ω} [IsFiniteMeasure P]
+lemma IsAlgEnvSeqUntil.map_history_succ {P : Measure Ω}
     (h : IsAlgEnvSeqUntil O X Y alg env P N) (hn : n < N) :
     P.map (history O X Y (n + 1)) =
       (P.map (history O X Y n) ⊗ₘ stepKernel alg env n).map
@@ -79,8 +79,8 @@ end HistoryLaw
 
 section Transport
 
-variable {P : Measure Ω} {P' : Measure Ω'} [IsFiniteMeasure P] [IsFiniteMeasure P'] {g : Ω → Ω'}
-  {O : ℕ → Ω' → 𝓞} {X : ℕ → Ω' → 𝓐} {Y : ℕ → Ω' → 𝓨}
+variable {P : Measure Ω} {P' : Measure Ω'} {g : Ω → Ω'} {O : ℕ → Ω' → 𝓞} {X : ℕ → Ω' → 𝓐}
+  {Y : ℕ → Ω' → 𝓨}
 
 /-- An algorithm-environment sequence is transported along a measurable map `g` carrying `P`
 to `P'`. -/
@@ -111,7 +111,7 @@ end Transport
 /-- If two algorithms have the same policies before time `N`, an algorithm-environment sequence
 until time `N` for the first one is an algorithm-environment sequence until time `N` for the
 second one. -/
-lemma IsAlgEnvSeqUntil.of_policy_eq {P : Measure Ω} [IsFiniteMeasure P] {O : ℕ → Ω → 𝓞}
+lemma IsAlgEnvSeqUntil.of_policy_eq {P : Measure Ω} {O : ℕ → Ω → 𝓞}
     {X : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨} (h : IsAlgEnvSeqUntil O X Y alg env P N)
     (h_eq : ∀ n < N, alg.policy n = alg'.policy n) : IsAlgEnvSeqUntil O X Y alg' env P N where
   measurable_obs := h.measurable_obs

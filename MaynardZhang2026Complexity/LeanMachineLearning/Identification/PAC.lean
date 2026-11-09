@@ -218,8 +218,9 @@ lemma IsDeltaCorrect.mono (h : A.IsDeltaCorrect env bad δ) (hδ : δ ≤ δ') :
 
 /-- The `δ`-correctness is antitone in the badness predicate. -/
 lemma IsDeltaCorrect.mono_bad (h : A.IsDeltaCorrect env bad δ)
-    (hbad : ∀ θ d, bad' θ d → bad θ d) : A.IsDeltaCorrect env bad' δ :=
-  fun θ ↦ (measureReal_mono fun _ hp ↦ hp.imp_right (hbad θ _)).trans (h θ)
+    (hbad : ∀ θ d, bad' θ d → bad θ d) : A.IsDeltaCorrect env bad' δ := by
+  refine fun θ ↦ le_trans ?_ (h θ)
+  exact measureReal_mono fun _ hp ↦ hp.imp_right (hbad θ _)
 
 /-- The `δ`-correctness is inherited by subfamilies of environments. -/
 lemma IsDeltaCorrect.comp (h : A.IsDeltaCorrect env bad δ) (f : Θ' → Θ) :
@@ -250,7 +251,7 @@ lemma IsDeltaPAC.isDeltaCorrect (h : A.IsDeltaPAC env bad δ) : A.IsDeltaCorrect
       (Measure.le_map_apply measurable_snd.aemeasurable _)
   calc μ.real {p | p.1 ∉ A.stopSet ∨ bad θ p.2}
   _ ≤ μ.real (Prod.fst ⁻¹' A.stopSetᶜ) + μ.real (Prod.snd ⁻¹' {d | bad θ d}) :=
-    measureReal_union_le _ _
+    measureReal_union_le (Prod.fst ⁻¹' A.stopSetᶜ) (Prod.snd ⁻¹' {d | bad θ d})
   _ ≤ δ := by linarith [h.1 θ]
 
 variable [IsProbabilityMeasure P] {θ : Θ}

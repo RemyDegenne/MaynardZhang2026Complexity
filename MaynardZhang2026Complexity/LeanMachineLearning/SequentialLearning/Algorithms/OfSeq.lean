@@ -53,6 +53,6 @@ lemma IsAlgEnvSeq.action_ofSeq_ae_all_eq [MeasurableEq 𝓐] {Ω : Type*} {mΩ :
     {P : Measure Ω} [IsProbabilityMeasure P] {O : ℕ → Ω → 𝓞} {X : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨}
     {x : ℕ → 𝓐} {env : Environment 𝓞 𝓐 𝓨} (h : IsAlgEnvSeq O X Y (Algorithm.ofSeq x) env P) :
     ∀ᵐ ω ∂P, ∀ n, X n ω = x n :=
-  IsAlgEnvSeq.action_deterministic_ae_all_eq h
+  IsAlgEnvSeq.action_ae_all_eq_deterministic h
 
 end Learning

@@ -6,8 +6,8 @@ Authors: Rémy Degenne
 module
 
 public import LeanMachineLearning.ForMathlib.Probability.HasCondDistrib
-public import LeanMachineLearning.ForMathlib.Probability.Independence.IndepFun
-public import LeanMachineLearning.ForMathlib.Probability.Independence.IndepInfinitePi
+public import LeanMachineLearning.ForMathlib.Probability.Independence.Basic
+public import LeanMachineLearning.ForMathlib.Probability.Independence.InfinitePi
 public import MaynardZhang2026Complexity.LeanMachineLearning.Online.Bandit.Linear.Basic
 public import MaynardZhang2026Complexity.LeanMachineLearning.SequentialLearning.Algorithms.RandomOrderLaw
 public import MaynardZhang2026Complexity.Mathlib.Probability.HasCondDistrib
@@ -68,7 +68,7 @@ lemma isAlgEnvSeqUntil_prod_infinitePi (μ : Measure 𝓤) [IsProbabilityMeasure
     -- the action given the past actions
     have h1 : HasCondDistrib (fun ω : 𝓤 × (ℕ → ℝ) ↦ a n ω.1)
         (fun ω (i : Fin n) ↦ a i ω.1) (κ n) P :=
-      (hκ n hn).comp_hasLaw (g := Prod.fst) (hasLaw_fst_prod μ _)
+      (hκ n hn).comp_hasLaw (f := Prod.fst) (hasLaw_fst_prod μ _)
     -- the past noises are independent of the past and current actions
     have h2 : HasCondDistrib (fun ω : 𝓤 × (ℕ → ℝ) ↦ fun i : Fin n ↦ ω.2 i)
         (fun ω ↦ ((fun i : Fin n ↦ a i ω.1), a n ω.1))
@@ -112,7 +112,8 @@ lemma isAlgEnvSeqUntil_randomOrder_prod_infinitePi {T : ℕ} (x : Fin T → 𝒳
     IsAlgEnvSeqUntil (fun _ _ ↦ ()) (fun n ω ↦ permArm x n ω.1)
       (fun n ω ↦ ⟪((permArm x n ω.1 : 𝒳) : E), θ n⟫ + ω.2 n) (Algorithm.randomOrder x)
       (nonstationaryLinearEnv 𝒳 θ ξ)
-      ((PMF.uniformOfFintype (Equiv.Perm (Fin T))).toMeasure.prod (Measure.infinitePi ξ)) T := by
+      ((Measure.uniformOfFinset (Finset.univ : Finset (Equiv.Perm (Fin T)))).prod
+        (Measure.infinitePi ξ)) T := by
   have : ∀ n, IsMarkovKernel
       (Kernel.ofFunOfCountable fun h : Fin n → 𝒳 ↦ multisetUniform (remaining x h)) :=
     fun n ↦ ⟨fun h ↦ (inferInstance : IsProbabilityMeasure (multisetUniform (remaining x h)))⟩

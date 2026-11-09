@@ -98,7 +98,7 @@ lemma mem_convexHull_setOf_inner_eq (hs : ∀ y ∈ s, ⟪y, w⟫ ≤ c) (hz : z
     exact absurd hzc (hlt hz).not_ge
   rw [hs12, convexHull_union h₁ h₂, mem_convexJoin] at hz
   obtain ⟨a, ha, b, hb, hz⟩ := hz
-  have ha' : ⟪a, w⟫ = c := convexHull_min (fun y hy ↦ hy.2)
+  have ha' : ⟪a, w⟫ = c := convexHull_min (s := s₁) (t := {y | ⟪y, w⟫ = c}) (fun y hy ↦ hy.2)
     (convex_hyperplane (isLinearMap_inner_left w) c) ha
   have hb' : ⟪b, w⟫ < c := hlt hb
   rw [segment_eq_image] at hz
@@ -119,7 +119,8 @@ lemma mem_vertices_of_inner_lt (hx : x ∈ 𝒳) (h : ∀ y ∈ 𝒳, y ≠ x �
     exacts [le_rfl, (h y hy hyx).le]
   refine ⟨subset_convexHull ℝ 𝒳 hx, innerSL ℝ w, fun y hy ↦ ⟨?_, fun hxy ↦ ?_⟩⟩
   · rw [innerSL_apply_apply, innerSL_apply_apply, ← real_inner_comm w y, ← real_inner_comm w x]
-    exact convexHull_min hle (convex_halfSpace_le (isLinearMap_inner_left w) _) hy
+    exact convexHull_min (t := {y | ⟪y, w⟫ ≤ ⟪x, w⟫}) hle
+      (convex_halfSpace_le (isLinearMap_inner_left w) _) hy
   · rw [innerSL_apply_apply, innerSL_apply_apply, ← real_inner_comm w y,
       ← real_inner_comm w x] at hxy
     have hsub : {y ∈ 𝒳 | ⟪y, w⟫ = ⟪x, w⟫} ⊆ {x} := fun y hy ↦ by
@@ -203,7 +204,8 @@ lemma exists_mem_vertices_forall_inner_le [CompleteSpace E] (h𝒳 : 𝒳.Finite
     Set.exists_max_image _ (fun y ↦ ⟪y, θ⟫) (h𝒳.subset vertices_subset) hVne
   refine ⟨v, hv, fun y hy ↦ ?_⟩
   have : y ∈ convexHull ℝ (vertices 𝒳) := h𝒳.convexHull_vertices ▸ subset_convexHull ℝ 𝒳 hy
-  exact convexHull_min hvmax (convex_halfSpace_le (isLinearMap_inner_left θ) _) this
+  exact convexHull_min (t := {y | ⟪y, θ⟫ ≤ ⟪v, θ⟫}) hvmax
+    (convex_halfSpace_le (isLinearMap_inner_left θ) _) this
 
 /-- Lexicographic optimality: if `x` maximizes `⟪·, φ⟫` over the finite set `𝒳` and is strictly
 better than the other maximizers for `⟪·, ψ⟫`, then a direction `φ + δ ψ` makes `x` strictly better
@@ -273,7 +275,8 @@ lemma isAdjacent_iff_exists_inner (h𝒳 : 𝒳.Finite) (hx : x ∈ vertices �
       · exact hxx'.ge
       exact (hw y hy hyx hyx').le
     have hle : ∀ z ∈ convexHull ℝ 𝒳, ⟪z, w⟫ ≤ ⟪x, w⟫ := fun z hz ↦
-      convexHull_min hV (convex_halfSpace_le (isLinearMap_inner_left w) _)
+      convexHull_min (t := {y | ⟪y, w⟫ ≤ ⟪x, w⟫}) hV
+        (convex_halfSpace_le (isLinearMap_inner_left w) _)
         (h𝒳.convexHull_vertices.symm ▸ hz)
     refine ⟨hx, hx', hne, fun _ ↦ ⟨innerSL ℝ w, ?_⟩⟩
     ext y

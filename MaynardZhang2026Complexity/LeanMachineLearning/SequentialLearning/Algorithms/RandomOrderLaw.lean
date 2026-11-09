@@ -152,7 +152,7 @@ lemma hasCondDistrib_apply_perm (hn : n < T) (x : Fin T → 𝓐) :
     HasCondDistrib (fun π : Equiv.Perm (Fin T) ↦ x (π ⟨n, hn⟩))
       (fun π (i : Fin n) ↦ x (π (Fin.castLE hn.le i)))
       (Kernel.ofFunOfCountable fun h : Fin n → 𝓐 ↦ multisetUniform (remaining x h))
-      (PMF.uniformOfFintype (Equiv.Perm (Fin T))).toMeasure := by
+      (Measure.uniformOfFinset (Finset.univ : Finset (Equiv.Perm (Fin T)))) := by
   refine hasCondDistrib_of_countable (measurable_of_countable _) (measurable_of_countable _)
     fun h y ↦ ?_
   have e1 : (fun (π : Equiv.Perm (Fin T)) (i : Fin n) ↦ x (π (Fin.castLE hn.le i))) ⁻¹' {h}
@@ -164,7 +164,7 @@ lemma hasCondDistrib_apply_perm (hn : n < T) (x : Fin T → 𝓐) :
       = {π | ∀ i : Fin n, x (π (Fin.castLE hn.le i)) = h i} := by
     ext π
     simp [funext_iff]
-  rw [e1, e0, PMF.toMeasure_uniformOfFintype_setOf, PMF.toMeasure_uniformOfFintype_setOf]
+  rw [e1, e0, Measure.uniformOfFinset_univ_setOf, Measure.uniformOfFinset_univ_setOf]
   change _ = _ * _ * multisetUniform (remaining x h) {y}
   have hkey := card_filter_perm_mul hn x h y
   set N1 := #(univ.filter fun π : Equiv.Perm (Fin T) ↦
@@ -184,12 +184,11 @@ lemma hasCondDistrib_apply_perm (hn : n < T) (x : Fin T → 𝓐) :
   have hR0 : remaining x h ≠ 0 := by
     rw [← Multiset.card_pos, hcard]
     omega
-  have hofm : PMF.ofMultiset (remaining x h) hR0 y
+  have hofm : Measure.ofMultiset (remaining x h) {y}
       = (remaining x h).count y / (Multiset.card (remaining x h) : ℝ≥0∞) := by
-    rw [PMF.ofMultiset_apply]
+    rw [Measure.ofMultiset_apply_singleton]
     congr
-  rw [multisetUniform, dite_eq_right hR0,
-    PMF.toMeasure_apply_singleton _ _ (measurableSet_singleton y), hofm, hcard]
+  rw [multisetUniform, ite_eq_right hR0, hofm, hcard]
   have hTn : ((T - n : ℕ) : ℝ≥0∞) ≠ 0 := by
     simp only [ne_eq, Nat.cast_eq_zero]
     omega
@@ -221,7 +220,7 @@ of the allocation not yet played: the policy of `Algorithm.randomOrder x`. -/
 lemma hasCondDistrib_permArm (hn : n < T) (x : Fin T → 𝓐) :
     HasCondDistrib (permArm x n) (fun π (i : Fin n) ↦ permArm x i π)
       (Kernel.ofFunOfCountable fun h : Fin n → 𝓐 ↦ multisetUniform (remaining x h))
-      (PMF.uniformOfFintype (Equiv.Perm (Fin T))).toMeasure := by
+      (Measure.uniformOfFinset (Finset.univ : Finset (Equiv.Perm (Fin T)))) := by
   have h1 : permArm x n = fun π : Equiv.Perm (Fin T) ↦ x (π ⟨n, hn⟩) :=
     funext fun π ↦ permArm_of_lt x hn π
   have h2 : (fun π (i : Fin n) ↦ permArm x i π)

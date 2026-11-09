@@ -105,8 +105,8 @@ lemma IsFixedBudget.outputMeasure_eq (hA : A.IsFixedBudget T) (env : Environment
     A.outputMeasure env = A.outputAt T ∘ₘ (trajMeasure A.alg env).map (IT.hist T) := by
   rw [outputMeasure, hA.stoppedHistMeasure_eq,
     show sigmaHistory IT.obs IT.action IT.feedback T = Sigma.mk T ∘ IT.hist T from rfl,
-    ← Measure.map_map (measurable_sigma_mk T) (IT.measurable_hist T),
-    ← Measure.deterministic_comp_eq_map (measurable_sigma_mk T), Measure.comp_assoc,
+    ← Measure.map_map (measurable_sigmaMk T) (IT.measurable_hist T),
+    ← Measure.deterministic_comp_eq_map (measurable_sigmaMk T), Measure.comp_assoc,
     Kernel.comp_deterministic_eq_comap, outputAt]
 
 /-- The law of the output of a fixed-budget algorithm with budget `0` is the output rule applied
@@ -139,7 +139,7 @@ lemma IsRun.hasCondDistrib_output_history [IsFiniteMeasure P] (hA : A.IsFixedBud
     HasCondDistrib out (history O X Y T) (A.outputAt T) P := by
   have h1 := h.hasCondDistrib_output
   rw [show A.stoppedHist O X Y = Sigma.mk T ∘ history O X Y T from funext hA.stoppedHist_eq] at h1
-  exact h1.of_measurableEmbedding_comp_right (measurableEmbedding_sigma_mk T)
+  exact h1.of_measurableEmbedding_comp_right (measurableEmbedding_sigmaMk T)
 
 /-- For a fixed-budget algorithm whose output rule on the histories of `T` rounds is the
 deterministic map `g`, the output of a run is almost surely `g` of the history of the first `T`
@@ -150,8 +150,7 @@ lemma IsRun.output_ae_eq_of_outputAt_eq_deterministic [MeasurableEq 𝓓] [IsFin
     out =ᵐ[P] fun ω ↦ g (history O X Y T ω) := by
   have h1 := h.hasCondDistrib_output_history hA
   rw [hout] at h1
-  exact ae_eq_of_hasCondDistrib_deterministic hg (h.isAlgEnvSeq.measurable_history T).aemeasurable
-    h.hasCondDistrib_output.aemeasurable_snd h1
+  exact h1.ae_eq_of_deterministic
 
 /-- For a run of a fixed-budget algorithm with budget `0`, the law of the output is the output
 rule applied to the empty history. -/

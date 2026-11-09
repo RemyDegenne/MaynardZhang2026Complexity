@@ -41,7 +41,7 @@ variable {𝓞 𝓐 𝓨 Ω Ω' : Type*} {m𝓞 : MeasurableSpace 𝓞} {m𝓐 :
 
 /-- An algorithm-environment sequence until time `N` for the environment `env` is one for every
 environment `env'` with the same observation and feedback kernels at the rounds before `N`. -/
-lemma IsAlgEnvSeqUntil.of_env_eq [IsFiniteMeasure P] (h : IsAlgEnvSeqUntil O A Y alg env P N)
+lemma IsAlgEnvSeqUntil.of_env_eq (h : IsAlgEnvSeqUntil O A Y alg env P N)
     (hobs : ∀ n < N, env.obs n = env'.obs n)
     (hfeedback : ∀ n < N, env.feedback n = env'.feedback n) :
     IsAlgEnvSeqUntil O A Y alg env' P N where

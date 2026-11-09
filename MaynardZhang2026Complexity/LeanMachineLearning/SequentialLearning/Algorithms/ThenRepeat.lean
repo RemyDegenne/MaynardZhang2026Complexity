@@ -88,6 +88,7 @@ variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsFiniteMeasu
   {O : ℕ → Ω → 𝓞} {X : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨} {alg : Algorithm 𝓞 𝓐 𝓨}
   {env : Environment 𝓞 𝓐 𝓨} {T : ℕ} {ρ : Kernel (Hist 𝓞 𝓐 𝓨 T) 𝓐} [IsMarkovKernel ρ]
 
+omit [IsFiniteMeasure P] in
 /-- An algorithm-environment sequence of `alg.thenRepeat T ρ` is an algorithm-environment
 sequence for `alg` until time `T`. -/
 lemma IsAlgEnvSeq.isAlgEnvSeqUntil_of_thenRepeat
@@ -110,10 +111,7 @@ lemma IsAlgEnvSeq.action_ae_eq_of_thenRepeat [MeasurableEq 𝓐]
     X t =ᵐ[P] X T := by
   have h1 := h.hasCondDistrib_action t
   rw [Algorithm.thenRepeat_policy_of_gt alg T ρ ht] at h1
-  exact ae_eq_of_hasCondDistrib_deterministic
-    (f := fun x : Hist 𝓞 𝓐 𝓨 t × 𝓞 ↦ (x.1 ⟨T, ht⟩).action) (by fun_prop)
-    ((h.measurable_history t).prodMk (h.measurable_obs t)).aemeasurable
-    (h.measurable_action t).aemeasurable h1
+  exact h1.ae_eq_of_deterministic
 
 /-- Under `alg.thenRepeat T ρ`, the action at round `T + s` is almost surely the action at
 round `T`. -/

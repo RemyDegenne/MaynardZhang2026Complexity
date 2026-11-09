@@ -7,7 +7,7 @@ module
 
 public import MaynardZhang2026Complexity.Mathlib.Probability.Kernel.Basic
 public import MaynardZhang2026Complexity.LeanMachineLearning.SequentialLearning.FactorsThrough
-public import Mathlib.Probability.Distributions.Uniform
+public import MaynardZhang2026Complexity.Mathlib.Probability.ProbabilityMassFunction.Uniform
 
 /-!
 # Playing a fixed allocation in uniformly random order
@@ -45,11 +45,13 @@ variable {𝓞 𝓐 𝓨 : Type*} [MeasurableSpace 𝓞] [MeasurableSpace 𝓐] 
 
 /-- The uniform law on a multiset (the uniform law on `𝓐` if the multiset is empty). -/
 noncomputable def multisetUniform (s : Multiset 𝓐) : Measure 𝓐 :=
-  if hs : s = 0 then (PMF.uniformOfFintype 𝓐).toMeasure else (PMF.ofMultiset s hs).toMeasure
+  if s = 0 then Measure.uniformOfFinset univ else Measure.ofMultiset s
 
 instance (s : Multiset 𝓐) : IsProbabilityMeasure (multisetUniform s) := by
   unfold multisetUniform
-  split_ifs <;> infer_instance
+  split_ifs with hs
+  · infer_instance
+  · exact Measure.isProbabilityMeasure_ofMultiset hs
 
 omit [Nonempty 𝓐] [MeasurableSingletonClass 𝓐] in
 /-- The multiset of arms of the allocation `x` not yet played after the arms `h`. -/

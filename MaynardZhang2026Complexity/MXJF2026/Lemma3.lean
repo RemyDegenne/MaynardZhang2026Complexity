@@ -172,7 +172,9 @@ theorem exists_minGapGE_le_max_error_optValue (𝒳 : Finset (EuclideanSpace ℝ
       (θ t) (gaussianReal 0 1)) (fun _ _ ↦ ()) X Y out P := h
   have hrun' : A.IsRun (Environment.banditSeq fun t ↦ linearKernel (𝒳 : Set (EuclideanSpace ℝ ι))
       (θ' t) (gaussianReal 0 1)) (fun _ _ ↦ ()) X' Y' out' P' := h'
-  have h2 := le_max_prob_ne _ _ T (fun t a ↦ by rw [hkl]; exact ENNReal.ofReal_ne_top) hne A hA
+  have h2 := le_max_prob_ne (fun t ↦ linearKernel (𝒳 : Set (EuclideanSpace ℝ ι)) (θ t)
+      (gaussianReal 0 1)) (fun t ↦ linearKernel (𝒳 : Set (EuclideanSpace ℝ ι)) (θ' t)
+      (gaussianReal 0 1)) T (fun t a ↦ by rw [hkl]; exact ENNReal.ofReal_ne_top) hne A hA
     P X Y out P' X' Y' out' hrun hrun'
   rw [hE, hE']
   refine le_trans ?_ h2

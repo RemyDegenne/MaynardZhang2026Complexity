@@ -44,7 +44,7 @@ theorem hasSubgaussianMGF_sum_perm {T : ℕ} (x θ : Fin T → EuclideanSpace �
         ∑ t, ⟪z, Matrix.toEuclideanCLM (𝕜 := ℝ) (∑ s, outerSelf (x s))⁻¹ (x t)⟫ *
           ⟪x t, θ (π t) - (T : ℝ)⁻¹ • ∑ s, θ s⟫)
       (8 * M ^ 2 * B ^ 2 * mahalanobisSq (∑ s, outerSelf (x s))⁻¹ z).toNNReal
-      (PMF.uniformOfFintype (Equiv.Perm (Fin T))).toMeasure := by
+      (Measure.uniformOfFinset (Finset.univ : Finset (Equiv.Perm (Fin T)))) := by
   set c : Fin T → ℝ := fun t ↦
     ⟪z, Matrix.toEuclideanCLM (𝕜 := ℝ) (∑ s, outerSelf (x s))⁻¹ (x t)⟫
   have h := hasSubgaussianMGF_sum_inner_perm (fun t ↦ c t • x t) θ hM

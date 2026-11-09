@@ -5,7 +5,8 @@ Authors: Rémy Degenne
 -/
 module
 
-public import LeanMachineLearning.ForMathlib.Probability.WithDensity
+public import LeanMachineLearning.ForMathlib.MeasureTheory.Measure.WithDensity
+public import LeanMachineLearning.ForMathlib.Probability.Kernel.Composition.WithDensity
 public import MaynardZhang2026Complexity.LeanMachineLearning.SequentialLearning.Algorithm
 
 /-!

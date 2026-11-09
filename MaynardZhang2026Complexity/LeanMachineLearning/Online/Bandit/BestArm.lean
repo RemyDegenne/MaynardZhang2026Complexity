@@ -52,7 +52,7 @@ noncomputable def bestMeanArm [Fintype α] [Nonempty α] (μ : α → ℝ) : α 
 variable [Fintype α] [Nonempty α]
 
 lemma le_bestMeanArm (μ : α → ℝ) (a : α) : μ a ≤ μ (bestMeanArm μ) :=
-  isMaxOn_argmax μ a
+  isMaxOn_argmax μ (Set.mem_univ a)
 
 /-- The best arm of a vector of means with a unique optimal arm `a` is `a`. -/
 lemma bestMeanArm_eq_of_forall_lt {μ : α → ℝ} {a : α} (h : ∀ b ≠ a, μ b < μ a) :

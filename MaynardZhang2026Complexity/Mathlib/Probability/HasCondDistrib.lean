@@ -8,6 +8,7 @@ module
 public import Mathlib.Probability.HasCondDistrib
 public import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 public import Mathlib.Probability.Kernel.Composition.Lemmas
+public import LeanMachineLearning.ForMathlib.Probability.HasCondDistrib
 public import LeanMachineLearning.ForMathlib.Probability.Kernel.Composition.MapComap
 public import MaynardZhang2026Complexity.Mathlib.Probability.Kernel.Composition.CompProd
 public import MaynardZhang2026Complexity.Mathlib.Probability.Kernel.Composition.MeasureCompProd
@@ -20,8 +21,8 @@ General facts about Mathlib's `HasCondDistrib`, complementing LML's
 
 ## Main statements
 
-* `HasCondDistrib.comp_hasLaw`, `HasCondDistrib.of_comp_hasLaw`: a conditional distribution is
-  transported along a map `g` carrying `P` to `P'`, and conversely;
+* `HasCondDistrib.of_comp_hasLaw`: a conditional distribution of `Z ∘ g` given `X ∘ g` is one of
+  `Z` given `X` under the law of `g` (the converse of LML's `HasCondDistrib.comp_hasLaw`);
 * `HasCondDistrib.const_comp_right`: a constant conditional law given `Z` is a constant
   conditional law given any measurable function of `Z`;
 * `HasLaw.hasCondDistrib_snd_const`: if `(X, Y)` has law `Q ⊗ R`, then `Y` has the constant
@@ -69,17 +70,6 @@ section transport
 variable {Ω Ω' 𝓧 𝓩 : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
   {m𝓧 : MeasurableSpace 𝓧} {m𝓩 : MeasurableSpace 𝓩} {P : Measure Ω} {P' : Measure Ω'}
   {g : Ω → Ω'}
-
-/-- A conditional distribution is transported along a map `g` carrying `P` to `P'`. -/
-lemma HasCondDistrib.comp_hasLaw {X : Ω' → 𝓧} {Z : Ω' → 𝓩}
-    {κ : Kernel 𝓧 𝓩} (h : HasCondDistrib Z X κ P') (hg : HasLaw g P' P) :
-    HasCondDistrib (Z ∘ g) (X ∘ g) κ P := by
-  have h' : HasLaw ((fun ω ↦ (X ω, Z ω)) ∘ g) (P'.map X ⊗ₘ κ) P := HasLaw.comp h hg
-  have hX : P'.map X = P.map (X ∘ g) := by
-    rw [← hg.map_eq, AEMeasurable.map_map_of_aemeasurable (hg.map_eq ▸ h.aemeasurable_fst)
-      hg.aemeasurable]
-  rw [hX] at h'
-  exact h'
 
 /-- A conditional distribution of `Z ∘ g` given `X ∘ g` under `P` is a conditional distribution
 of `Z` given `X` under the law `P'` of `g`. -/
