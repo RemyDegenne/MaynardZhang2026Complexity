@@ -8,9 +8,9 @@ module
 public import MaynardZhang2026Complexity.MXJF2026.Setting
 public import MaynardZhang2026Complexity.MXJF2026.Lemma2
 public import MaynardZhang2026Complexity.MXJF2026.Optimization
-public import MaynardZhang2026Complexity.LeanMachineLearning.Design
-public import MaynardZhang2026Complexity.LeanMachineLearning.SequentialLearning.AgreeingEnvironments
-public import MaynardZhang2026Complexity.Mathlib.InformationTheory.KullbackLeibler.Gaussian
+public import MaynardZhang2026Complexity.ForLMLExplore.Analysis.InnerProductSpace.Design
+public import MaynardZhang2026Complexity.ForLMLExplore.SequentialLearning.AgreeingEnvironments
+public import MaynardZhang2026Complexity.ForLMLExplore.InformationTheory.KullbackLeibler.Gaussian
 
 /-!
 # Lemma 3: the optimization-based lower bound

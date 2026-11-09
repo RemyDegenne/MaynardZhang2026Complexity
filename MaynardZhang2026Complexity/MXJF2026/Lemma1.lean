@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import MaynardZhang2026Complexity.MXJF2026.Setting
-public import MaynardZhang2026Complexity.Mathlib.Analysis.Convex.Vertices
+public import MaynardZhang2026Complexity.ForLMLExplore.Analysis.Convex.Vertices
 
 /-!
 # Lemma 1: the adjacency lemma

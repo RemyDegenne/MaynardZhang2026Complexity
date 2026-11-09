@@ -22,15 +22,16 @@ are listed in [`formalization.yaml`](formalization.yaml) and are standalone chal
   `Theorem2.lean`, `Proposition1.lean`), namespace `MaynardZhang2026Complexity`; the setting,
   the complexity `H_Adjacent`, the optimization problem of the lower bound and Algorithm 1 are in
   `Setting.lean`.
-* `MaynardZhang2026Complexity/LeanMachineLearning/`: material for LML: non-stationary bandits and
-  linear bandits, designs and design matrices, identification algorithms with a fixed budget, the
-  algorithm playing an allocation in random order (from `LMLPapers`); new: the chain rule and the
-  change of measure for non-stationary bandits, runs against agreeing environments, the law of
-  the actions of the random-order algorithm and an explicit model of its runs.
-* `MaynardZhang2026Complexity/Mathlib/`: material for Mathlib: Mahalanobis norms, vertices and
-  adjacent vertices of the convex hull of a set (from `LMLPapers`); new: the adjacency lemma and
-  the cone property for finite sets (`Analysis/Convex/Vertices.lean`), Cauchy–Schwarz for
-  Mahalanobis norms, sampling without replacement, Bretagnolle–Huber.
+* `MaynardZhang2026Complexity/ForLMLExplore/`: library-shaped material, under LMLExplore's
+  paths. LML-shaped (`Bandits/`, `Identification/`, `SequentialLearning/`, designs in
+  `Analysis/InnerProductSpace/`): non-stationary bandits and linear bandits, designs and design
+  matrices, identification algorithms with a fixed budget, the algorithm playing an allocation in
+  random order (from `LMLPapers`); new: the chain rule and the change of measure for
+  non-stationary bandits, runs against agreeing environments, the law of the actions of the
+  random-order algorithm and an explicit model of its runs. Mathlib-shaped: Mahalanobis norms,
+  vertices and adjacent vertices of the convex hull of a set (from `LMLPapers`); new: the
+  adjacency lemma and the cone property for finite sets (`Analysis/Convex/Vertices.lean`),
+  Cauchy–Schwarz for Mahalanobis norms, sampling without replacement, Bretagnolle–Huber.
   Upstreaming candidates: `notes/upstreaming-candidates.md`.
 * `blueprint/src/`: the blueprint (Part I follows the paper, Part II the prerequisites);
   `notes/blueprint-outline.md`: the outline it was written from (labels, corrections, proof

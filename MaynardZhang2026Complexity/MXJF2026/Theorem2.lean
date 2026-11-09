@@ -7,7 +7,7 @@ module
 
 public import MaynardZhang2026Complexity.MXJF2026.Setting
 public import MaynardZhang2026Complexity.MXJF2026.Lemma5
-public import MaynardZhang2026Complexity.Mathlib.Analysis.Convex.Vertices
+public import MaynardZhang2026Complexity.ForLMLExplore.Analysis.Convex.Vertices
 public import Mathlib.Probability.Moments.SubGaussian
 
 /-!

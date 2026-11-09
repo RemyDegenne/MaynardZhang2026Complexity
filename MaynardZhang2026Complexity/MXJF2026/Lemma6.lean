@@ -7,7 +7,7 @@ module
 
 public import MaynardZhang2026Complexity.MXJF2026.Setting
 public import LeanMachineLearning.SequentialLearning.IonescuTulceaSpace
-public import MaynardZhang2026Complexity.LeanMachineLearning.Online.Bandit.ChangeOfMeasure
+public import MaynardZhang2026Complexity.ForLMLExplore.Bandits.ChangeOfMeasure
 
 /-!
 # Lemma 6: change of measure at a stopping time for non-stationary bandits

@@ -7,7 +7,7 @@ module
 
 public import MaynardZhang2026Complexity.MXJF2026.Setting
 public import MaynardZhang2026Complexity.MXJF2026.Lemma9
-public import MaynardZhang2026Complexity.LeanMachineLearning.Online.Bandit.Linear.ActionModel
+public import MaynardZhang2026Complexity.ForLMLExplore.Bandits.LinearBandit.ActionModel
 public import Mathlib.Probability.Moments.SubGaussian
 
 /-!

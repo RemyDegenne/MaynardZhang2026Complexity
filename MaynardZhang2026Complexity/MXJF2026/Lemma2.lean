@@ -7,9 +7,9 @@ module
 
 public import MaynardZhang2026Complexity.MXJF2026.Setting
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
-public import MaynardZhang2026Complexity.Mathlib.InformationTheory.KullbackLeibler.BretagnolleHuber
-public import MaynardZhang2026Complexity.LeanMachineLearning.Identification.ChangeOfMeasure
-public import MaynardZhang2026Complexity.LeanMachineLearning.SequentialLearning.DivergenceDecomposition
+public import MaynardZhang2026Complexity.ForLMLExplore.InformationTheory.KullbackLeibler.BretagnolleHuber
+public import MaynardZhang2026Complexity.ForLMLExplore.Identification.ChangeOfMeasure
+public import MaynardZhang2026Complexity.ForLMLExplore.SequentialLearning.DivergenceDecomposition
 
 /-!
 # Lemma 2: the change-of-measure lower bound for non-stationary bandits

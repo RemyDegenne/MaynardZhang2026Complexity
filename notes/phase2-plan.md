@@ -8,7 +8,7 @@ Interface files (statements fixed; their owner replaces the `sorry`):
 
 | File | Declarations | Owner |
 |---|---|---|
-| `MaynardZhang2026Complexity/Mathlib/Analysis/Convex/Vertices.lean` | `Set.Finite.mem_vertices_iff_exists_inner_lt`, `isAdjacent_iff_exists_inner`, `exists_mem_adjacentTo_inner_pos`, `exists_mem_adjacentTo_inner_nonneg`, `adjacentTo_nonempty`, `mem_vertices_of_forall_vertices` | P |
+| `MaynardZhang2026Complexity/ForLMLExplore/Analysis/Convex/Vertices.lean` | `Set.Finite.mem_vertices_iff_exists_inner_lt`, `isAdjacent_iff_exists_inner`, `exists_mem_adjacentTo_inner_pos`, `exists_mem_adjacentTo_inner_nonneg`, `adjacentTo_nonempty`, `mem_vertices_of_forall_vertices` | P |
 | `MXJF2026/Lemma1.lean`, `Lemma10.lean`, `Proposition1.lean` (frozen) | `exists_pos_inner_iff`, `ratio_le_iSup_adjacentTo`, `iInf_iSup_ratio_eq` | P |
 | `MXJF2026/Optimization.lean` | `exists_pairFeasible`, `optValue_pos`, `exists_pairFeasible_lt_two_mul_optValue`, `hAdjacent_pos`, `optValue_le` | O |
 | `MXJF2026/Lemma4.lean`, `Lemma7.lean`, `Lemma8.lean` (frozen) | `pairValue_eq`, `le_pairValue`, `pairValue_le` | O |
@@ -99,7 +99,7 @@ the five interfaces of `Optimization.lean`. Use P's `Set.Finite.mem_vertices_iff
   `x'`, scaled; `pairValue` is an infimum over a nonempty set, bounded below by `0` for positive
   semidefinite `A` (design matrices are positive semidefinite).
 * Lemma 7: `2Δ ≤ ⟪x' - x, v⟫`, Cauchy–Schwarz for the forms of `A⁻¹` and `A` (through
-  `CFC.sqrt A`, see `Mathlib/Analysis/Matrix/Order.lean` and `Mahalanobis.lean` in this repo).
+  `CFC.sqrt A`, see `ForLMLExplore/Analysis/Matrix/Order.lean` and `Mahalanobis.lean` in this repo).
 * Lemma 8: the paper's explicit point (blueprint `lem:pair_value_upper`), `α` large; it holds for
   every `Δ`.
 * `pairValue` monotone and positively homogeneous in `A` (`lem:pair_value_mono`).
