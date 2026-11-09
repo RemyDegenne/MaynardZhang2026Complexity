@@ -162,5 +162,15 @@ status:
     `IsAlgEnvSeq` and `IdentAlg.IsRun`); `scripts/comparator-verify.sh` has still to be run.
     Errors of the paper: `notes/paper-errata.md` (E1 Lemma 5, E2 Theorem 1 and Lemma 3, E3 the
     proof of Lemma 3).
+
+    Paper roadmap, 2026-11-09: `PAPER_ROADMAP.md` tags the 20 prerequisites against LMLExplore
+    afd365492580 and LMLRoadmaps d01bdd6b89ce: 7 already in the dependencies (`exists`: the
+    identification framework, designs and weighted norms as operators, Bretagnolle-Huber, the
+    Gaussian divergence, small probability lemmas), 1 `target` (data processing for the output,
+    Identification 2.1), 2 `refactor` (runs against environments agreeing before a round, linear
+    kernels with any noise law), 7 `staged` with proposed targets (vertices and edges of
+    polytopes, the non-stationary divergence decomposition and likelihood-ratio identity,
+    conditional laws, random-order allocations and their runs, concentration for sampling without
+    replacement) and 3 `paper`.
   sorry_count: 0
   sorry_in_definitions: 0
